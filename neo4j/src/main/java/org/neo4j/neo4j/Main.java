@@ -41,7 +41,7 @@ public class Main
 	public static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 
 	
-	private static final String Neo4j_DBPath = "/Users/JackyChang/Documents/workspace/neo4j/database";
+	private static final String Neo4j_DBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database";
 	List<Node> neo4jServiceNodes;
 	Relationship relation;
 	GraphDatabaseService graphDatabaseService;
