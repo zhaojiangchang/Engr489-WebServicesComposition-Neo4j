@@ -3,8 +3,10 @@ package org.neo4j.neo4j;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,8 +23,12 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.graphdb.index.IndexManager;
+import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.io.fs.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -49,12 +55,20 @@ public class Main
 	List<Node> neo4jTaxonomyNodes;
 	Relationship relation;
 	GraphDatabaseService graphDatabaseService;
+	GraphDatabaseService graphDatabaseTaxonomy;
 	private static enum RelTypes implements RelationshipType{
 		PARENT, CHILD
 	}
     public static void main( String[] args )
     {
     	Main neo4jwsc = new Main();
+    	try {
+			FileUtils.deleteRecursively(new File(Neo4j_TaxonomyDBPath));
+			FileUtils.deleteRecursively(new File(Neo4j_ServicesDBPath));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	neo4jwsc.parseWSCServiceFile("test_serv.xml");
     	neo4jwsc.createServicesDatabase(serviceMap);
     	neo4jwsc.parseWSCTaxonomyFile("test_taxonomy.xml");
@@ -65,6 +79,7 @@ public class Main
     }
 	void createServicesDatabase(Map<String, ServiceNode> serviceMap){
     	graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath);
+    	
     	Transaction transaction = graphDatabaseService.beginTx();
     	neo4jServiceNodes = new ArrayList<Node>();
     	try{
@@ -109,8 +124,78 @@ public class Main
     	System.out.println("Neo4j database is shutdown");
     }
     void setServicesRelationship(List<Node> neo4jServiceNodes){
-    	
+    	Transaction transaction = graphDatabaseService.beginTx();
+
+//    	IndexManager index = 
+    	for(int j= 0; j<neo4jServiceNodes.size(); j++){
+    		Object inputsFromGdb =neo4jServiceNodes.get(j).getProperty("inputs");
+    		//remove the "[" and "]" from string
+    		String inputs = Arrays.toString((String[]) inputsFromGdb).substring(1, Arrays.toString((String[]) inputsFromGdb).length()-1);
+    		String[] items = inputs.split("\\s*,\\s*");
+    		//split s comma-separated string 
+//    		List<String> items = Arrays.asList(inputs.split("\\s*,\\s*"));
+    		for(int i = 0; i< items.length; i++){
+    			String [] findOutputsNodes = new String[0];
+    			try(Transaction tx = graphDatabaseTaxonomy.beginTx()){
+    					for(int t = 0; t<neo4jTaxonomyNodes.size(); t++){
+    						String name = neo4jTaxonomyNodes.get(t).getProperty("name").toString();
+    						TaxonomyNode taxNode = taxonomyMap.get( name );
+    						List<TaxonomyNode> children = taxNode.children;
+    						System.out.println(name+"    "+items[i]);
+    						if(name.equals(items[i])){
+    							System.out.println("----------------------");
+    							findOutputsNodes = increaseArray(findOutputsNodes);
+    							findOutputsNodes[findOutputsNodes.length-1]= name;
+    							checkAndAddAllChildNodes(name, findOutputsNodes);
+    							System.out.println("----------------------");
+
+    						}
+//    						if(neo4jTaxonomyNodes.get(t).getProperty("name")))
+    					}
+    					
+    					
+//    				Result result = graphDatabaseTaxonomy.execute("match(n{name: 'items[i]'}) return n, n.name")){
+//    				
+//    				String rows= "";
+//    				while (result.hasNext()){
+//        				System.out.println(result.hasNext());
+//    					 Map<String,Object> row = result.next();
+//    				        for ( Entry<String,Object> column : row.entrySet() )
+//    				        {
+//    				            rows += column.getKey() + ": " + column.getValue() + "; ";
+//    				        }
+//    				        rows += "\n";
+//    				}
+//    				System.out.println("----------------");
+//    				System.out.println(rows);
+    			}
+    		}
+    	}
+    	transaction.finish();
     }
+    
+	private void checkAndAddAllChildNodes(String name, String[] findOutputsNodes){
+		for(int t = 0; t<neo4jTaxonomyNodes.size(); t++){
+			String n = neo4jTaxonomyNodes.get(t).getProperty("name").toString();
+			if(name.equals(n)){
+//				neo4jTaxonomyNodes.get(t).getRelationshipTypes();
+				System.out.println(neo4jTaxonomyNodes.get(t).getRelationships(Direction.OUTGOING));
+				for (Relationship relationship : neo4jTaxonomyNodes.get(t).getRelationships(Direction.OUTGOING)) {
+			       
+			        for (Node node : relationship.getNodes()) {
+			            System.out.println("++++++++++++++++++++++++");
+
+			            System.out.println(node.getProperty("name"));
+			        }
+			       
+			    }
+
+			}
+			
+		}
+	}
+
+	
     /**
 	 * Parses the WSC Web service file with the given name, creating Web
 	 * services based on this information and saving them to the service map.
@@ -195,8 +280,9 @@ public class Main
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 			NodeList taxonomyRoots = doc.getChildNodes();
-			graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_TaxonomyDBPath);
-			Transaction transaction = graphDatabaseService.beginTx();
+			graphDatabaseTaxonomy = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_TaxonomyDBPath);
+			
+			Transaction transaction = graphDatabaseTaxonomy.beginTx();
 			neo4jTaxonomyNodes = new ArrayList<Node>();
 			try{
 				processTaxonomyChildren(null, taxonomyRoots, null);
@@ -236,12 +322,10 @@ public class Main
 					String value = currNode.getAttribute("name");
 					TaxonomyNode taxNode = taxonomyMap.get( value );
 					if (taxNode == null) {
-						System.out.println(taxNode==null);
-						System.out.println(value);
 						taxNode = new TaxonomyNode(value);
 						taxonomyMap.put( value, taxNode );
 						
-						taxonomyGNode = graphDatabaseService.createNode();
+						taxonomyGNode = graphDatabaseTaxonomy.createNode();
 						if(value!=""){
 						    Label nodeLable = DynamicLabel.label(value);
 						    taxonomyGNode.addLabel(nodeLable);
