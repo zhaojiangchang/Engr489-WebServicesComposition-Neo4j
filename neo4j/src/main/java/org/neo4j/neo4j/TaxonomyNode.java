@@ -20,11 +20,30 @@ public class TaxonomyNode {
 	public String value;
 	public List<TaxonomyNode> parents = new ArrayList<TaxonomyNode>();
 	public List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
+	public TaxonomyNode parentNode = null;
 
 	public TaxonomyNode(String value) {
 		this.value = value;
 	}
-
+	
+	public void addChild(TaxonomyNode t){
+		children.add(t);
+	}
+	public void addParent(TaxonomyNode t){
+		parents.add(t);
+	}
+	public List<TaxonomyNode> getParents(){
+		return parents;
+	}
+	public List<TaxonomyNode> getChildren(){
+		return children;
+	}
+	public TaxonomyNode getParentNode(){
+		return parentNode;
+	}
+	public void setParentNode(TaxonomyNode t){
+		this.parentNode = t;
+	}
 	/**
 	 * Gets all concepts subsumed by this node (i.e. all
 	 * concepts in its subtree).
