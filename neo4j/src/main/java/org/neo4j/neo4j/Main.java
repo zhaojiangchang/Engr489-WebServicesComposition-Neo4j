@@ -234,13 +234,21 @@ public class Main
 	
 	void createTaxonomyDatabase(Map<String, TaxonomyNode> taxonomyMap){
 		graphDatabaseTaxonomy = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_TaxonomyDBPath);
-		setSubChilden(taxonomyMap);
+//		setSubChilden(taxonomyMap);
     	Transaction transaction = graphDatabaseTaxonomy.beginTx();
     	neo4jTaxonomyNodes = new Node[0];
     	try{
     		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()) {
     		    String key = entry.getKey();
     		    TaxonomyNode value = entry.getValue();
+
+    		    System.out.println("-----------------------");
+    		    System.out.println("Node: "+value.toString());
+    		    System.out.print("subchildren: ");
+    		    for(int i = 0; i<value.subChildren.length;i++){
+    		    	System.out.print(" - "+value.subChildren[i]);
+    		    }
+    		    System.out.println();
     		    if(key!=""){
     		    	Node taxonomyGNode = graphDatabaseTaxonomy.createNode();
     				if(key!=""){
@@ -250,6 +258,7 @@ public class Main
     			    taxonomyGNode.setProperty("name", key);
     			    taxonomyGNode.setProperty("parent", value.getParent());
     			    taxonomyGNode.setProperty("children", value.getChildren());
+    			    taxonomyGNode.setProperty("subChildren", value.getSubChildren());
     			    neo4jTaxonomyNodes = increaseNodeArray(neo4jTaxonomyNodes);
     			    neo4jTaxonomyNodes[neo4jTaxonomyNodes.length-1] = taxonomyGNode;
     		    }
@@ -285,13 +294,13 @@ public class Main
     		transaction.finish();
     	}
     }
-	private void setSubChilden(Map<String, TaxonomyNode> taxonomyMap){
-		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()) {
-		    String key = entry.getKey();
-		    TaxonomyNode value = entry.getValue();
-		    
-		}
-	}
+//	private void setSubChilden(Map<String, TaxonomyNode> taxonomyMap){
+//		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()) {
+//		    String key = entry.getKey();
+//		    TaxonomyNode value = entry.getValue();
+//		    
+//		}
+//	}
    
 		
 	/**
@@ -348,7 +357,12 @@ public class Main
 						taxNode.setParentNode(parent);
 						taxNode.setParent(parent.toString());
 						parent.addChild(taxNode.toString());
-		
+						TaxonomyNode td = taxNode;
+
+						while(td.getParentNode().toString()!=""){
+							td.getParentNode().addSubChildren(taxNode.toString());
+							td = td.getParentNode();
+						}
 					}
 					NodeList children = currNode.getChildNodes();
 					processTaxonomyChildren(taxNode, children);

@@ -46,7 +46,7 @@ public class TaxonomyNode {
 	}
 	public void addSubChildren(String s){
 		subChildren = increaseArray(subChildren);
-		subChildren[subChildren.length-1] = s;
+		subChildren[subChildren.length-1] = s;			
 	}
 	public String[] getSubChildren(){
 		return subChildren;
