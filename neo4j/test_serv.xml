@@ -19,15 +19,15 @@
 			<instance name="canine_inst" />
 		</inputs>
 		<outputs>
-			<instance name="city_inst" />
-			<instance name="broccoli_inst" ></instance>
+			<instance name="cat_inst" />
+			<instance name="broccoli_inst" />
 		</outputs>
 	</service>
 	<service name="serv3a" Res="700" Ava="0.4" Suc="0.6" Rel="0.4"
 		Lat="0" Pri="3">
 		<inputs>
-			<instance name="broccoli_inst" />
-			<instance name="box_inst" />
+			<instance name="container_inst" />
+			<instance name="feline_inst" />
 		</inputs>
 		<outputs>
 			<instance name="house_inst" />
@@ -47,7 +47,7 @@
 	<service name="serv5a" Res="800" Ava="0.9" Suc="0.5" Rel="0.8"
 		Lat="0" Pri="2">
 		<inputs>
-			<instance name="building_inst" />
+			<instance name="ruminant_inst" />
 			<instance name="cruciferous_inst" />
 		</inputs>
 		<outputs>
