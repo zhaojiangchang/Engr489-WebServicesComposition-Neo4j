@@ -15,27 +15,27 @@ import java.util.Set;
  */
 public class TaxonomyNode {
 	public Set<String> endNodeInputs = new HashSet<String>();
-	public List<ServiceNode> servicesWithOutput = new ArrayList<ServiceNode>();
-	public Map<ServiceNode,Set<String>> servicesWithInput = new HashMap<ServiceNode,Set<String>>();
 	public String value;
-	public List<TaxonomyNode> parents = new ArrayList<TaxonomyNode>();
-	public List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
+	public String parent = "";
+	public String[] children = new String[0];
+	public String[] subChildren = new String[0];
 	public TaxonomyNode parentNode = null;
 
 	public TaxonomyNode(String value) {
 		this.value = value;
 	}
 	
-	public void addChild(TaxonomyNode t){
-		children.add(t);
+	public void addChild(String t){
+		children = increaseArray(children);
+		children[children.length-1] = t;
 	}
-	public void addParent(TaxonomyNode t){
-		parents.add(t);
+	public void setParent(String t){
+		parent = t;
+		}
+	public String getParent(){
+		return parent;
 	}
-	public List<TaxonomyNode> getParents(){
-		return parents;
-	}
-	public List<TaxonomyNode> getChildren(){
+	public String[] getChildren(){
 		return children;
 	}
 	public TaxonomyNode getParentNode(){
@@ -44,29 +44,36 @@ public class TaxonomyNode {
 	public void setParentNode(TaxonomyNode t){
 		this.parentNode = t;
 	}
+	public void addSubChildren(String s){
+		subChildren = increaseArray(subChildren);
+		subChildren[subChildren.length-1] = s;
+	}
+	public String[] getSubChildren(){
+		return subChildren;
+	}
 	/**
 	 * Gets all concepts subsumed by this node (i.e. all
 	 * concepts in its subtree).
 	 *
 	 * @return Set of concepts
 	 */
-	public Set<String> getSubsumedConcepts() {
-		Set<String> concepts = new HashSet<String>();
-        _getSubsumedConcepts( concepts );
-		return concepts;
-	}
+//	public Set<String> getSubsumedConcepts() {
+//		Set<String> concepts = new HashSet<String>();
+//        _getSubsumedConcepts( concepts );
+//		return concepts;
+//	}
 
 	/*
 	 * This recursively subsume all the descendent concepts of the current node
 	 */
-    private void _getSubsumedConcepts(Set<String> concepts) {
-        if (!concepts.contains( value )) {
-            concepts.add(value);
-            for (TaxonomyNode child : children) {
-                child._getSubsumedConcepts(concepts);
-            }
-        }
-    }
+//    private void _getSubsumedConcepts(Set<String> concepts) {
+//        if (!concepts.contains( value )) {
+//            concepts.add(value);
+//            for (TaxonomyNode child : children) {
+//                child._getSubsumedConcepts(concepts);
+//            }
+//        }
+//    }
 
     @Override
     public boolean equals(Object other) {
@@ -85,4 +92,15 @@ public class TaxonomyNode {
     public String toString() {
         return value;
     }
+    public String[] increaseArray(String[] theArray)
+	{
+	    int i = theArray.length;
+	    int n = ++i;
+	    String[] newArray = new String[n];
+	    for(int cnt=0;cnt<theArray.length;cnt++)
+	    {
+	        newArray[cnt] = theArray[cnt];
+	    }
+	    return newArray;
+	}
 }
