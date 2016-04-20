@@ -68,6 +68,7 @@ public class Main
 			e.printStackTrace();
 		}
       	neo4jwsc.parseWSCTaxonomyFile("test_taxonomy.xml");
+      	neo4jwsc.addParentNodesForEachTaxonomyNode(taxonomyMap);
     	neo4jwsc.createTaxonomyDatabase(taxonomyMap);
     	neo4jwsc.parseWSCServiceFile("test_serv.xml");
     	neo4jwsc.createServicesDatabase(serviceMap);
@@ -75,7 +76,7 @@ public class Main
     	neo4jwsc.shutdown();
     	
     }
-	void createServicesDatabase(Map<String, ServiceNode> serviceMap){
+	private void createServicesDatabase(Map<String, ServiceNode> serviceMap){
     	graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath);
     	
     	Transaction transaction = graphDatabaseService.beginTx();
@@ -95,21 +96,67 @@ public class Main
     		    neo4jServiceNodes = increaseNodeArray(neo4jServiceNodes);
     		    neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
     		}
-
+    		//for each node use inputs and all inputs' subchildren find all other nodes
     		for(int j= 0; j<neo4jServiceNodes.length; j++){
-    			
-    			System.out.println((String)neo4jServiceNodes[j].getProperty("name")+"++++++++++++++++++++++++");
-
           		Object inputsFromGdb =neo4jServiceNodes[j].getProperty("inputs");
         		//remove the "[" and "]" from string
         		String ips = Arrays.toString((String[]) inputsFromGdb).substring(1, Arrays.toString((String[]) inputsFromGdb).length()-1);
-	    			System.out.println("ips:    "+ips);
         		String[] inputs = ips.split("\\s*,\\s*");
         		String[] tempInputs = new String[0];
         		for(int input = 0; input<inputs.length; input++){
         			try ( 
         					Transaction tx = graphDatabaseTaxonomy.beginTx();
             			    Result execResult = graphDatabaseTaxonomy.execute( "match (n{name: {o}}) return n", MapUtil.map("o",inputs[input])))
+            			{
+	          				Iterator<Node> javaNodes = execResult.columnAs("n");
+	          				for (Node node : IteratorUtil.asIterable(javaNodes))
+	          				{	          					
+	          					String nodeParent = node.getProperty("parent").toString();
+	            			    Result resultParentNode = graphDatabaseTaxonomy.execute( "match (n{name: {o}}) return n", MapUtil.map("o",nodeParent));
+	            			    Iterator<Node> gNodes = resultParentNode.columnAs("n");
+		          				for (Node nd : IteratorUtil.asIterable(gNodes)){
+		          					Object subC = nd.getProperty("subChildren");
+		          					String subs = Arrays.toString((String[]) subC).substring(1, Arrays.toString((String[]) subC).length()-1);
+	          		    			String[] subChildrenFromTNode = subs.split("\\s*,\\s*");
+		          					for(int sc = 0; sc<subChildrenFromTNode.length; sc++){
+		          		    			tempInputs = increaseArray(tempInputs);
+		          		    			tempInputs[tempInputs.length-1] = subChildrenFromTNode[sc];
+		          					}
+		          				}
+	          				}  
+	          	    		tx.finish();
+            			}
+        		}
+        		inputs = tempInputs;
+        		//TODO: add all taxonomyGNode.children()
+        		for(int i = 0; i< inputs.length; i++){
+        			System.out.println("inputs: "+inputs[i]);
+        			try ( 
+          			      Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ANY(output IN n.outputs  WHERE output =~ {o}) RETURN n", MapUtil.map("o",inputs[i]) ) )
+          			{
+        				Iterator<Node> javaNodes = execResult.columnAs( "n");
+        				for (Node node : IteratorUtil.asIterable(javaNodes))
+        				{
+        					if(!node.getProperty("name").equals(neo4jServiceNodes[j].getProperty("name"))){
+        						relation = neo4jServiceNodes[j].createRelationshipTo(node, RelTypes.INPUT);
+            	        		relation.setProperty("relationship", "output");
+        					}        				
+           				}  
+          			}
+        		}    		
+        	}
+    		
+    		//for each node use outputs and all outputs' parents nodes find all other nodes
+    		for(int j= 0; j<neo4jServiceNodes.length; j++){
+          		Object outputsFromGdb =neo4jServiceNodes[j].getProperty("outputs");
+        		//remove the "[" and "]" from string
+        		String ops = Arrays.toString((String[]) outputsFromGdb).substring(1, Arrays.toString((String[]) outputsFromGdb).length()-1);
+        		String[] outputs = ops.split("\\s*,\\s*");
+        		String[] tempOutputs = new String[0];
+        		for(int output = 0; output<outputs.length; output++){
+        			try ( 
+        					Transaction tx = graphDatabaseTaxonomy.beginTx();
+            			    Result execResult = graphDatabaseTaxonomy.execute( "match (n{name: {o}}) return n", MapUtil.map("o",outputs[output])))
             			{
 	          				Iterator<Node> javaNodes = execResult.columnAs("n");
 	          				for (Node node : IteratorUtil.asIterable(javaNodes))
@@ -121,16 +168,16 @@ public class Main
 	            			    Result resultParentNode = graphDatabaseTaxonomy.execute( "match (n{name: {o}}) return n", MapUtil.map("o",nodeParent));
 	            			    Iterator<Node> gNodes = resultParentNode.columnAs("n");
 		          				for (Node nd : IteratorUtil.asIterable(gNodes)){
-		          					Object subC = nd.getProperty("subChildren");
+		          					Object subC = nd.getProperty("parents");
 		          					String subs = Arrays.toString((String[]) subC).substring(1, Arrays.toString((String[]) subC).length()-1);
 	          		    			System.out.println("subs:    "+subs);
-	          		    			String[] subChildrenFromTNode = subs.split("\\s*,\\s*");
+	          		    			String[] parentsFromTNode = subs.split("\\s*,\\s*");
 	          		    			System.out.println("__________________");
-		          					for(int sc = 0; sc<subChildrenFromTNode.length; sc++){
-		          		    			System.out.println(subChildrenFromTNode[sc]);
+		          					for(int sc = 0; sc<parentsFromTNode.length; sc++){
+		          		    			System.out.println(parentsFromTNode[sc]);
 
-		          		    			tempInputs = increaseArray(tempInputs);
-		          		    			tempInputs[tempInputs.length-1] = subChildrenFromTNode[sc];
+		          		    			tempOutputs = increaseArray(tempOutputs);
+		          		    			tempOutputs[tempOutputs.length-1] = parentsFromTNode[sc];
 		          					}
 	          		    			System.out.println("__________________");
 		          				}
@@ -139,20 +186,23 @@ public class Main
 
             			}
         		}
-        		inputs = tempInputs;
+        		outputs = tempOutputs;
         		//TODO: add all taxonomyGNode.children()
-        		for(int i = 0; i< inputs.length; i++){
-        			System.out.println("inputs:        "+inputs[i]);
+        		for(int i = 0; i< outputs.length; i++){
+        			System.out.println("outputs:        "+outputs[i]);
+        			outputs[i] = outputs[i]+"_inst";
         			try ( 
-          			      Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ANY(output IN n.outputs  WHERE output =~ {o}) RETURN n", MapUtil.map("o",inputs[i]) ) )
+          			      Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ANY(input IN n.inputs  WHERE input =~ {o}) RETURN n", MapUtil.map("o",outputs[i]) ) )
           			{
         				Iterator<Node> javaNodes = execResult.columnAs( "n");
         				for (Node node : IteratorUtil.asIterable(javaNodes))
         				{
+                			System.out.println("outputs node:        "+node.getProperty("name"));
+
         					if(!node.getProperty("name").equals(neo4jServiceNodes[j].getProperty("name"))){
-        						relation = node.createRelationshipTo(neo4jServiceNodes[j], RelTypes.OUTPUT);
-//            	        		relation = neo4jServiceNodes[j].createRelationshipTo(node, RelTypes.INPUT);
-            	        		relation.setProperty("relationship", "relationship");
+//        						relation = node.createRelationshipTo(neo4jServiceNodes[j], RelTypes.OUTPUT);
+            	        		relation = neo4jServiceNodes[j].createRelationshipTo(node, RelTypes.OUTPUT);
+            	        		relation.setProperty("relationship", "input");
         					}
         					
            				}  
@@ -273,7 +323,7 @@ public class Main
 	
 	
 	
-	void createTaxonomyDatabase(Map<String, TaxonomyNode> taxonomyMap){
+	private void createTaxonomyDatabase(Map<String, TaxonomyNode> taxonomyMap){
 		graphDatabaseTaxonomy = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_TaxonomyDBPath);
 //		setSubChilden(taxonomyMap);
     	Transaction transaction = graphDatabaseTaxonomy.beginTx();
@@ -292,6 +342,7 @@ public class Main
     			    taxonomyGNode.setProperty("parent", value.getParent());
     			    taxonomyGNode.setProperty("children", value.getChildren());
     			    taxonomyGNode.setProperty("subChildren", value.getSubChildren());
+    			    taxonomyGNode.setProperty("parents", value.getParents());
     			    neo4jTaxonomyNodes = increaseNodeArray(neo4jTaxonomyNodes);
     			    neo4jTaxonomyNodes[neo4jTaxonomyNodes.length-1] = taxonomyGNode;
     		    }
@@ -336,6 +387,7 @@ public class Main
 			Document doc = dBuilder.parse(fXmlFile);
 			NodeList taxonomyRoots = doc.getChildNodes();
 			processTaxonomyChildren(null, taxonomyRoots);	
+			
 			System.out.println("add taxonomy node added");
     		
 		}
@@ -390,7 +442,22 @@ public class Main
 			}
 		}
 	}
-	public String[] increaseArray(String[] theArray)
+	
+	private void addParentNodesForEachTaxonomyNode(Map<String, TaxonomyNode> taxonomyMap){
+		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()) {
+			String key = entry.getKey();
+		    TaxonomyNode value = entry.getValue();
+		    TaxonomyNode td = value;
+		    while(td.getParentNode()!=null && !td.toString().equals("")){
+		    	if(!td.getParentNode().toString().equals("")){
+			    	value.addParents(td.getParentNode().toString());
+		    	}
+		    	td = td.getParentNode();
+			}	    
+		}
+	}
+	
+	private String[] increaseArray(String[] theArray)
 	{
 	    int i = theArray.length;
 	    int n = ++i;
@@ -401,7 +468,7 @@ public class Main
 	    }
 	    return newArray;
 	}
-	public Node[] increaseNodeArray(Node[] theArray)
+	private Node[] increaseNodeArray(Node[] theArray)
 	{
 	    int i = theArray.length;
 	    int n = ++i;

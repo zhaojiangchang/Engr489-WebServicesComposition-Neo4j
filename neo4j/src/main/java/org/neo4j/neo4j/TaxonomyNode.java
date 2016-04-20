@@ -19,6 +19,7 @@ public class TaxonomyNode {
 	public String parent = "";
 	public String[] children = new String[0];
 	public String[] subChildren = new String[0];
+	public String[] parents = new String[0];
 	public TaxonomyNode parentNode = null;
 
 	public TaxonomyNode(String value) {
@@ -35,6 +36,14 @@ public class TaxonomyNode {
 	public String getParent(){
 		return parent;
 	}
+	public boolean hasParent(){
+		if(parent.equals("")){
+			return false;
+		}
+		else{
+			return true; 
+		}
+	}
 	public String[] getChildren(){
 		return children;
 	}
@@ -50,6 +59,13 @@ public class TaxonomyNode {
 	}
 	public String[] getSubChildren(){
 		return subChildren;
+	}
+	public void addParents(String s){
+		parents = increaseArray(parents);
+		parents[parents.length-1] = s;			
+	}
+	public String[] getParents(){
+		return parents;
 	}
 	/**
 	 * Gets all concepts subsumed by this node (i.e. all
