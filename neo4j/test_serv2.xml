@@ -25,10 +25,17 @@
 	<service name="3" Res="700" Ava="0.4" Suc="0.6" Rel="0.4"
 		Lat="0" Pri="3">
 		<inputs>
-			<instance name="F_inst" />
+			<instance name="A_inst" />
+			<instance name="B_inst" />
+			<instance name="C_inst" />
+			<instance name="D_inst" />
 		</inputs>
 		<outputs>
-			<instance name="E_inst" />
+			<instance name="A_inst" />
+						<instance name="F_inst" />
+			
+						<instance name="H_inst" />
+			
 		</outputs>
 	</service>
 	<service name="4" Res="200" Ava="0.7" Suc="0.7" Rel="0.5"
