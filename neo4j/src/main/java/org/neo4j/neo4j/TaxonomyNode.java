@@ -19,27 +19,27 @@ public class TaxonomyNode {
 	public Set<String> outputs;
 	public Set<ServiceNode> servicesWithOutput = new HashSet<ServiceNode>();
 	public Map<ServiceNode,Set<String>> servicesWithInput = new HashMap<ServiceNode,Set<String>>();
-	public List<TaxonomyNode> parentTnodes = new ArrayList<TaxonomyNode>();
-	public List<TaxonomyNode> childrenTnodes = new ArrayList<TaxonomyNode>();
-	public String value;
+	public String value = null;
 	public String parent = "";
-//	public String[] children = new String[0];
-	public String[] subChildren = new String[0];
-//	public String[] parents = new String[0];
+	public String child = "";
+	public Set<String> childrenString;
+	public Set<String> parentsString;
 	public TaxonomyNode parentNode = null;
+	public TaxonomyNode childNode = null;
+	public Set<TaxonomyNode> children_notGrandchildren = new HashSet<TaxonomyNode>();
+	public Set<TaxonomyNode> parents_notGrandparents = new HashSet<TaxonomyNode>();
+
 	public List<TaxonomyNode> parents = new ArrayList<TaxonomyNode>();
 	public List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
+	public String state = "Unvisited";
 	
 	public TaxonomyNode(String value) {
 		this.value = value;
 		inputs = new HashSet<String>();
-		 outputs = new HashSet<String>();
+		outputs = new HashSet<String>();
+		childrenString = new HashSet<String>();
+		parentsString= new HashSet<String>();
 	}
-	
-//	public void addChild(String t){
-//		children = increaseArray(children);
-//		children[children.length-1] = t;
-//	}
 	public String[] getInputsArray() {
 //		System.out.println("inputs: "+inputs.size());
 		String[] temp = new String[inputs.size()];
@@ -74,29 +74,44 @@ public class TaxonomyNode {
 			return true; 
 		}
 	}
-//	public String[] getChildren(){
-//		return children;
-//	}
+	public boolean hasChild(){
+		if(child.equals("")){
+			return false;
+		}
+		else{
+			return true; 
+		}
+	}
+	public void addParent (String s){
+		this.parentsString.add(s);
+	}
+	public void addChild (String s){
+		this.childrenString.add(s);
+	}
+	public void setChildNode(TaxonomyNode c){
+		this.child = c.value;
+		this.childNode = c;
+	}
 	public TaxonomyNode getParentNode(){
 		return parentNode;
 	}
 	public void setParentNode(TaxonomyNode t){
 		this.parentNode = t;
 	}
-	public void addSubChildren(String s){
-		subChildren = increaseArray(subChildren);
-		subChildren[subChildren.length-1] = s;			
+	public boolean hasParentNode(){
+		if(parentNode!=null){
+			return true;
+		}
+		else return false;
 	}
-	public String[] getSubChildren(){
-		return subChildren;
+	public boolean hasChildNode(){
+		if(childNode!=null){
+			return true;
+		}
+		else return false;
 	}
-//	public void addParents(String s){
-//		parents = increaseArray(parents);
-//		parents[parents.length-1] = s;			
-//	}
-//	public String[] getParents(){
-//		return parents;
-//	}
+	
+
 	/**
 	 * Gets all concepts subsumed by this node (i.e. all
 	 * concepts in its subtree).
@@ -149,15 +164,4 @@ public class TaxonomyNode {
 	    }
 	    return newArray;
 	}
-
-
-//	public void addServiceWithOutput(ServiceNode node) {
-//		this.servicesWithOutput.add(node);
-//		this.outputs.add(node.getName());
-//	}
-//
-//	public void addServiceWithInput(ServiceNode node, Set<String>inputs) {
-//		this.servicesWithInput.put(node, inputs);
-//		this.inputs.add(node.getName());
-//	}
 }
