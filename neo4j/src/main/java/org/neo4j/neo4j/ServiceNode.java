@@ -11,11 +11,11 @@ public class ServiceNode implements Cloneable {
 	private List<TaxonomyNode> taxonomyOutputs = new ArrayList<TaxonomyNode>();
 	private String name;
 	private double[] qos;
-	private String[] inputs;
-	private String[] outputs;
+	private Set<String>inputs;
+	private Set<String>outputs;
 	private boolean consider = true;
 
-	public ServiceNode(String name, double[] qos, String[] inputs, String[] outputs) {
+	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs) {
 		this.name = name;
 		this.qos = qos;
 		this.inputs = inputs;
@@ -34,11 +34,29 @@ public class ServiceNode implements Cloneable {
 		return qos;
 	}
 
-	public String[] getInputs() {
+	public String[] getInputsArray() {
+		String[] temp = new String[inputs.size()];
+		int index = -1;
+		for(String s: inputs){
+			index++;
+			temp[index] = s;
+		}
+		return temp;
+	}
+	public Set<String> getInputs(){
 		return inputs;
 	}
 
-	public String[] getOutputs() {
+	public String[] getOutputsArray() {
+		String[] temp = new String[outputs.size()];
+		int index = -1;
+		for(String s: outputs){
+			index++;
+			temp[index] = s;
+		}
+		return temp;
+		}
+	public Set<String> getOutputs(){
 		return outputs;
 	}
 
@@ -54,10 +72,14 @@ public class ServiceNode implements Cloneable {
 	 * This clones the caller node and returns an identical node with completely different reference
 	 */
 	public ServiceNode clone() {
-		String[] newInputs = {};
-		String[] newOutputs = {};
-		newInputs = inputs.clone();
-		newOutputs = outputs.clone();
+		Set<String> newInputs = new HashSet<String>();
+		Set<String> newOutputs = new HashSet<String>();
+		for(String s: inputs){
+			newInputs.add(s);
+		}
+		for(String s: outputs){
+			newOutputs.add(s);
+		}
 		return new ServiceNode(name, qos, newInputs, newOutputs);
 	}
 
