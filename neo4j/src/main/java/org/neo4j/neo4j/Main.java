@@ -166,13 +166,14 @@ public class Main {
 		
 		startTime = System.currentTimeMillis();
 		neo4jwsc.addServiceNodeRelationShip();
+		System.out.println();
 		endTime = System.currentTimeMillis();
 		records.put("addServiceNodeRelationShip", endTime - startTime);
 		System.out.println("addServiceNodeRelationShip Total execution time: " + (endTime - startTime) );
 
 		
 		
-		 FileWriter fw = new FileWriter("file.dat");
+		 FileWriter fw = new FileWriter("timeRecord.txt");
 			for(Entry<String, Long> entry : records.entrySet()){
 					fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
 		    }
@@ -213,7 +214,8 @@ public class Main {
 									relation = node.createRelationshipTo(sNode, RelTypes.IN);
 									relation.setProperty("From", sNode.getProperty("name"));
 									relation.setProperty("To", node.getProperty("name"));
-									relation.setProperty("Direction", "incoming");    	      						
+									relation.setProperty("Direction", "incoming");    	   
+
 								}
 							}
 						}  
@@ -342,19 +344,23 @@ public class Main {
 			System.out.print(index+" ");
 
 			TaxonomyNode node = entry.getValue();
-			findAllChildrenTNode();
-			findAllParentsTNode();
-			
+//			findAllChildrenTNode();
+//			findAllParentsTNode();
+			//TODO: too slow may work without this function
+			findAllParentsAndChildrenTNode();
 			children = new HashSet<TaxonomyNode>();
 			parents = new HashSet<TaxonomyNode>();
+
 			dfsGetChildren(node);
 			dfsGetParents(node);
+
 			cs.put(node.value, children);
 			ps.put(node.value, parents);
 		}
 		System.out.println("found child and parent");
 		removeChildrenInputs();
 		removeParentsOutputs();
+
 		System.out.println("remove child and parent");
 		for (ServiceNode s: serviceMap.values()) {
 			addServiceToTaxonomyTree(s);
@@ -387,7 +393,7 @@ public class Main {
 //					System.out.println("current: "+current.value);
 
 					for (TaxonomyNode parent : current.parents) {
-//						current.parents_notGrandparents.add(parent);
+						current.parents_notGrandparents.add(parent);
 //						System.out.println("================parent: "+parent.value);
 						if(!parent.value.equals("")){
 							parent.outputs.add(s.getName());
@@ -859,14 +865,18 @@ public class Main {
 	        }
 			
 	}
-	private void findAllParentsTNode(){
+	private void findAllParentsAndChildrenTNode(){
 		Set<TaxonomyNode> seenConceptsOutput = new HashSet<TaxonomyNode>();
+		Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
 
 		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
 			TaxonomyNode n = entry.getValue();
 			// Also add output to all parent nodes
 			Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
+			Queue<TaxonomyNode> queue2 = new LinkedList<TaxonomyNode>();
+
 			queue.add( n );
+			queue2.add( n );
 
 			while (!queue.isEmpty()) {
 				TaxonomyNode current = queue.poll();
@@ -886,27 +896,16 @@ public class Main {
 					}
 				}
 			}
-		}
-	}
-	private void findAllChildrenTNode(){
-		Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
-
-		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
-			TaxonomyNode n = entry.getValue();
-			// Also add output to all parent nodes
-			Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
-			queue.add( n );
-
-			while (!queue.isEmpty()) {
-				TaxonomyNode current = queue.poll();
-				if(!current.value.equals("")){
-					seenConceptsInput.add( current );
+			while (!queue2.isEmpty()) {
+				TaxonomyNode current2 = queue2.poll();
+				if(!current2.value.equals("")){
+					seenConceptsInput.add( current2 );
 //					System.out.println("current: "+current.value);
-					for (TaxonomyNode child : current.children) {
-						current.children_notGrandchildren.add(child);
+					for (TaxonomyNode child : current2.children) {
+						current2.children_notGrandchildren.add(child);
 						if(!child.value.equals("")){
 							if (!seenConceptsInput.contains( child )) {
-								queue.add(child);
+								queue2.add(child);
 								seenConceptsInput.add(child);
 							}
 						}
@@ -917,6 +916,35 @@ public class Main {
 			}
 		}
 	}
+//	private void findAllChildrenTNode(){
+//		Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
+//
+//		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
+//			TaxonomyNode n = entry.getValue();
+//			// Also add output to all parent nodes
+//			Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
+//			queue.add( n );
+//
+//			while (!queue.isEmpty()) {
+//				TaxonomyNode current = queue.poll();
+//				if(!current.value.equals("")){
+//					seenConceptsInput.add( current );
+////					System.out.println("current: "+current.value);
+//					for (TaxonomyNode child : current.children) {
+//						current.children_notGrandchildren.add(child);
+//						if(!child.value.equals("")){
+//							if (!seenConceptsInput.contains( child )) {
+//								queue.add(child);
+//								seenConceptsInput.add(child);
+//							}
+//						}
+//
+//
+//					}
+//				}
+//			}
+//		}
+//	}
 	private String[] increaseArray(String[] theArray)
 	{
 		int i = theArray.length;

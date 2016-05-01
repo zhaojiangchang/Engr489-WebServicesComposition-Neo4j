@@ -1,0 +1,5 @@
+addServiceNodeRelationShip    1936
+createServicesDatabase    1621
+parseservicefile    13
+populateTaxonomyTree    140
+parseTaxonomyfile    52
