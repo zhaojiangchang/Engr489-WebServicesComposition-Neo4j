@@ -51,7 +51,9 @@ public class Main {
 	public static final int RELIABILITY = 3;
 
 	public Set<ServiceNode> relevant;
+	//Key: taxonomyNode name Value: set of children
 	public static Map<String, Set<TaxonomyNode>> cs = new HashMap<String,Set<TaxonomyNode>>();
+	//Key: taxonomyNode name Value: set of parents
 	public static Map<String, Set<TaxonomyNode>> ps = new HashMap<String,Set<TaxonomyNode>>();
 
 	public Set<String> taskInput;
@@ -274,7 +276,7 @@ public class Main {
 		try{
 			int index = -1;
 			for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
-
+				
 				index++;
 				System.out.println("create noce: "+index);
 				String key = entry.getKey();
@@ -340,12 +342,7 @@ public class Main {
 		findAllParentsAndChildrenTNode();
 		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
 			index++;
-			System.out.print(index+" ");
-
 			TaxonomyNode node = entry.getValue();
-//			findAllChildrenTNode();
-//			findAllParentsTNode();
-			//TODO: too slow may work without this function
 			children = new HashSet<TaxonomyNode>();
 			parents = new HashSet<TaxonomyNode>();
 
@@ -355,26 +352,19 @@ public class Main {
 			cs.put(node.value, children);
 			ps.put(node.value, parents);
 		}
-		System.out.println();
-		System.out.println("found child and parent");
 		removeChildrenInputs();
 		removeParentsOutputs();
+		
 
-		System.out.println("remove child and parent");
 		for (ServiceNode s: serviceMap.values()) {
 			addServiceToTaxonomyTree(s);
 		}
-		System.out.println("addServiceToTaxonomyTree done");
-
-		
-		System.out.println("add services to taxonomyTree");
 	}
 
 	private void addServiceToTaxonomyTree(ServiceNode s) {
 		// Populate outputs
 		Set<TaxonomyNode> seenConceptsOutput = new HashSet<TaxonomyNode>();
 		for (String outputVal : s.getOutputs()) {
-
 			TaxonomyNode n = taxonomyMap.get(outputVal).parentNode;
 			s.getTaxonomyOutputs().add(n);
 			n.outputs.add(s.getName());
@@ -684,25 +674,23 @@ public class Main {
 			ServiceNode sNode = entry.getValue();
 			Set<String> inputs = sNode.getInputs();
 			Set<String> copy = new HashSet<String>(inputs);
+			System.out.println("Service node: "+sNode.getName() +"  inputs size:  "+inputs.size());
 			for(String input: inputs){
-
+				System.out.println("input: "+input);
 				if(!input.equals("")||input!=null){
 					TaxonomyNode inputNode = taxonomyMap.get(input);
 					input = inputNode.parentNode.value;
-
 					if(cs.get(input).size()>0){
 						Set<TaxonomyNode> children = cs.get(input);
 						for(TaxonomyNode child:children){
-							if(inputs.contains(child.value) && !inputNode.value.equals(child.value)){
+							if(copy.contains(child.value) && !inputNode.value.equals(child.value)){
 								copy.remove(child.value);
+								System.out.println("remove input: "+child.value);
 							}
 						}
 					}
 				}
-		
-				
 			}
-
 			sNode.setInputs(copy);
 		}
 	}
@@ -710,6 +698,8 @@ public class Main {
 	private void removeParentsOutputs(){
 		for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
 			ServiceNode sNode = entry.getValue();
+			System.out.println("Service node: "+sNode.getName());
+
 			Set<String> outputs = sNode.getOutputs();
 			Set<String> copy = new HashSet<String>(outputs);
 			for(String output: outputs){
@@ -719,8 +709,9 @@ public class Main {
 					Set<TaxonomyNode> parents = ps.get(output);
 					for(TaxonomyNode parent:parents){
 						String toRemve = getChildInst(parent);
-						if(outputs.contains(toRemve)){
+						if(copy.contains(toRemve)){
 							copy.remove(toRemve);
+							System.out.println("remove output: "+toRemve);
 						}
 					}
 				}
