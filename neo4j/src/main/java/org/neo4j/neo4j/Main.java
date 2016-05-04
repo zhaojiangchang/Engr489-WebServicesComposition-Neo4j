@@ -60,8 +60,8 @@ public class Main {
 	public ServiceNode endNode;
 	public static Set<TaxonomyNode> children;
 	public static Set<TaxonomyNode> parents;
-	private static String serviceFileName = "services-output.xml";
-	private static String taxonomyFileName = "taxonomy.xml";
+	private static String serviceFileName = "test_serv2.xml";
+	private static String taxonomyFileName = "test_taxonomy2.xml";
 	public static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	public static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private static final String Neo4j_ServicesDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/services";
@@ -119,8 +119,7 @@ public class Main {
 		long endTime = System.currentTimeMillis();
 		records.put("parseTaxonomyfile", endTime - startTime);
 		System.out.println("parseTaxonomyfile Total execution time: " + (endTime - startTime) );
-		
-		System.out.println("done taxonomy nodes");
+
 		startTime = System.currentTimeMillis();
 		neo4jwsc.parseWSCServiceFile(serviceFileName);
 		endTime = System.currentTimeMillis();
@@ -128,7 +127,6 @@ public class Main {
 		System.out.println("parseservicefile Total execution time: " + (endTime - startTime) );
 
 		
-		System.out.println("done service nodes");
 		startTime = System.currentTimeMillis();
 		neo4jwsc.populateTaxonomyTree();
 		endTime = System.currentTimeMillis();
@@ -138,25 +136,25 @@ public class Main {
 		
 
 //
-//				for(Entry<String, Set<TaxonomyNode>> entry : cs.entrySet()){
-//					String key = entry.getKey();
-//					System.out.println("node: " + key);
-//
-//					Set<TaxonomyNode> tNodes = entry.getValue();
-//					for(TaxonomyNode tNode: tNodes){
-//						System.out.println("children TNode: " + tNode.value);
-//					}
-//				}
-//				
-//				for(Entry<String, Set<TaxonomyNode>> entry : ps.entrySet()){
-//					String key = entry.getKey();
-//					System.out.println("node: " + key);
-//
-//					Set<TaxonomyNode> tNodes = entry.getValue();
-//					for(TaxonomyNode tNode: tNodes){
-//						System.out.println("parents TNode: " + tNode.value);
-//					}
-//				}
+				for(Entry<String, Set<TaxonomyNode>> entry : cs.entrySet()){
+					String key = entry.getKey();
+					System.out.println("node: " + key);
+
+					Set<TaxonomyNode> tNodes = entry.getValue();
+					for(TaxonomyNode tNode: tNodes){
+						System.out.println("children TNode: " + tNode.value);
+					}
+				}
+				
+				for(Entry<String, Set<TaxonomyNode>> entry : ps.entrySet()){
+					String key = entry.getKey();
+					System.out.println("node: " + key);
+
+					Set<TaxonomyNode> tNodes = entry.getValue();
+					for(TaxonomyNode tNode: tNodes){
+						System.out.println("parents TNode: " + tNode.value);
+					}
+				}
 		
 		startTime = System.currentTimeMillis();
 		neo4jwsc.createServicesDatabase(serviceMap);
@@ -339,6 +337,7 @@ public class Main {
 	 */
 	private void populateTaxonomyTree() {
 		int index = -1;
+		findAllParentsAndChildrenTNode();
 		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
 			index++;
 			System.out.print(index+" ");
@@ -347,7 +346,6 @@ public class Main {
 //			findAllChildrenTNode();
 //			findAllParentsTNode();
 			//TODO: too slow may work without this function
-			findAllParentsAndChildrenTNode();
 			children = new HashSet<TaxonomyNode>();
 			parents = new HashSet<TaxonomyNode>();
 
@@ -357,6 +355,7 @@ public class Main {
 			cs.put(node.value, children);
 			ps.put(node.value, parents);
 		}
+		System.out.println();
 		System.out.println("found child and parent");
 		removeChildrenInputs();
 		removeParentsOutputs();
@@ -686,16 +685,21 @@ public class Main {
 			Set<String> inputs = sNode.getInputs();
 			Set<String> copy = new HashSet<String>(inputs);
 			for(String input: inputs){
-				TaxonomyNode inputNode = taxonomyMap.get(input);
-				input = inputNode.parentNode.value;
-				if(cs.get(input).size()>0){
-					Set<TaxonomyNode> children = cs.get(input);
-					for(TaxonomyNode child:children){
-						if(inputs.contains(child.value) && !inputNode.value.equals(child.value)){
-							copy.remove(child.value);
+
+				if(!input.equals("")||input!=null){
+					TaxonomyNode inputNode = taxonomyMap.get(input);
+					input = inputNode.parentNode.value;
+
+					if(cs.get(input).size()>0){
+						Set<TaxonomyNode> children = cs.get(input);
+						for(TaxonomyNode child:children){
+							if(inputs.contains(child.value) && !inputNode.value.equals(child.value)){
+								copy.remove(child.value);
+							}
 						}
 					}
 				}
+		
 				
 			}
 
