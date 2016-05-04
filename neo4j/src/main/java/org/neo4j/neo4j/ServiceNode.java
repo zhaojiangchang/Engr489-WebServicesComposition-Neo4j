@@ -14,12 +14,17 @@ public class ServiceNode implements Cloneable {
 	private Set<String>inputs;
 	private Set<String>outputs;
 	private boolean consider = true;
+	public Set<String>outputsServicesToThisService;
+	public Set<String>inputsServicesToThisService;
 
 	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs) {
 		this.name = name;
 		this.qos = qos;
 		this.inputs = inputs;
 		this.outputs = outputs;
+		inputsServicesToThisService = new HashSet<String>();
+		outputsServicesToThisService = new HashSet<String>();
+
 	}
 
 	public List<Edge> getIncomingEdgeList() {
@@ -35,9 +40,9 @@ public class ServiceNode implements Cloneable {
 	}
 
 	public String[] getInputsArray() {
-		String[] temp = new String[inputs.size()];
+		String[] temp = new String[inputsServicesToThisService.size()];
 		int index = -1;
-		for(String s: inputs){
+		for(String s: inputsServicesToThisService){
 			index++;
 			temp[index] = s;
 		}
@@ -48,9 +53,9 @@ public class ServiceNode implements Cloneable {
 	}
 
 	public String[] getOutputsArray() {
-		String[] temp = new String[outputs.size()];
+		String[] temp = new String[outputsServicesToThisService.size()];
 		int index = -1;
-		for(String s: outputs){
+		for(String s: outputsServicesToThisService){
 			index++;
 			temp[index] = s;
 		}
@@ -126,5 +131,14 @@ public class ServiceNode implements Cloneable {
 	public void setOutputs(Set<String> copy) {
 		// TODO Auto-generated method stub
 		this.outputs = copy;
+	}
+	public void addInputs(String service) {
+		// TODO Auto-generated method stub
+		this.inputs.add(service);
+	}
+
+	public void addOutputs(String service) {
+		// TODO Auto-generated method stub
+		this.outputs.add(service);
 	}
 }

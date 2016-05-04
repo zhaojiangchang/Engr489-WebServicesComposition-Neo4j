@@ -1,5 +1,5 @@
-addServiceNodeRelationShip    1448
-createServicesDatabase    1595
-parseservicefile    8
-populateTaxonomyTree    4
-parseTaxonomyfile    41
+addServiceNodeRelationShip    1547
+parseTaxonomyfile    45
+populateTaxonomyTree    5
+createServicesDatabase    1766
+parseservicefile    10
