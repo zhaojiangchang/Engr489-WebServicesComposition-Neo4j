@@ -16,8 +16,10 @@ public class ServiceNode implements Cloneable {
 	private boolean consider = true;
 	public Set<String>outputsServicesToThisService;
 	public Set<String>inputsServicesToThisService;
+	public int index;
 
-	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs) {
+	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs, int index) {
+		this.index = index;
 		this.name = name;
 		this.qos = qos;
 		this.inputs = inputs;
@@ -85,7 +87,7 @@ public class ServiceNode implements Cloneable {
 		for(String s: outputs){
 			newOutputs.add(s);
 		}
-		return new ServiceNode(name, qos, newInputs, newOutputs);
+		return new ServiceNode(name, qos, newInputs, newOutputs, this.index);
 	}
 
 	public List<TaxonomyNode> getTaxonomyOutputs() {
