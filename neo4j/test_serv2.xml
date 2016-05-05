@@ -3,7 +3,7 @@
 <!-- "Pri" stands for price, and it is between 1 and 4 -->
 <!-- All other QoS values are between 0 and 1, and "Lat" is not used -->
 <services>
-	<service name="aa" Res="1000" Ava="0.8" Suc="0.8" Rel="0.6"
+	<service name="1" Res="1000" Ava="0.8" Suc="0.8" Rel="0.6"
 		Lat="0" Pri="4">
 		<inputs>
 			<instance name="B_inst" />
