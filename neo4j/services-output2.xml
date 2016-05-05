@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+  <service name="serv1113858419" Res="154.63" Ava="0.08" Suc="0.36" Rel="0.61" Lat="3899.42" Pri="5.14">
+    <inputs>
+      <instance name="inst418107940"/>
+      <instance name="inst1344894685"/>
+      <instance name="inst649749907"/>
+      <instance name="inst1012890404"/>
+      <instance name="inst699109700"/>
+      <instance name="inst1910799974"/>
+      <instance name="inst1515097242"/>
+      <instance name="inst8268425"/>
+      <instance name="inst1778897656"/>
+    </inputs>
+    <outputs>
+      <instance name="inst1038698756"/>
+      <instance name="inst1122053155"/>
+      <instance name="inst698699522"/>
+      <instance name="inst1612176154"/>
+      <instance name="inst1117960009"/>
+    </outputs>
+  </service>
+  <service name="serv1806542243" Res="3724.15" Ava="0.82" Suc="0.82" Rel="0.36" Lat="736.04" Pri="7.34">
+    <inputs>
+      <instance name="inst1917351982"/>
+      <instance name="inst1929845999"/>
+    </inputs>
+    <outputs>
+      <instance name="inst1988422721"/>
+      <instance name="inst1715201335"/>
+    </outputs>
+  </service>
+  <service name="serv351742400" Res="2918.68" Ava="0.80" Suc="0.11" Rel="0.64" Lat="941.34" Pri="8.87">
+    <inputs>
+      <instance name="inst1111403817"/>
+      <instance name="inst724099826"/>
+      <instance name="inst1870861191"/>
+      <instance name="inst1471675274"/>
+      <instance name="inst337206013"/>
+      <instance name="inst1097275478"/>
+      <instance name="inst210831342"/>
+      <instance name="inst1055698189"/>
+    </inputs>
+    <outputs>
+      <instance name="inst1979003841"/>
+      <instance name="inst1501166632"/>
+      <instance name="inst496961145"/>
+      <instance name="inst839206754"/>
+      <instance name="inst102488909"/>
+      <instance name="inst665729239"/>
+      <instance name="inst1748379883"/>
+    </outputs>
+  </service>
+  <service name="serv1044426186" Res="3787.20" Ava="0.05" Suc="0.53" Rel="0.70" Lat="3808.61" Pri="5.53">
+    <inputs>
+      <instance name="inst535261422"/>
+      <instance name="inst894506426"/>
+      <instance name="inst336997786"/>
+      <instance name="inst172533195"/>
+      <instance name="inst1811260108"/>
+      <instance name="inst509661297"/>
+    </inputs>
+    <outputs>
+      <instance name="inst2045567072"/>
+      <instance name="inst1661950309"/>
+      <instance name="inst1936602012"/>
+      <instance name="inst109043009"/>
+      <instance name="inst1423133707"/>
+      <instance name="inst1443822460"/>
+      <instance name="inst1545608701"/>
+      <instance name="inst1920216762"/>
+      <instance name="inst247087157"/>
+    </outputs>
+  </service>
+</services>

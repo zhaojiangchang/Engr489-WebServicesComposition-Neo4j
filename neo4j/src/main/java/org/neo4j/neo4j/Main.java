@@ -1,6 +1,7 @@
-package org.neo4j.neo4j;
 
+package org.neo4j.neo4j;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
-
+import org.neo4j.cypher.ExecutionEngine;
+import org.neo4j.cypher.ExecutionResult;
 import org.neo4j.cypher.internal.compiler.v2_2.planDescription.Children;
+
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -34,9 +37,11 @@ import org.neo4j.graphdb.Node;
 //import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.graphdb.index.Index;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.io.fs.FileUtils;
@@ -48,15 +53,21 @@ public class Main {
 	public static final int COST = 1;
 	public static final int AVAILABILITY = 2;
 	public static final int RELIABILITY = 3;
-
+	public int totalRel = 0;
 	public Set<ServiceNode> relevant;
+	//Key: taxonomyNode name Value: set of children
+	public static Map<String, Set<TaxonomyNode>> cs = new HashMap<String,Set<TaxonomyNode>>();
+	//Key: taxonomyNode name Value: set of parents
+	public static Map<String, Set<TaxonomyNode>> ps = new HashMap<String,Set<TaxonomyNode>>();
 
 	public Set<String> taskInput;
 	public Set<String> taskOutput;
 	public ServiceNode startNode;
 	public ServiceNode endNode;
-	private static String serviceFileName = "test_serv2.xml";
-	private static String taxonomyFileName = "test_taxonomy2.xml";
+	public static Set<TaxonomyNode> children;
+	public static Set<TaxonomyNode> parents;
+	private static String serviceFileName = "services-output.xml";
+	private static String taxonomyFileName = "taxonomy.xml";
 	public static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	public static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private static final String Neo4j_ServicesDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/services";
@@ -82,7 +93,7 @@ public class Main {
 	public int idealNumAtomic;
 	public int numNodesMutation;
 	public static File histogramLogFile;
-
+	public static Map<String,Long>records = new HashMap<String,Long>();
 
 	Node[] neo4jServiceNodes;
 	Node[] neo4jTaxonomyNodes;
@@ -98,7 +109,7 @@ public class Main {
 	public static Map<String, Integer> nodeCount = new HashMap<String, Integer>();
 	public static Map<String, Integer> edgeCount = new HashMap<String, Integer>();
 
-	public static void main( String[] args ){
+	public static void main( String[] args ) throws IOException{
 		Main neo4jwsc = new Main();
 		try {
 			FileUtils.deleteRecursively(new File(Neo4j_TaxonomyDBPath));
@@ -107,363 +118,704 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		neo4jwsc.parseWSCServiceFile(serviceFileName);
+
+
+		long startTime = System.currentTimeMillis();
 		neo4jwsc.parseWSCTaxonomyFile(taxonomyFileName);
+		long endTime = System.currentTimeMillis();
+		records.put("parseTaxonomyfile", endTime - startTime);
+		System.out.println("parseTaxonomyfile Total execution time: " + (endTime - startTime) );
+		startTime = 0;
+		endTime = 0;
+		startTime = System.currentTimeMillis();
+		neo4jwsc.parseWSCServiceFile(serviceFileName);
+		endTime = System.currentTimeMillis();
+		records.put("parseservicefile", endTime - startTime);
+		System.out.println("parseservicefile Total execution time: " + (endTime - startTime) );
+		startTime = 0;
+		endTime = 0;
+
+		startTime = System.currentTimeMillis();
 		neo4jwsc.populateTaxonomyTree();
-		//		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
+		endTime = System.currentTimeMillis();
+		records.put("populateTaxonomyTree", endTime - startTime);
+		System.out.println("populateTaxonomyTree Total execution time: " + (endTime - startTime) );
+
+		startTime = 0;
+		endTime = 0;
+
+		//
+		//		for(Entry<String, Set<TaxonomyNode>> entry : cs.entrySet()){
 		//			String key = entry.getKey();
-		//			TaxonomyNode tNode = entry.getValue();
-		//			System.out.println("TNode: " + tNode.value);
+		//			System.out.println("node: " + key);
 		//
-		//			System.out.println("###################");
-		//			System.out.print("inputs: ");
-		//
-		//			for(String input : tNode.inputs){
-		//				System.out.print(input +"   ");
+		//			Set<TaxonomyNode> tNodes = entry.getValue();
+		//			for(TaxonomyNode tNode: tNodes){
+		//				System.out.println("children TNode: " + tNode.value);
 		//			}
-		//			System.out.println();
-		//			System.out.print("outputs: ");
-		//			for(String output : tNode.outputs){
-		//				System.out.print(output +"   ");
-		//			}
-		//			System.out.println();
-		//			System.out.println("###################");
-		//
 		//		}
+		//
+		//		for(Entry<String, Set<TaxonomyNode>> entry : ps.entrySet()){
+		//			String key = entry.getKey();
+		//			System.out.println("node: " + key);
+		//
+		//			Set<TaxonomyNode> tNodes = entry.getValue();
+		//			for(TaxonomyNode tNode: tNodes){
+		//				System.out.println("parents TNode: " + tNode.value);
+		//			}
+		//		}
+
+		startTime = System.currentTimeMillis();
 		neo4jwsc.createServicesDatabase(serviceMap);
-
+		endTime = System.currentTimeMillis();
+		records.put("createServicesDatabase", endTime - startTime);
+		System.out.println("createServicesDatabase Total execution time: " + (endTime - startTime) );
+		startTime = 0;
+		endTime = 0;
+		
+		startTime = System.currentTimeMillis();
 		neo4jwsc.addServiceNodeRelationShip();
+		endTime = System.currentTimeMillis();
+		records.put("addServiceNodeRelationShip", endTime - startTime);
+		System.out.println("addServiceNodeRelationShip Total execution time: " + (endTime - startTime) );
+		startTime = 0;
+		endTime = 0;
 
+
+		FileWriter fw = new FileWriter("timeRecord.txt");
+		for(Entry<String, Long> entry : records.entrySet()){
+			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
+		}
+		fw.close();
 		neo4jwsc.shutdown();
 
 	}
 	private void addServiceNodeRelationShip() {
 		// TODO Auto-generated method stub
-		Transaction transaction = graphDatabaseService.beginTx();
-
+		int index = -1;
+		Map<String, Object> maps = new HashMap<String, Object>();
+		int[] ids = null;
 		for(Node sNode: neo4jServiceNodes){
+			Transaction transaction = graphDatabaseService.beginTx();
+			index++;
+			System.out.println(index);
 			Object inputsFromGdb =sNode.getProperty("inputs");
 			//    		//remove the "[" and "]" from string
 			String ips = Arrays.toString((String[]) inputsFromGdb).substring(1, Arrays.toString((String[]) inputsFromGdb).length()-1);
 			String[] inputs = ips.split("\\s*,\\s*");
-			for(String input:inputs){
-				TaxonomyNode tNode = taxonomyMap.get(input).parentNode;
-				Set<String>outputServices = tNode.outputs;
-				for(String output: outputServices){
-					try ( 
-							Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",output)))
-					{
-						Iterator<Node> javaNodes = execResult.columnAs("n");
-						for (Node node : IteratorUtil.asIterable(javaNodes))
-						{	          	
-							if(node!=null && node!=sNode){
-								relations = sNode.getRelationships();
-								boolean find = false;
-								for(Relationship r: relations){
-									if(r.getOtherNode(sNode).equals(node) && r.getStartNode().getProperty("name").equals(node.getProperty("name"))){
-										find = true;
-									}
-								}
-								if(!find){
-									relation = node.createRelationshipTo(sNode, RelTypes.IN);
-									relation.setProperty("From", sNode.getProperty("name"));
-									relation.setProperty("To", node.getProperty("name"));
-									relation.setProperty("Direction", "incoming");    	      						
-								}
+
+//			Object outputsFromGdb =sNode.getProperty("outputs");
+//			//    		//remove the "[" and "]" from string
+//			String ops = Arrays.toString((String[]) outputsFromGdb).substring(1, Arrays.toString((String[]) outputsFromGdb).length()-1);
+//			String[] outputs = ops.split("\\s*,\\s*");
+			ids = null;
+			ids = getServicesId(inputs);
+			maps.clear();
+			maps.put("input", ids);
+			//			for(String input:inputs){
+			//				TaxonomyNode tNode = taxonomyMap.get(input).parentNode;
+			//				Set<String>outputServices = tNode.outputs;
+			//			for(String input: inputs){
+			//					System.out.println("output service for each input========"+outputServices.size()  + "   "+totalRel);
+			Iterator<Node> javaNodes = null;
+			try ( 
+					//						Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
+
+					Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ID(n) IN {input} RETURN n",maps))
+
+			{
+				System.out.println("===============");
+				relation = null;
+				javaNodes = null;
+				javaNodes = execResult.columnAs("n");
+				for (Node node : IteratorUtil.asIterable(javaNodes))
+				{	   
+					relation = node.createRelationshipTo(sNode, RelTypes.IN);
+					relation.setProperty("From", (String)sNode.getProperty("name"));
+					relation.setProperty("To", (String)node.getProperty("name"));
+					relation.setProperty("Direction", "incoming");    
+				}
+				javaNodes = null;
+			}
+			inputsFromGdb =null;
+			//    		//remove the "[" and "]" from string
+			ips = null;
+			inputs = null;
+			ids = null;
+			relation = null;
+			System.out.println("+++++++++++++++");
+			transaction.success();
+			transaction.finish();
+			transaction.close();
+		}
+
+
+		System.out.println("-------------");
+
+	}
+				////							System.out.println("check========"+node.getProperty("name"));
+				//							if(node!=null && node!=sNode){
+				//								Map<String, Object> map = new HashMap<String,Object>();
+				//								int sn =  (int) sNode.getProperty("id");
+				//								int n =  (int) node.getProperty("id");
+				//								map.put("sNode", sn);
+				//								map.put("node",n);
+				//
+				////								Result rResult = graphDatabaseService.execute( "start n1=node({sNode}) , n2=node({node}) match n1-[r]->n2 return r",map);
+				//
+				////									ExecutionEngine execEngine = new ExecutionEngine(graphDatabaseService, null);
+				//								      Result rResult = graphDatabaseService.execute( "start n1=node({sNode}) , n2=node({node}) match n1-[r]->n2 return r", map);
+				////									String results = rrResult.dumpToString();
+				//								      ResourceIterator<Relationship> rels = rResult.columnAs("r");
+				//										boolean find = false;
+				//										int in = -1;
+				//								      while(rels.hasNext()) { 
+				//								    	  in++;
+				//								          Relationship r = rels.next();
+				//								          // Do something cool here.
+				//								          if(r.getProperty("To").equals(sNode.getProperty("name"))){
+				//									          System.out.println("From : "+r.getProperty("From") + " To: " + r.getProperty("To"));
+				//								        	  find = true;
+				//								          }
+				//								          
+				//								      } 
+				//								      if(!find){
+				//								    	  totalRel++;
+				////								    	  System.out.println("not find crate rel");
+				//											relation = node.createRelationshipTo(sNode, RelTypes.IN);
+				//											relation.setProperty("From", (String)sNode.getProperty("name"));
+				//											relation.setProperty("To", (String)node.getProperty("name"));
+				//											relation.setProperty("Direction", "incoming");    	   
+
+				//										}
+
+				//								      System.out.println(results);
+				//									   		String results = ((ExecutionResult) rResult).dumpToString();
+				//									      System.out.println(results);
+				//											System.out.println(rResult);
+				//											Iterator<Relationship> rs =rResult.columnAs("n");
+				//											int i = -1;
+				//
+				//											for (Relationship r : IteratorUtil.asIterable(rs))
+				//											{	          	
+				//												i++;
+				//
+				//												System.out.println("From : "+r.getProperty("From") + " To: " + r.getProperty("To"));
+				//
+				//											}
+				//											System.out.println(i);
+				////
+				//										}
+
+
+
+				//								relations = sNode.getRelationships();
+				//
+				//								boolean find = false;
+				//								for(Relationship r: relations){
+				////									System.out.println("From : "+r.getProperty("From") + " To: " + r.getProperty("To"));
+				//									if(r.getOtherNode(sNode).equals(node) && r.getStartNode().getProperty("name").equals(node.getProperty("name"))){
+				//										find = true;
+				//									}
+				//								}
+
+				//							}
+				//					}  
+				//					}
+				//				}
+				//			}
+				//			
+				//			for(String output: outputs){
+				////				TaxonomyNode tNode = taxonomyMap.get(output).parentNode;
+				////				Set<String>inputServices = tNode.inputs;
+				////				for(String output: outputs){
+				//					try ( 
+				//							Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",output)))
+				//					{
+				//						Iterator<Node> javaNodes = execResult.columnAs("n");
+				//
+				//						for (Node node : IteratorUtil.asIterable(javaNodes))
+				//						{	          					
+				////							if(node!=null && node!=sNode){
+				////								relations = sNode.getRelationships();
+				////								boolean find = false;
+				////								for(Relationship r: relations){
+				////									if(r.getOtherNode(sNode).equals(node) && r.getStartNode().getProperty("name").equals(sNode.getProperty("name"))){
+				////										find = true;
+				////									}
+				////								}
+				////								if(!find){
+				//									relation = sNode.createRelationshipTo(node, RelTypes.OUT);
+				//									relation.setProperty("From", node.getProperty("name"));
+				//									relation.setProperty("To", sNode.getProperty("name"));    	
+				//									relation.setProperty("Direction", "outgoing");    	      						
+				//								}
+				//							}
+				//
+				//						}
+				//					}  
+
+
+
+
+	
+	private int[] getServicesId(String[] inputs) {
+		// TODO Auto-generated method stub
+		int[] ids = new int[inputs.length];
+		int i = -1;
+		for(String input: inputs){
+			if(!input.equals("")||input!=null||!input.equals(" ") || input.length()>0){
+				ServiceNode sNode = serviceMap.get(input);
+				if(sNode!=null){
+					i++;
+					ids[i] = sNode.index;
+				}
+
+			}
+
+		}
+		return ids;
+	}
+	
+	void shutdown(){
+		graphDatabaseService.shutdown();
+		System.out.println("Neo4j database is shutdown");
+	}
+
+	private void createServicesDatabase(Map<String, ServiceNode> serviceMap){
+		graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath);
+		Transaction transaction = graphDatabaseService.beginTx();
+		neo4jServiceNodes = new Node[0];
+		try{
+			Index<Node> idIndex = graphDatabaseService.index().forNodes("identifiers");
+
+
+			for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
+				//				System.out.println("create noce: "+index);
+				String key = entry.getKey();
+				ServiceNode value = entry.getValue();
+				Node service = graphDatabaseService.createNode();
+				Label nodeLable = DynamicLabel.label(key);
+				service.addLabel(nodeLable);
+				service.setProperty("name", key);
+				service.setProperty("id", value.index);
+				idIndex.add(service, "id", value.index);
+				service.setProperty("qos", value.getQos());
+				service.setProperty("inputs", value.getInputsArray());
+				service.setProperty("outputs", value.getOutputsArray());
+				neo4jServiceNodes = increaseNodeArray(neo4jServiceNodes);
+				neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
+			}
+			System.out.println("web service nodes created");			
+			transaction.success();
+		}finally{
+			transaction.finish();
+		}
+	}
+
+	/**
+	 * Checks whether set of inputs can be completely satisfied by the search
+	 * set, making sure to check descendants of input concepts for the subsumption.
+	 *
+	 * @param inputs
+	 * @param searchSet
+	 * @return true if search set subsumed by input set, false otherwise.
+	 */
+	public boolean isSubsumed(Set<String> inputs, Set<String> searchSet) {
+		boolean satisfied = true;
+		for (String input : inputs) {
+			Set<String> subsumed = taxonomyMap.get(input).getSubsumedConcepts();
+			if (!isIntersection( searchSet, subsumed )) {
+				satisfied = false;
+				break;
+			}
+		}
+		return satisfied;
+	}
+
+	/**
+	 * Checks whether two sets of strings have overlapping elements
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public boolean isIntersection( Set<String> a, Set<String> b ) {
+		for ( String v1 : a ) {
+			if ( b.contains( v1 ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Populates the taxonomy tree by associating services to the
+	 * nodes in the tree.
+	 */
+	private void populateTaxonomyTree() {
+		//find all parents node and children node for each taxonomy node
+		findAllParentsAndChildrenTNode();
+		//remove inputs and outputs duplicates for each service node
+		//if service node inputs A B C and in taxonomy file A is parent and BC are the children  then remove B C
+		//if service outputs D E F and in taxonomy file D E are parents and F is the child  then remove D E 
+		removeInputsAndOutputsDuplicates();
+
+		for (ServiceNode s: serviceMap.values()) {
+			addServiceToTaxonomyTree(s);
+		}
+		//after add all services to taxonomyTree, for each service node, go through each inputs instance find all output services to this service node and add to outputsServicesToThisService set.
+		// go through each outputs instance find all input services to this service node and add to inputsServicesToThisService set.
+		addAllInputOutputServicesToEachServiceNode();
+
+	}
+	private void findAllParentsAndChildrenTNode(){
+		Set<TaxonomyNode> seenConceptsOutput = new HashSet<TaxonomyNode>();
+		Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
+		Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
+
+		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
+			TaxonomyNode n = entry.getValue();
+			// Also add output to all parent nodes
+			queue.clear();
+
+			queue.add( n );
+
+			while (!queue.isEmpty()) {
+				TaxonomyNode current = queue.poll();
+				if(!current.value.equals("")){
+					seenConceptsOutput.add( current );
+					//					System.out.println("current: "+current.value);
+					for (TaxonomyNode parent : current.parents) {
+						current.parents_notGrandparents.add(parent);
+						//						System.out.println("================parent: "+parent.value);
+						if(!parent.value.equals("")){
+							if (!seenConceptsOutput.contains( parent )) {
+								queue.add(parent);
+								seenConceptsOutput.add(parent);
 							}
-						}  
+						}
+
 					}
 				}
 			}
-			Object outputsFromGdb =sNode.getProperty("outputs");
-			//    		//remove the "[" and "]" from string
-			String ops = Arrays.toString((String[]) outputsFromGdb).substring(1, Arrays.toString((String[]) outputsFromGdb).length()-1);
-			String[] outputs = ops.split("\\s*,\\s*");
+			seenConceptsOutput.clear();
+			queue.clear();
+			queue.add(n);
+			while (!queue.isEmpty()) {
+				TaxonomyNode current2 = queue.poll();
+				if(!current2.value.equals("")){
+					seenConceptsInput.add( current2 );
+					//					System.out.println("current: "+current.value);
+					for (TaxonomyNode child : current2.children) {
+						current2.children_notGrandchildren.add(child);
+						if(!child.value.equals("")){
+							if (!seenConceptsInput.contains( child )) {
+								queue.add(child);
+								seenConceptsInput.add(child);
+							}
+						}
+					}
+				}
+			}
+			seenConceptsInput.clear();
+		}
+	}
+	private void removeInputsAndOutputsDuplicates() {
+		// TODO Auto-generated method stub
+		children = new HashSet<TaxonomyNode>();
+		parents = new HashSet<TaxonomyNode>();
+		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
+			TaxonomyNode node = entry.getValue();
+			children.clear();
+			parents.clear();
+			dfsGetChildren(node);
+			dfsGetParents(node);
+
+			cs.put(node.value, children);
+			ps.put(node.value, parents);
+		}
+		removeChildrenInputs();
+		removeParentsOutputs();
+	}
+	private void dfsGetChildren(TaxonomyNode root){
+		if(root == null ||root.value.equals("")) return;
+		//for every child
+		for(TaxonomyNode n: root.children_notGrandchildren)
+		{
+			children.add(n);
+			dfsGetChildren(n);
+		}
+	}
+
+	private void dfsGetParents(TaxonomyNode root){
+		if(root == null ||root.value.equals("")) return;
+		//for every parents
+		for(TaxonomyNode n: root.parents_notGrandparents)
+		{
+			parents.add(n);
+			dfsGetParents(n);
+		}
+
+	}
+	private void removeChildrenInputs(){
+		for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
+			ServiceNode sNode = entry.getValue();
+			Set<String> inputs = sNode.getInputs();
+			Set<String> copy = new HashSet<String>(inputs);
+			//			System.out.println("Service node: "+sNode.getName() +"  inputs size:  "+inputs.size());
+			for(String input: inputs){
+				//				System.out.println("input: "+input);
+				if(!input.equals("")||input!=null){
+					TaxonomyNode inputNode = taxonomyMap.get(input);
+					input = inputNode.parentNode.value;
+					if(cs.get(input).size()>0){
+						Set<TaxonomyNode> children = cs.get(input);
+						for(TaxonomyNode child:children){
+							//							System.out.println("child: "+child.value);
+							if(copy.contains(child.value) && !inputNode.value.equals(child.value)){
+								copy.remove(child.value);
+								//								System.out.println("remove input: "+child.value);
+							}
+						}
+					}
+				}
+			}
+			sNode.setInputs(copy);
+			//			System.out.println("  inputs size AFTER REMOVE:  "+sNode.getInputs().size());
+			inputs.clear();
+//			copy.clear();
+			sNode = null;
+		}
+	}
+
+	private void removeParentsOutputs(){
+		for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
+			ServiceNode sNode = entry.getValue();
+			//			System.out.println("Service node: "+sNode.getName());
+
+			Set<String> outputs = sNode.getOutputs();
+			Set<String> copy = new HashSet<String>(outputs);
+			for(String output: outputs){
+				TaxonomyNode outputNode = taxonomyMap.get(output);
+				output = outputNode.parentNode.value;
+				if(cs.get(output).size()>0){
+					Set<TaxonomyNode> parents = ps.get(output);
+					for(TaxonomyNode parent:parents){
+						String toRemve = getChildInst(parent);
+						if(copy.contains(toRemve)){
+							copy.remove(toRemve);
+							//							System.out.println("remove output: "+toRemve);
+						}
+					}
+				}
+
+			}
+			sNode.setOutputs(copy);
+			outputs.clear();
+//			copy.clear();
+			sNode = null;
+		}
+
+	}
+	private void addServiceToTaxonomyTree(ServiceNode s) {
+		// Populate outputs
+		Set<TaxonomyNode> seenConceptsOutput = new HashSet<TaxonomyNode>();
+		Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
+
+		for (String outputVal : s.getOutputs()) {
+			TaxonomyNode n = taxonomyMap.get(outputVal).parentNode;
+			s.getTaxonomyOutputs().add(n);
+			n.outputs.add(s.getName());
+			queue.clear();
+			// Also add output to all parent nodes
+			queue.add( n );
+
+			while (!queue.isEmpty()) {
+
+				TaxonomyNode current = queue.poll();
+				if(!current.value.equals("")){
+					seenConceptsOutput.add( current );
+					current.servicesWithOutput.add(s);
+					//					System.out.println("current: "+current.value);
+
+					for (TaxonomyNode parent : current.parents) {
+						current.parents_notGrandparents.add(parent);
+						//						System.out.println("================parent: "+parent.value);
+						if(!parent.value.equals("")){
+							parent.outputs.add(s.getName());
+							if (!seenConceptsOutput.contains( parent )) {
+								queue.add(parent);
+								seenConceptsOutput.add(parent);
+							}
+						}
+
+					}
+				}
+			}
+		}
+		seenConceptsOutput.clear();
+		// Also add output to all parent nodes
+		Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
+		for (String inputVal : s.getInputs()) {
+
+			TaxonomyNode n = taxonomyMap.get(inputVal).parentNode;
+			s.getTaxonomyOutputs().add(n);
+			n.inputs.add(s.getName());
+
+			// Also add output to all parent nodes
+			queue.clear();
+			queue.add( n );
+
+			while (!queue.isEmpty()) {
+
+				TaxonomyNode current = queue.poll();
+				if(!current.value.equals("")){
+					seenConceptsInput.add( current );
+					current.servicesWithInput.put(s, s.getInputs());
+					for (TaxonomyNode child : current.children) {
+						current.children_notGrandchildren.add(child);
+						if(!child.value.equals("")){
+							child.inputs.add(s.getName());
+							if (!seenConceptsInput.contains( child )) {
+								queue.add(child);
+								seenConceptsOutput.add(child);
+							}
+						}
+
+					}
+				}
+			}
+		}		
+		seenConceptsInput.clear();
+		return;
+	}
+	private void addAllInputOutputServicesToEachServiceNode(){
+		for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
+			Set<String> inputs = entry.getValue().getInputs();
+			Set<String> outputs = entry.getValue().getOutputs();
+			for(String input: inputs){
+				TaxonomyNode tNode = taxonomyMap.get(input).parentNode;
+				entry.getValue().inputsServicesToThisService.addAll(tNode.outputs);
+				tNode = null;
+			}
 			for(String output: outputs){
 				TaxonomyNode tNode = taxonomyMap.get(output).parentNode;
-				Set<String>inputServices = tNode.inputs;
-				for(String input: inputServices){
-					try ( 
-							Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
-					{
-						Iterator<Node> javaNodes = execResult.columnAs("n");
-
-						for (Node node : IteratorUtil.asIterable(javaNodes))
-						{	          					
-							if(node!=null && node!=sNode){
-								relations = sNode.getRelationships();
-								boolean find = false;
-								for(Relationship r: relations){
-									if(r.getOtherNode(sNode).equals(node) && r.getStartNode().getProperty("name").equals(sNode.getProperty("name"))){
-										find = true;
-									}
-								}
-								if(!find){
-									relation = sNode.createRelationshipTo(node, RelTypes.OUT);
-									relation.setProperty("From", node.getProperty("name"));
-									relation.setProperty("To", sNode.getProperty("name"));    	
-									relation.setProperty("Direction", "outgoing");    	      						
-								}
-							}
-
-						}
-					}  
-				}
+				entry.getValue().outputsServicesToThisService.addAll(tNode.inputs);
+				tNode = null;
 			}
-		
+			inputs.clear();
+			outputs.clear();
 
-	}
-	transaction.success();
-	transaction.finish();
-
-}
-void shutdown(){
-	graphDatabaseService.shutdown();
-	System.out.println("Neo4j database is shutdown");
-}
-
-private void createServicesDatabase(Map<String, ServiceNode> serviceMap){
-	graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath);
-	Transaction transaction = graphDatabaseService.beginTx();
-	neo4jServiceNodes = new Node[0];
-	try{
-		int index = -1;
-		for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
-			index++;
-			String key = entry.getKey();
-			ServiceNode value = entry.getValue();
-			Node service = graphDatabaseService.createNode();
-			Label nodeLable = DynamicLabel.label(key);
-			service.addLabel(nodeLable);
-			service.setProperty("name", key);
-			service.setProperty("qos", value.getQos());
-			service.setProperty("inputs", value.getInputsArray());
-			service.setProperty("outputs", value.getOutputsArray());
-			neo4jServiceNodes = increaseNodeArray(neo4jServiceNodes);
-			neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
 		}
-		System.out.println("web service nodes created");			
-		transaction.success();
-	}finally{
-		transaction.finish();
+
 	}
-}
 
-/**
- * Checks whether set of inputs can be completely satisfied by the search
- * set, making sure to check descendants of input concepts for the subsumption.
- *
- * @param inputs
- * @param searchSet
- * @return true if search set subsumed by input set, false otherwise.
- */
-public boolean isSubsumed(Set<String> inputs, Set<String> searchSet) {
-	boolean satisfied = true;
-	for (String input : inputs) {
-		Set<String> subsumed = taxonomyMap.get(input).getSubsumedConcepts();
-		if (!isIntersection( searchSet, subsumed )) {
-			satisfied = false;
-			break;
-		}
-	}
-	return satisfied;
-}
+	private void addEndNodeToTaxonomyTree() {
+		for (String inputVal : endNode.getInputs()) {
+			TaxonomyNode n = taxonomyMap.get(inputVal);
+			n.endNodeInputs.add(inputVal);
 
-/**
- * Checks whether two sets of strings have overlapping elements
- * @param a
- * @param b
- * @return
- */
-public boolean isIntersection( Set<String> a, Set<String> b ) {
-	for ( String v1 : a ) {
-		if ( b.contains( v1 ) ) {
-			return true;
-		}
-	}
-	return false;
-}
+			// Also add input to all children nodes
+			Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
+			queue.addAll(n.children);
 
-/**
- * Populates the taxonomy tree by associating services to the
- * nodes in the tree.
- */
-private void populateTaxonomyTree() {
-	for (ServiceNode s: serviceMap.values()) {
-		addServiceToTaxonomyTree(s);
-	}
-	System.out.println("add services to taxonomyTree");
-}
-
-private void addServiceToTaxonomyTree(ServiceNode s) {
-	// Populate outputs
-	Set<TaxonomyNode> seenConceptsOutput = new HashSet<TaxonomyNode>();
-
-	for (String outputVal : s.getOutputs()) {
-		TaxonomyNode n = taxonomyMap.get(outputVal).parentNode;
-		s.getTaxonomyOutputs().add(n);
-		n.outputs.add(s.getName());
-
-		// Also add output to all parent nodes
-		Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
-		queue.add( n );
-
-		while (!queue.isEmpty()) {
-
-			TaxonomyNode current = queue.poll();
-			if(!current.value.equals("")){
-				seenConceptsOutput.add( current );
-				current.servicesWithOutput.add(s);
-				for (TaxonomyNode parent : current.parents) {
-					if(!parent.value.equals("")){
-						parent.outputs.add(s.getName());
-						if (!seenConceptsOutput.contains( parent )) {
-							queue.add(parent);
-							seenConceptsOutput.add(parent);
-						}
-					}
-
-				}
+			while(!queue.isEmpty()) {
+				TaxonomyNode current = queue.poll();
+				current.endNodeInputs.add(inputVal);
+				queue.addAll(current.children);
 			}
 		}
-	}
-	// Also add output to all parent nodes
-	Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
-	for (String inputVal : s.getInputs()) {
-		TaxonomyNode n = taxonomyMap.get(inputVal).parentNode;
-		s.getTaxonomyOutputs().add(n);
-		n.inputs.add(s.getName());
 
-		// Also add output to all parent nodes
-		Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
-		queue.add( n );
-
-		while (!queue.isEmpty()) {
-
-			TaxonomyNode current = queue.poll();
-			if(!current.value.equals("")){
-				seenConceptsInput.add( current );
-				current.servicesWithInput.put(s, s.getInputs());
-				for (TaxonomyNode child : current.children) {
-					if(!child.value.equals("")){
-						child.inputs.add(s.getName());
-						if (!seenConceptsInput.contains( child )) {
-							queue.add(child);
-							seenConceptsOutput.add(child);
-						}
-					}
-
-				}
-			}
-		}
-	}		
-	return;
-}
-
-private void addEndNodeToTaxonomyTree() {
-	for (String inputVal : endNode.getInputs()) {
-		TaxonomyNode n = taxonomyMap.get(inputVal);
-		n.endNodeInputs.add(inputVal);
-
-		// Also add input to all children nodes
-		Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
-		queue.addAll(n.children);
-
-		while(!queue.isEmpty()) {
-			TaxonomyNode current = queue.poll();
-			current.endNodeInputs.add(inputVal);
-			queue.addAll(current.children);
-		}
 	}
 
-}
+	/**
+	 * Converts input, output, and service instance values to their corresponding
+	 * ontological parent.
+	 */
+	private void findConceptsForInstances() {
+		Set<String> temp = new HashSet<String>();
 
-/**
- * Converts input, output, and service instance values to their corresponding
- * ontological parent.
- */
-private void findConceptsForInstances() {
-	Set<String> temp = new HashSet<String>();
-
-	for (String s : taskInput)
-		temp.add(taxonomyMap.get(s).parents.get(0).value);
-	taskInput.clear();
-	taskInput.addAll(temp);
-
-	temp.clear();
-	for (String s : taskOutput)
-		temp.add(taxonomyMap.get(s).parents.get(0).value);
-	taskOutput.clear();
-	taskOutput.addAll(temp);
-
-	for (ServiceNode s : serviceMap.values()) {
-		temp.clear();
-		Set<String> inputs = s.getInputs();
-		for (String i : inputs)
-			temp.add(taxonomyMap.get(i).parents.get(0).value);
-		inputs.clear();
-		inputs.addAll(temp);
+		for (String s : taskInput)
+			temp.add(taxonomyMap.get(s).parents.get(0).value);
+		taskInput.clear();
+		taskInput.addAll(temp);
 
 		temp.clear();
-		Set<String> outputs = s.getOutputs();
-		for (String o : outputs)
-			temp.add(taxonomyMap.get(o).parents.get(0).value);
-		outputs.clear();
-		outputs.addAll(temp);
+		for (String s : taskOutput)
+			temp.add(taxonomyMap.get(s).parents.get(0).value);
+		taskOutput.clear();
+		taskOutput.addAll(temp);
+
+		for (ServiceNode s : serviceMap.values()) {
+			temp.clear();
+			Set<String> inputs = s.getInputs();
+			for (String i : inputs)
+				temp.add(taxonomyMap.get(i).parents.get(0).value);
+			inputs.clear();
+			inputs.addAll(temp);
+
+			temp.clear();
+			Set<String> outputs = s.getOutputs();
+			for (String o : outputs){
+				temp.add(taxonomyMap.get(o).parents.get(0).value);
+			}
+
+			outputs.clear();
+			outputs.addAll(temp);
+		}
 	}
-}
 
 
 
-/**
- * This helps invoke the getRelevantSevices(Map<String,Node> serviceMap, Set<String> inputs, Set<String> outputs)
- * method outside the GraphInitializer class, without the argument of serviceMap.
- * @param inputs
- * @param outputs
- * @return a set of relevant service nodes
- */
-/*public Set<Node> getRelevantServices(Set<String> inputs, Set<String> outputs){
+	/**
+	 * This helps invoke the getRelevantSevices(Map<String,Node> serviceMap, Set<String> inputs, Set<String> outputs)
+	 * method outside the GraphInitializer class, without the argument of serviceMap.
+	 * @param inputs
+	 * @param outputs
+	 * @return a set of relevant service nodes
+	 */
+	/*public Set<Node> getRelevantServices(Set<String> inputs, Set<String> outputs){
 		return getRelevantServices(serviceMap, inputs, outputs);
 	}*/
 
-private void calculateNormalisationBounds(Set<ServiceNode> services) {
-	for(ServiceNode service: services) {
-		double[] qos = service.getQos();
+	private void calculateNormalisationBounds(Set<ServiceNode> services) {
+		for(ServiceNode service: services) {
+			double[] qos = service.getQos();
 
-		// Availability
-		double availability = qos[AVAILABILITY];
-		if (availability > maxAvailability)
-			maxAvailability = availability;
+			// Availability
+			double availability = qos[AVAILABILITY];
+			if (availability > maxAvailability)
+				maxAvailability = availability;
 
-		// Reliability
-		double reliability = qos[RELIABILITY];
-		if (reliability > maxReliability)
-			maxReliability = reliability;
+			// Reliability
+			double reliability = qos[RELIABILITY];
+			if (reliability > maxReliability)
+				maxReliability = reliability;
 
-		// Time
-		double time = qos[TIME];
-		if (time > maxTime)
-			maxTime = time;
-		if (time < minTime)
-			minTime = time;
+			// Time
+			double time = qos[TIME];
+			if (time > maxTime)
+				maxTime = time;
+			if (time < minTime)
+				minTime = time;
 
-		// Cost
-		double cost = qos[COST];
-		if (cost > maxCost)
-			maxCost = cost;
-		if (cost < minCost)
-			minCost = cost;
+			// Cost
+			double cost = qos[COST];
+			if (cost > maxCost)
+				maxCost = cost;
+			if (cost < minCost)
+				minCost = cost;
+		}
+		// Adjust max. cost and max. time based on the number of services in shrunk repository
+		maxCost *= services.size();
+		maxTime *= services.size();
 	}
-	// Adjust max. cost and max. time based on the number of services in shrunk repository
-	maxCost *= services.size();
-	maxTime *= services.size();
-}
 
-/*
- * This calculates the availability and reliability of each path of the graph.
- */
+	/*
+	 * This calculates the availability and reliability of each path of the graph.
+	 */
 
-/*public void calculateMultiplicativeNormalisationBounds(Node node, double availability, double reliability){
+	/*public void calculateMultiplicativeNormalisationBounds(Node node, double availability, double reliability){
 
 		for(Edge e: node.getOutgoingEdgeList()){
 			Node service = e.getToNode();
@@ -487,11 +839,11 @@ private void calculateNormalisationBounds(Set<ServiceNode> services) {
 		}
 	}*/
 
-/**
- * This calculates the normalisation bounds for reliability and availability of the whole graph
- * @param services
- */
-/*public void calculateMultiplicativeNormalisationBounds(Collection<Node> services){
+	/**
+	 * This calculates the normalisation bounds for reliability and availability of the whole graph
+	 * @param services
+	 */
+	/*public void calculateMultiplicativeNormalisationBounds(Collection<Node> services){
 		double availability = 1;
 		double reliability = 1;
 		for(Node service: services) {
@@ -509,220 +861,273 @@ private void calculateNormalisationBounds(Set<ServiceNode> services) {
 		if (reliability > maxReliability)
 			maxReliability = reliability;
 	}
- */
-/**
- * Discovers all services from the provided collection whose
- * input can be satisfied either (a) by the input provided in
- * searchSet or (b) by the output of services whose input is
- * satisfied by searchSet (or a combination of (a) and (b)).
- *
- * @param services
- * @param searchSet
- * @return set of discovered services
- */
-private Set<ServiceNode> discoverService(Collection<ServiceNode> services, Set<String> searchSet) {
-	Set<ServiceNode> found = new HashSet<ServiceNode>();
-	for (ServiceNode s: services) {
-		if (isSubsumed(s.getInputs(), searchSet))
-			found.add(s);
-	}
-	return found;
-}
-
-/**
- * Parses the WSC Web service file with the given name, creating Web
- * services based on this information and saving them to the service map.
- *
- * @param fileName
- */
-private void parseWSCServiceFile(String fileName) {
-	Set<String> inputs = new HashSet<String>();
-	Set<String> outputs = new HashSet<String>();
-	double[] qos = new double[4];
-
-	try {
-		File fXmlFile = new File(fileName);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);
-
-		NodeList nList = doc.getElementsByTagName("service");
-
-		for (int i = 0; i < nList.getLength(); i++) {
-			org.w3c.dom.Node nNode = nList.item(i);
-			Element eElement = (Element) nNode;
-
-			String name = eElement.getAttribute("name");
-			if (!runningOwls) {
-				qos[TIME] = Double.valueOf(eElement.getAttribute("Res"));
-				qos[COST] = Double.valueOf(eElement.getAttribute("Pri"));
-				qos[AVAILABILITY] = Double.valueOf(eElement.getAttribute("Ava"));
-				qos[RELIABILITY] = Double.valueOf(eElement.getAttribute("Rel"));
-			}
-
-			// Get inputs
-			org.w3c.dom.Node inputNode = eElement.getElementsByTagName("inputs").item(0);
-			NodeList inputNodes = ((Element)inputNode).getElementsByTagName("instance");
-			for (int j = 0; j < inputNodes.getLength(); j++) {
-				org.w3c.dom.Node in = inputNodes.item(j);
-				Element e = (Element) in;
-				inputs.add(e.getAttribute("name"));
-			}
-
-			// Get outputs
-			org.w3c.dom.Node outputNode = eElement.getElementsByTagName("outputs").item(0);
-			NodeList outputNodes = ((Element)outputNode).getElementsByTagName("instance");
-			for (int j = 0; j < outputNodes.getLength(); j++) {
-				org.w3c.dom.Node out = outputNodes.item(j);
-				Element e = (Element) out;
-				outputs.add(e.getAttribute("name"));
-			}
-
-			ServiceNode ws = new ServiceNode(name, qos, inputs, outputs);
-			serviceMap.put(name, ws);
-			inputs = new HashSet<String>();
-			outputs = new HashSet<String>();
-			qos = new double[4];
+	 */
+	/**
+	 * Discovers all services from the provided collection whose
+	 * input can be satisfied either (a) by the input provided in
+	 * searchSet or (b) by the output of services whose input is
+	 * satisfied by searchSet (or a combination of (a) and (b)).
+	 *
+	 * @param services
+	 * @param searchSet
+	 * @return set of discovered services
+	 */
+	private Set<ServiceNode> discoverService(Collection<ServiceNode> services, Set<String> searchSet) {
+		Set<ServiceNode> found = new HashSet<ServiceNode>();
+		for (ServiceNode s: services) {
+			if (isSubsumed(s.getInputs(), searchSet))
+				found.add(s);
 		}
-	}
-	catch(IOException ioe) {
-		System.out.println("Service file parsing failed...");
-	}
-	catch (ParserConfigurationException e) {
-		System.out.println("Service file parsing failed...");
-	}
-	catch (SAXException e) {
-		System.out.println("Service file parsing failed...");
-	}
-}
-
-/**
- * Parses the WSC task file with the given name, extracting input and
- * output values to be used as the composition task.
- *
- * @param fileName
- */
-private void parseWSCTaskFile(String fileName) {
-	try {
-		File fXmlFile = new File(fileName);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);
-
-		org.w3c.dom.Node provided = doc.getElementsByTagName("provided").item(0);
-		NodeList providedList = ((Element) provided).getElementsByTagName("instance");
-		taskInput = new HashSet<String>();
-		for (int i = 0; i < providedList.getLength(); i++) {
-			org.w3c.dom.Node item = providedList.item(i);
-			Element e = (Element) item;
-			taskInput.add(e.getAttribute("name"));
-		}
-
-		org.w3c.dom.Node wanted = doc.getElementsByTagName("wanted").item(0);
-		NodeList wantedList = ((Element) wanted).getElementsByTagName("instance");
-		taskOutput = new HashSet<String>();
-		for (int i = 0; i < wantedList.getLength(); i++) {
-			org.w3c.dom.Node item = wantedList.item(i);
-			Element e = (Element) item;
-			taskOutput.add(e.getAttribute("name"));
-		}
-	}
-	catch (ParserConfigurationException e) {
-		System.out.println("Task file parsing failed...");
-		e.printStackTrace();
-	}
-	catch (SAXException e) {
-		System.out.println("Task file parsing failed...");
-		e.printStackTrace();
-	}
-	catch (IOException e) {
-		System.out.println("Task file parsing failed...");
-		e.printStackTrace();
-	}
-}
-
-/**
- * Parses the WSC taxonomy file with the given name, building a
- * tree-like structure.
- *
- * @param fileName
- */
-private void parseWSCTaxonomyFile(String fileName) {
-	try {
-		File fXmlFile = new File(fileName);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);
-		NodeList taxonomyRoots = doc.getChildNodes();
-
-		processTaxonomyChildren(null, taxonomyRoots);
+		return found;
 	}
 
-	catch (ParserConfigurationException e) {
-		System.err.println("Taxonomy file parsing failed...");
-	}
-	catch (SAXException e) {
-		System.err.println("Taxonomy file parsing failed...");
-	}
-	catch (IOException e) {
-		System.err.println("Taxonomy file parsing failed...");
-	}
-}
+	/**
+	 * Parses the WSC Web service file with the given name, creating Web
+	 * services based on this information and saving them to the service map.
+	 *
+	 * @param fileName
+	 */
+	private void parseWSCServiceFile(String fileName) {
+		Set<String> inputs = new HashSet<String>();
+		Set<String> outputs = new HashSet<String>();
+		double[] qos = new double[4];
 
-/**
- * Recursive function for recreating taxonomy structure from file.
- *
- * @param parent - Nodes' parent
- * @param nodes
- */
-private void processTaxonomyChildren(TaxonomyNode parent, NodeList nodes) {
-	if (nodes != null && nodes.getLength() != 0) {
-		for (int i = 0; i < nodes.getLength(); i++) {
-			org.w3c.dom.Node ch = nodes.item(i);
+		try {
+			File fXmlFile = new File(fileName);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
 
-			if (!(ch instanceof Text)) {
-				Element currNode = (Element) nodes.item(i);
-				String value = currNode.getAttribute("name");
-				TaxonomyNode taxNode = taxonomyMap.get( value );
-				if (taxNode == null) {
-					taxNode = new TaxonomyNode(value);
-					taxonomyMap.put( value, taxNode );
-				}
-				if (parent != null) {
-					taxNode.setParentNode(parent);
-					taxNode.parents.add(parent);
-					parent.children.add(taxNode);
+			NodeList nList = doc.getElementsByTagName("service");
 
+			for (int i = 0; i < nList.getLength(); i++) {
+				org.w3c.dom.Node nNode = nList.item(i);
+				Element eElement = (Element) nNode;
 
+				String name = eElement.getAttribute("name");
+				if (!runningOwls) {
+					qos[TIME] = Double.valueOf(eElement.getAttribute("Res"));
+					qos[COST] = Double.valueOf(eElement.getAttribute("Pri"));
+					qos[AVAILABILITY] = Double.valueOf(eElement.getAttribute("Ava"));
+					qos[RELIABILITY] = Double.valueOf(eElement.getAttribute("Rel"));
 				}
 
-				NodeList children = currNode.getChildNodes();
-				processTaxonomyChildren(taxNode, children);
+				// Get inputs
+				org.w3c.dom.Node inputNode = eElement.getElementsByTagName("inputs").item(0);
+				NodeList inputNodes = ((Element)inputNode).getElementsByTagName("instance");
+				for (int j = 0; j < inputNodes.getLength(); j++) {
+					org.w3c.dom.Node in = inputNodes.item(j);
+					Element e = (Element) in;
+					String input = e.getAttribute("name");
+
+					inputs.add(input);
+				}
+
+
+				// Get outputs
+				org.w3c.dom.Node outputNode = eElement.getElementsByTagName("outputs").item(0);
+				NodeList outputNodes = ((Element)outputNode).getElementsByTagName("instance");
+				for (int j = 0; j < outputNodes.getLength(); j++) {
+					org.w3c.dom.Node out = outputNodes.item(j);
+					Element e = (Element) out;
+					outputs.add(e.getAttribute("name"));
+				}
+
+				ServiceNode ws = new ServiceNode(name, qos, inputs, outputs, i);
+				serviceMap.put(name, ws);
+				inputs = new HashSet<String>();
+				outputs = new HashSet<String>();
+//				inputs.clear();
+//				outputs.clear();
+				qos = new double[4];
+				ws = null;
+			}
+			nList = null;
+		}
+		catch(IOException ioe) {
+			System.out.println("Service file parsing failed...");
+		}
+		catch (ParserConfigurationException e) {
+			System.out.println("Service file parsing failed...");
+		}
+		catch (SAXException e) {
+			System.out.println("Service file parsing failed...");
+		}
+	}
+
+	private String getChildInst(TaxonomyNode parent) {
+		// TODO Auto-generated method stub
+		for(TaxonomyNode tNode: parent.children_notGrandchildren){
+			if(tNode.childNode==null){
+				return tNode.value;
+			}
+		}
+		return null;
+	}
+	/**
+	 * Parses the WSC task file with the given name, extracting input and
+	 * output values to be used as the composition task.
+	 *
+	 * @param fileName
+	 */
+	private void parseWSCTaskFile(String fileName) {
+		try {
+			File fXmlFile = new File(fileName);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			org.w3c.dom.Node provided = doc.getElementsByTagName("provided").item(0);
+			NodeList providedList = ((Element) provided).getElementsByTagName("instance");
+			taskInput = new HashSet<String>();
+			for (int i = 0; i < providedList.getLength(); i++) {
+				org.w3c.dom.Node item = providedList.item(i);
+				Element e = (Element) item;
+				taskInput.add(e.getAttribute("name"));
+			}
+
+			org.w3c.dom.Node wanted = doc.getElementsByTagName("wanted").item(0);
+			NodeList wantedList = ((Element) wanted).getElementsByTagName("instance");
+			taskOutput = new HashSet<String>();
+			for (int i = 0; i < wantedList.getLength(); i++) {
+				org.w3c.dom.Node item = wantedList.item(i);
+				Element e = (Element) item;
+				taskOutput.add(e.getAttribute("name"));
+			}
+		}
+		catch (ParserConfigurationException e) {
+			System.out.println("Task file parsing failed...");
+			e.printStackTrace();
+		}
+		catch (SAXException e) {
+			System.out.println("Task file parsing failed...");
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			System.out.println("Task file parsing failed...");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Parses the WSC taxonomy file with the given name, building a
+	 * tree-like structure.
+	 *
+	 * @param fileName
+	 */
+	private void parseWSCTaxonomyFile(String fileName) {
+		try {
+			File fXmlFile = new File(fileName);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			NodeList taxonomyRoots = doc.getChildNodes();
+
+			processTaxonomyChildren(null, taxonomyRoots);
+			dbFactory = null;
+			dBuilder = null;
+			doc = null;
+			taxonomyRoots = null;
+			
+		}
+
+		catch (ParserConfigurationException e) {
+			System.err.println("Taxonomy file parsing failed...");
+		}
+		catch (SAXException e) {
+			System.err.println("Taxonomy file parsing failed...");
+		}
+		catch (IOException e) {
+			System.err.println("Taxonomy file parsing failed...");
+		}
+	}
+
+	/**
+	 * Recursive function for recreating taxonomy structure from file.
+	 *
+	 * @param parent - Nodes' parent
+	 * @param nodes
+	 */
+	private void processTaxonomyChildren(TaxonomyNode parent, NodeList nodes) {
+		if (nodes != null && nodes.getLength() != 0) {
+			for (int i = 0; i < nodes.getLength(); i++) {
+				org.w3c.dom.Node ch = nodes.item(i);
+
+				if (!(ch instanceof Text)) {
+					Element currNode = (Element) nodes.item(i);
+					String value = currNode.getAttribute("name");
+					TaxonomyNode taxNode = taxonomyMap.get( value );
+					if (taxNode == null) {
+						taxNode = new TaxonomyNode(value);
+						taxonomyMap.put( value, taxNode );
+					}
+					value =null;
+					if (parent != null) {
+						taxNode.setParentNode(parent);
+						parent.setChildNode(taxNode);
+						taxNode.parents.add(parent);
+						taxNode.addParent(parent.value);
+						parent.children.add(taxNode);
+						parent.addChild(taxNode.value);
+					}
+					NodeList children = currNode.getChildNodes();
+					processTaxonomyChildren(taxNode, children);
+				}
 			}
 		}
 	}
-}
 
-private String[] increaseArray(String[] theArray)
-{
-	int i = theArray.length;
-	int n = ++i;
-	String[] newArray = new String[n];
-	for(int cnt=0;cnt<theArray.length;cnt++)
+
+
+	//	private void findAllChildrenTNode(){
+	//		Set<TaxonomyNode> seenConceptsInput = new HashSet<TaxonomyNode>();
+	//
+	//		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
+	//			TaxonomyNode n = entry.getValue();
+	//			// Also add output to all parent nodes
+	//			Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
+	//			queue.add( n );
+	//
+	//			while (!queue.isEmpty()) {
+	//				TaxonomyNode current = queue.poll();
+	//				if(!current.value.equals("")){
+	//					seenConceptsInput.add( current );
+	////					System.out.println("current: "+current.value);
+	//					for (TaxonomyNode child : current.children) {
+	//						current.children_notGrandchildren.add(child);
+	//						if(!child.value.equals("")){
+	//							if (!seenConceptsInput.contains( child )) {
+	//								queue.add(child);
+	//								seenConceptsInput.add(child);
+	//							}
+	//						}
+	//
+	//
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	private String[] increaseArray(String[] theArray)
 	{
-		newArray[cnt] = theArray[cnt];
+		int i = theArray.length;
+		int n = ++i;
+		String[] newArray = new String[n];
+		for(int cnt=0;cnt<theArray.length;cnt++)
+		{
+			newArray[cnt] = theArray[cnt];
+		}
+		return newArray;
 	}
-	return newArray;
-}
-private Node[] increaseNodeArray(Node[] theArray)
-{
-	int i = theArray.length;
-	int n = ++i;
-	Node[] newArray = new Node[n];
-	for(int cnt=0;cnt<theArray.length;cnt++)
+	private Node[] increaseNodeArray(Node[] theArray)
 	{
-		newArray[cnt] = theArray[cnt];
+		int i = theArray.length;
+		int n = ++i;
+		Node[] newArray = new Node[n];
+		for(int cnt=0;cnt<theArray.length;cnt++)
+		{
+			newArray[cnt] = theArray[cnt];
+		}
+		return newArray;
 	}
-	return newArray;
-}
 }
