@@ -11,8 +11,8 @@ public class ServiceNode implements Cloneable {
 	private List<TaxonomyNode> taxonomyOutputs = new ArrayList<TaxonomyNode>();
 	private String name;
 	private double[] qos;
-	private Set<String>inputs;
-	private Set<String>outputs;
+	public Set<String>inputs;
+	public Set<String>outputs;
 	private boolean consider = true;
 	public Set<String>outputsServicesToThisService;
 	public Set<String>inputsServicesToThisService;
@@ -41,7 +41,7 @@ public class ServiceNode implements Cloneable {
 		return qos;
 	}
 
-	public String[] getInputsArray() {
+	public String[] getInputsServiceArray() {
 		String[] temp = new String[inputsServicesToThisService.size()];
 		int index = -1;
 		for(String s: inputsServicesToThisService){
@@ -53,8 +53,26 @@ public class ServiceNode implements Cloneable {
 	public Set<String> getInputs(){
 		return inputs;
 	}
-
-	public String[] getOutputsArray() {
+	
+	public String[] getInputsArray(){
+		String[] temp = new String[inputs.size()];
+		int index = -1;
+		for(String s: inputs){
+			index++;
+			temp[index] = s;
+		}
+		return temp;
+	}
+	public String[] getOutputsArray(){
+		String[] temp = new String[outputs.size()];
+		int index = -1;
+		for(String s: outputs){
+			index++;
+			temp[index] = s;
+		}
+		return temp;
+	}
+	public String[] getOutputsServiceArray() {
 		String[] temp = new String[outputsServicesToThisService.size()];
 		int index = -1;
 		for(String s: outputsServicesToThisService){

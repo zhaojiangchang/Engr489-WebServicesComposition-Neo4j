@@ -1,6 +1,6 @@
-parse Taxonomy file    48
-addServiceNodeRelationShip    1749
-parse service file    10
-parse task file    6
-populate Taxonomy Tree    3
-createServicesDatabase    1699
+parse Taxonomy file    46
+addServiceNodeRelationShip    1735
+parse service file    9
+parse task file    4
+populate Taxonomy Tree    4
+createServicesDatabase    1545

@@ -17,7 +17,7 @@
 		<concept name="F">
 			<instance name="F_inst" />
 			<concept name="G">
-				<instance name="G_inst" ></instance>
+				<instance name="G_inst"></instance>
 			</concept>
 			<concept name="H">
 				<instance name="H_inst" />
@@ -25,25 +25,48 @@
 		</concept>
 		<concept name="I">
 			<instance name="I_inst" />
-			<concept name="K">
-				<instance name="K_inst" ></instance>
+			<concept name="J">
+				<instance name="J_inst" />
+				<concept name="K">
+					<instance name="K_inst" />
+				</concept>
 			</concept>
 			<concept name="L">
 				<instance name="L_inst" />
-					<concept name="M">
-						<instance name="M_inst" />
-						<concept name="N">
-							<instance name="N_inst" ></instance>
-						</concept>
-						<concept name="O">
-							<instance name="O_inst" />
-						</concept>
-						<concept name="J">
-							<instance name="J_inst" />
-						</concept>
-		</concept>
 			</concept>
-			
+		</concept>
+		<concept name="M">
+			<instance name="M_inst" />
+			<concept name="N">
+				<instance name="N_inst"></instance>
+			</concept>
+			<concept name="O">
+				<instance name="O_inst" />
+			</concept>
+		</concept>
+			<concept name="P">
+			<instance name="I_inst" />
+			<concept name="Q">
+				<instance name="Q_inst" />
+				<concept name="R">
+					<instance name="R_inst" />
+				</concept>
+			</concept>
+			<concept name="U">
+				<instance name="U_inst" />
+				<concept name="V">
+					<instance name="V_inst" />
+				</concept>
+				<concept name="W">
+					<instance name="W_inst" />
+				</concept>
+			</concept>
+			<concept name="S">
+				<instance name="S_inst" />
+				<concept name="T">
+					<instance name="T_inst" />
+				</concept>
+			</concept>
 		</concept>
 	</concept>
 </taxonomy>

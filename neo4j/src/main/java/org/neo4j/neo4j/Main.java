@@ -45,6 +45,10 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
+import org.neo4j.graphdb.traversal.Evaluators;
+import org.neo4j.graphdb.traversal.TraversalDescription;
+import org.neo4j.graphdb.traversal.Traverser;
+import org.neo4j.graphdb.traversal.Uniqueness;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.io.fs.FileUtils;
@@ -63,6 +67,10 @@ public class Main {
 	public static Map<String, Set<TaxonomyNode>> cs = new HashMap<String,Set<TaxonomyNode>>();
 	//Key: taxonomyNode name Value: set of parents
 	public static Map<String, Set<TaxonomyNode>> ps = new HashMap<String,Set<TaxonomyNode>>();
+	//service and list of service's outputs
+	public Map<String,List<String>> servicesWithOutputs = new HashMap<String,List<String>>();
+	public Map<String,List<String>> servicesWithInputs = new HashMap<String,List<String>>();
+	public List<List<List<Node>>>paths = new ArrayList<List<List<Node>>>();
 
 	public Set<String> taskInputs;
 	public Set<String> taskOutputs;
@@ -71,9 +79,9 @@ public class Main {
 	public Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
 	public static Set<TaxonomyNode> children;
 	public static Set<TaxonomyNode> parents;
-	private static String serviceFileName = "test_serv2.xml";
-	private static String taxonomyFileName = "test_taxonomy2.xml";
-	private static String taskFileName = "test_problem2.xml";
+	private static String serviceFileName = "test_serv3.xml";
+	private static String taxonomyFileName = "test_taxonomy3.xml";
+	private static String taskFileName = "test_problem3.xml";
 
 	public static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	public static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
@@ -215,71 +223,166 @@ public class Main {
 
 	private void addServiceNodeRelationShip() {
 		// TODO Auto-generated method stub
-		int index = -1;
+
 		Map<String, Object> maps = new HashMap<String, Object>();
+		Map<String,List<String>> serviceInputs = new HashMap<String,List<String>>();
+		Map<String,List<String>> serviceOutputs = new HashMap<String,List<String>>();
 		int[] ids = null;
 		for(Node sNode: neo4jServiceNodes){
-			Transaction transaction = graphDatabaseService.beginTx();
-			index++;
-			System.out.println(index);
-			double sNodeWeight = (double) sNode.getProperty("weight");
-			Object inputsFromGdb =sNode.getProperty("inputs");
-			//    		//remove the "[" and "]" from string
-			String ips = Arrays.toString((String[]) inputsFromGdb).substring(1, Arrays.toString((String[]) inputsFromGdb).length()-1);
-			String[] inputs = ips.split("\\s*,\\s*");
 
-			//			Object outputsFromGdb =sNode.getProperty("outputs");
-			//			//    		//remove the "[" and "]" from string
-			//			String ops = Arrays.toString((String[]) outputsFromGdb).substring(1, Arrays.toString((String[]) outputsFromGdb).length()-1);
-			//			String[] outputs = ops.split("\\s*,\\s*");
-			ids = null;
-			ids = getServicesId(inputs);
-			maps.clear();
-			maps.put("input", ids);
-			//			for(String input:inputs){
-			//				TaxonomyNode tNode = taxonomyMap.get(input).parentNode;
-			//				Set<String>outputServices = tNode.outputs;
-			//			for(String input: inputs){
-			//					System.out.println("output service for each input========"+outputServices.size()  + "   "+totalRel);
-			Iterator<Node> javaNodes = null;
-			try ( 
-					//						Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
+			addInputsServiceRelationship(sNode, ids, maps, serviceInputs);
+			addOutputsServiceRelationship(sNode, ids, maps, serviceOutputs);
 
-					Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ID(n) IN {input} RETURN n",maps))
+		}
+		servicesWithInputs = serviceInputs;
+		servicesWithOutputs = serviceOutputs;
 
-			{
-				relation = null;
-				javaNodes = null;
-				javaNodes = execResult.columnAs("n");
-				for (Node node : IteratorUtil.asIterable(javaNodes))
-				{	   
+
+	}
+	private void addOutputsServiceRelationship(Node sNode, int[] ids, Map<String, Object> maps, Map<String,List<String>> serviceOutputs) {
+		// TODO Auto-generated method stub
+		Transaction transaction = graphDatabaseService.beginTx();
+
+		double sNodeWeight = (double) sNode.getProperty("weight");
+		Object outputsFromGdb =sNode.getProperty("outputServices");
+		//remove the "[" and "]" from string
+		String ops = Arrays.toString((String[]) outputsFromGdb).substring(1, Arrays.toString((String[]) outputsFromGdb).length()-1);
+		String[] outputs = ops.split("\\s*,\\s*");
+		serviceOutputs.put((String) sNode.getProperty("name"), Arrays.asList(outputs));
+		//		ids = null;
+		//		ids = getServicesId(outputs);
+		//		maps.clear();
+		//		maps.put("output", ids);
+		//		Iterator<Node> javaOutputNodes = null;
+		//		try ( 
+		//				//						Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
+		//
+		//				Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ID(n) IN {output} RETURN n",maps))
+		//
+		//		{
+		//			relation = null;
+		//			javaOutputNodes = null;
+		//			javaOutputNodes = execResult.columnAs("n");
+		//			for (Node node : IteratorUtil.asIterable(javaOutputNodes))
+		//			{	   
+		//				double nodeWeight = (double) node.getProperty("weight");
+		//				relation = node.createRelationshipTo(sNode, RelTypes.OUT);
+		//				relation.setProperty("From", (String)sNode.getProperty("name"));
+		//				relation.setProperty("To", (String)node.getProperty("name"));
+		//				relation.setProperty("Direction", "outgoing");    
+		//				relation.setProperty("weight", (sNodeWeight+nodeWeight)/2);
+		//			}
+		//			javaOutputNodes = null;
+		//		}
+		//		outputsFromGdb =null;
+		//		//    		//remove the "[" and "]" from string
+		//		ops = null;
+		//		outputs = null;
+		//		ids = null;
+		//		relation = null;
+		//		//transaction close for each query - otherwise run out memory
+		transaction.success();
+		transaction.finish();
+		transaction.close();
+	}
+
+	private void addInputsServiceRelationship(Node sNode, int[]ids, Map<String, Object>maps, Map<String, List<String>> serviceInputs) {
+		// TODO Auto-generated method stub
+		Transaction transaction = graphDatabaseService.beginTx();
+
+		double sNodeWeight = (double) sNode.getProperty("weight");
+
+		Object inputsFromGdb =sNode.getProperty("inputServices");
+		//    		//remove the "[" and "]" from string
+		String ips = Arrays.toString((String[]) inputsFromGdb).substring(1, Arrays.toString((String[]) inputsFromGdb).length()-1);
+		String[] tempInputs = ips.split("\\s*,\\s*");
+		String[] inputs = new String[0];
+		int i = -1;
+		for(String s: tempInputs){
+			
+			if(s.length()>0){
+				i++;
+				inputs =increaseArray(inputs);
+				inputs[inputs.length-1] = s;
+			}
+		}
+		serviceInputs.put((String) sNode.getProperty("name"), Arrays.asList(inputs));
+		System.out.println(sNode.getProperty("name")+"==================");
+		System.out.println(inputs.length+"  inputs length");
+
+		for(String s: inputs){
+			
+			System.out.print(s.length()+" ==  ");
+		}
+		System.out.println();
+
+		ids = null;
+		ids = getServicesId(inputs);
+		maps.clear();
+		maps.put("input", ids);
+
+		Iterator<Node> javaInputNodes = null;
+		try ( 
+				//						Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
+
+				Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ID(n) IN {input} RETURN n",maps))
+
+		{
+			relation = null;
+			javaInputNodes = null;
+			javaInputNodes = execResult.columnAs("n");
+			for (Node node : IteratorUtil.asIterable(javaInputNodes))
+			{	   
+				System.out.println(inputs.length);
+
+				if(inputs.length>0){
+					System.out.println("========="+node.getProperty("name")+"    node pro");
 					double nodeWeight = (double) node.getProperty("weight");
 					relation = node.createRelationshipTo(sNode, RelTypes.IN);
-					relation.setProperty("From", (String)sNode.getProperty("name"));
-					relation.setProperty("To", (String)node.getProperty("name"));
+					relation.setProperty("From", (String)node.getProperty("name"));
+					relation.setProperty("To", (String)sNode.getProperty("name"));
 					relation.setProperty("Direction", "incoming");    
 					relation.setProperty("weight", (sNodeWeight+nodeWeight)/2);
 				}
-				javaNodes = null;
+				
 			}
-			inputsFromGdb =null;
-			//    		//remove the "[" and "]" from string
-			ips = null;
-			inputs = null;
-			ids = null;
-			relation = null;
-			//transaction close for each query - otherwise run out memory
-			transaction.success();
-			transaction.finish();
-			transaction.close();
+			javaInputNodes = null;
 		}
+		inputsFromGdb =null;
+		//    		//remove the "[" and "]" from string
+		ips = null;
+		inputs = null;
+		ids = null;
+		relation = null;
+		sNode = null;
+		transaction.success();
+		transaction.finish();
+		transaction.close();
 	}
-	private int[] getServicesId(String[] inputs) {
+	public String[] increaseArray(String[] theArray)
+	{
+	    int i = theArray.length;
+	    int n = ++i;
+	    String[] newArray = new String[n];
+	    if(theArray.length==0){
+	    	return new String[1];
+	    }
+	    else{
+	    	for(int cnt=0;cnt<theArray.length;cnt++)
+		    {
+		        newArray[cnt] = theArray[cnt];
+		    }
+	    }
+	    
+	    return newArray;
+	}
+	private int[] getServicesId(String[] nodes) {
 		// TODO Auto-generated method stub
-		int[] ids = new int[inputs.length];
+		int[] ids = new int[nodes.length];
 		int i = -1;
-		for(String input: inputs){
-			if(!input.equals("")||input!=null||!input.equals(" ") || input.length()>0){
+		for(String input: nodes){
+			if(input.length()>0){
+				System.out.println(input);
 				ServiceNode sNode = serviceMap.get(input);
 				if(sNode!=null){
 					i++;
@@ -291,48 +394,150 @@ public class Main {
 	}
 
 	private void runTask() {
+		System.out.println("run task");
 		Set<Node>neo4jOutputServiceNodes = new HashSet<Node>();
 		Set<Node>neo4jInputServiceNodes = new HashSet<Node>();
 		// find all service nodes for task input
 		Set<String>inputServices = findAllTaskInputsNodes();
 		for(String inputService: inputServices){
+			System.out.println("inputservice: "+inputService);
 			neo4jInputServiceNodes.add(neo4jServNodes.get(inputService));
 		}
-		// find all service nodes for task output
+		//		 find all service nodes for task output
 		Set<String>outputServices = findAllTaskOutputsNodes();
 		for(String outputService: outputServices){
+			System.out.println("outputservicename: "+outputService);
 			neo4jOutputServiceNodes.add(neo4jServNodes.get(outputService));
 		}
-		List<List<String>> compareWeights = new ArrayList<List<String>>();
+//		List<List<String>> compareWeights = new ArrayList<List<String>>();
 		for(Node input: neo4jInputServiceNodes){
 			for(Node output: neo4jOutputServiceNodes){
-				System.out.println();
-				compareWeights.add(findPath(input, output));
-				System.out.println();
+				findAllPath(input, output);
 			}
 		}
-		double minWeight = Double.MAX_VALUE;
-		String path = "";
-		String startNode = "";
-		String endNode="";
-		for(List<String> weightInfo: compareWeights){
-			double weight = Double.parseDouble(weightInfo.get(3));
-			if (weight<minWeight){
-				minWeight = weight;
-				path = weightInfo.get(2);
-				startNode = weightInfo.get(0);
-				endNode = weightInfo.get(1);
+		Transaction transaction = graphDatabaseService.beginTx();
+		Node startNode = createNode("start",taskInputs);
+		Node endNode = createNode("end",taskOutputs);
+		Node problemOutputNode = null;
+		Node problemInputNode = null;
+		for(int i = 0; i<paths.size(); i++){//paths
+			problemInputNode = paths.get(i).get(0).get(0);
+			if(paths.get(i).get(0).size()==1){
+				problemOutputNode = paths.get(i).get(0).get(0);
 			}
+			else {
+				problemOutputNode = paths.get(i).get(0).get(1);
+			}
+//			System.out.print(problemOutputNode.getProperty("name")+"  ");
+			for(int j = 0; j<paths.get(i).size(); j++){//each start node and end node path list
+//				for(int m = 0; m<paths.get(i).get(j).size(); m++){//each path		
+					checkPathMatchAllInputs(startNode, endNode,problemInputNode, problemOutputNode, paths.get(i).get(j));
+//				}
+			}
+			
 		}
-		System.out.println("================================");
-		System.out.println("Start Node: "+ startNode+ "  End Node："+ endNode);
+		transaction.success();
+		transaction.finish();
+		transaction.close();
 
-		System.out.println("Path: "+ path);
-		System.out.println("min weight: "+ minWeight);
+		//		double minWeight = Double.MAX_VALUE;
+		//		String path = "";
+		//		String startNode = "";
+		//		String endNode="";
+		//		for(List<String> weightInfo: compareWeights){
+		//			double weight = Double.parseDouble(weightInfo.get(3));
+		//			if (weight<minWeight){
+		//				minWeight = weight;
+		//				path = weightInfo.get(2);
+		//				startNode = weightInfo.get(0);
+		//				endNode = weightInfo.get(1);
+		//			}
+		//		}
+		//		System.out.println("================================");
+		//		System.out.println("Start Node: "+ startNode+ "  End Node："+ endNode);
+		//
+		//		System.out.println("Path: "+ path);
+		//		System.out.println("min weight: "+ minWeight);
 
+
+
+
+	}
+
+
+	private boolean checkPathMatchAllInputs(Node startNode, Node endNode, Node problemInputNode, Node problemOutputNode, List<Node> list) {
+//		System.out.println();
+//		System.out.println(1+"   "+startNode.getProperty("name") +"    "+ problemInputNode.getProperty("name"));
 		
+		if(!checkStringArrays(endNode.getProperty("inputs"),problemOutputNode.getProperty("outputs"))){
+//			System.out.println(2);
 
+			return false;
+		}
+		if(!checkStringArrays(startNode.getProperty("outputs"),problemInputNode.getProperty("inputs"))){
+//			System.out.println(3);
 
+			return false;
+		}
+		findAllInputsForPath(problemOutputNode, list);
+		
+		return false;
+	}
+
+	private void findAllInputsForPath(Node problemOutputNode, List<Node> list) {
+//		System.out.println(4);
+
+		// TODO Auto-generated method stub
+		for(Node node: list){
+//			System.out.println(5);
+
+			if(checkStringArrays(problemOutputNode.getProperty("inputs"), node.getProperty("outputs"))){
+//				System.out.println(6);
+
+//				System.out.println("find: "+node.getProperty("name"));
+				findAllInputsForPath(node,list);
+			}
+		}
+		
+	}
+
+	private boolean checkStringArrays(Object obj1, Object obj2) {
+		// TODO Auto-generated method stub
+		//    		//remove the "[" and "]" from string
+//		System.out.println("=======");
+//		System.out.println();
+
+		String o1 = Arrays.toString((String[]) obj1).substring(1, Arrays.toString((String[]) obj1).length()-1);
+		String[] array1 = o1.split("\\s*,\\s*");
+//		System.out.println("array1");
+
+//		for(String s: array1){
+//			System.out.print(s+"   ");
+//		}
+//		System.out.println();
+		String o2 = Arrays.toString((String[]) obj2).substring(1, Arrays.toString((String[]) obj2).length()-1);
+		String[] array2 = o2.split("\\s*,\\s*");
+//		System.out.println("array2");
+
+//		for(String s: array2){
+//			System.out.print(s+"   ");
+//		}
+//		System.out.println();
+		return Arrays.equals(array1	, array2);
+	}
+
+	private Node createNode(String nodeName, Set<String> inputOutputServices) {
+		String[]array = inputOutputServices.toArray(new String[inputOutputServices.size()]);
+		Node service = graphDatabaseService.createNode();
+		Label nodeLable = DynamicLabel.label(nodeName);
+		service.addLabel(nodeLable);
+		service.setProperty("name", nodeName);
+		if(nodeName.equals("start"))
+			service.setProperty("outputs", array);
+		else if(nodeName.equals("end"))
+			service.setProperty("inputs", array);
+
+		return service;
 	}
 
 	private Set<String> findAllTaskOutputsNodes() {
@@ -340,8 +545,51 @@ public class Main {
 		if(taskOutputs.size()==1){
 			outputServicesNode.clear();
 			for(String output: taskOutputs){
-				outputServicesNode = taxonomyMap.get(output).parentNode.outputs;
+				//				outputServicesNode = taxonomyMap.get(output).parentNode;
+				Set<TaxonomyNode>parentNodes = new HashSet<TaxonomyNode>();
+				for(Entry<String, Set<TaxonomyNode>>entry: ps.entrySet()){
+					if(entry.getKey().equals(output)){
+
+						parentNodes = entry.getValue();
+						for(TaxonomyNode s:entry.getValue() ){
+						}
+					}
+				}
+
+				Transaction transaction = graphDatabaseService.beginTx();
+				for(Entry<String,ServiceNode>entry: serviceMap.entrySet()){
+
+					for(TaxonomyNode tNode: parentNodes){
+						for(String ss: entry.getValue().getOutputs()){
+
+						}
+						if(entry.getValue().getOutputs().contains(tNode.value+"_inst")){
+							//							System.out.println(tNode.value+"_inst");
+							outputServicesNode.add(entry.getKey());
+						}
+
+					}
+
+					//						if(!s.equals("")){
+					//							System.out.println("service outputs: "+ s);
+					//							TaxonomyNode tNode = taxonomyMap.get(s);
+					//							if(parentNodes.contains(tNode.parentNode.value)){
+					//								System.out.println("contains: "+ s);
+					//								outputServicesNode.add(entry.getKey());
+					//							}
+					//						}
+
+				}
+
+
+				transaction.success();
+				transaction.finish();
+				transaction.close();
+
+
 			}
+
+
 		}
 		else if(taskOutputs.size()>1){
 			outputServicesNode.clear();
@@ -369,6 +617,8 @@ public class Main {
 	}
 
 	private Set<String> findAllTaskInputsNodes() {
+//		System.out.println("find task input nodes: ");
+
 		Set<String>inputServicesNode = new HashSet<String>();
 		if(taskInputs.size()==1){
 			inputServicesNode.clear();
@@ -412,13 +662,17 @@ public class Main {
 		neo4jServiceNodes = new Node[0];
 		try{
 			Index<Node> idIndex = graphDatabaseService.index().forNodes("identifiers");
-			
+
 
 			for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
+
 				//				System.out.println("create noce: "+index);
 				String key = entry.getKey();
 				ServiceNode value = entry.getValue();
-				double weight = calculateWeight(value.getQos());
+//				System.out.println(value.getName());
+//				System.out.println(value.getInputsArray().length+"     "+value.getOutputsArray().length);
+				//				double weight = calculateWeight(value.getQos());
+				double weight = value.getQos()[TIME];
 				Node service = graphDatabaseService.createNode();
 				Label nodeLable = DynamicLabel.label(key);
 				service.addLabel(nodeLable);
@@ -429,6 +683,8 @@ public class Main {
 				service.setProperty("weight", weight);
 				service.setProperty("inputs", value.getInputsArray());
 				service.setProperty("outputs", value.getOutputsArray());
+				service.setProperty("inputServices", value.getInputsServiceArray());
+				service.setProperty("outputServices", value.getOutputsServiceArray());
 				neo4jServiceNodes = increaseNodeArray(neo4jServiceNodes);
 				neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
 				neo4jServNodes.put(entry.getKey(), service);
@@ -510,6 +766,11 @@ public class Main {
 		Queue<TaxonomyNode> queue = new LinkedList<TaxonomyNode>();
 
 		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
+			//			System.out.println();
+			//			System.out.println();
+
+			//			System.out.println("taxonomyNode: "+entry.getKey());
+
 			TaxonomyNode n = entry.getValue();
 			// Also add output to all parent nodes
 			queue.clear();
@@ -517,23 +778,29 @@ public class Main {
 			queue.add( n );
 
 			while (!queue.isEmpty()) {
+				//				System.out.println();
 				TaxonomyNode current = queue.poll();
 				if(!current.value.equals("")){
 					seenConceptsOutput.add( current );
 					//					System.out.println("current: "+current.value);
 					for (TaxonomyNode parent : current.parents) {
-						current.parents_notGrandparents.add(parent);
-						//						System.out.println("================parent: "+parent.value);
 						if(!parent.value.equals("")){
-							if (!seenConceptsOutput.contains( parent )) {
-								queue.add(parent);
-								seenConceptsOutput.add(parent);
+
+							current.parents_notGrandparents.add(parent);
+							//							System.out.println("================parent: "+parent.value);
+							if(!parent.value.equals("")){
+								if (!seenConceptsOutput.contains( parent )) {
+									queue.add(parent);
+									seenConceptsOutput.add(parent);
+								}
 							}
 						}
 
 					}
+
 				}
 			}
+
 			seenConceptsOutput.clear();
 			queue.clear();
 			queue.add(n);
@@ -558,17 +825,18 @@ public class Main {
 	}
 	private void removeInputsAndOutputsDuplicates() {
 		// TODO Auto-generated method stub
-		children = new HashSet<TaxonomyNode>();
-		parents = new HashSet<TaxonomyNode>();
+
 		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
 			TaxonomyNode node = entry.getValue();
-			children.clear();
-			parents.clear();
+
+			children = new HashSet<TaxonomyNode>();
+			parents = new HashSet<TaxonomyNode>();
 			dfsGetChildren(node);
 			dfsGetParents(node);
 
 			cs.put(node.value, children);
 			ps.put(node.value, parents);
+
 		}
 		removeChildrenInputs();
 		removeParentsOutputs();
@@ -616,11 +884,11 @@ public class Main {
 					}
 				}
 			}
+			//		inputs.clear();
 			sNode.setInputs(copy);
 			//			System.out.println("  inputs size AFTER REMOVE:  "+sNode.getInputs().size());
-			inputs.clear();
 			//			copy.clear();
-			sNode = null;
+			//		sNode = null;
 		}
 	}
 
@@ -640,16 +908,15 @@ public class Main {
 						String toRemve = getChildInst(parent);
 						if(copy.contains(toRemve)){
 							copy.remove(toRemve);
-							//							System.out.println("remove output: "+toRemve);
 						}
 					}
 				}
 
 			}
+			//		outputs.clear();
 			sNode.setOutputs(copy);
-			outputs.clear();
 			//			copy.clear();
-			sNode = null;
+			//		sNode = null;
 		}
 
 	}
@@ -727,20 +994,20 @@ public class Main {
 	}
 	private void addAllInputOutputServicesToEachServiceNode(){
 		for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
-			Set<String> inputs = entry.getValue().getInputs();
-			Set<String> outputs = entry.getValue().getOutputs();
-			for(String input: inputs){
-				TaxonomyNode tNode = taxonomyMap.get(input).parentNode;
+			Set<String> inputs = new HashSet<String>(entry.getValue().getInputs());
+			Set<String> outputs = new HashSet<String>(entry.getValue().getOutputs());
+			for(String serviceInput: inputs){
+				TaxonomyNode tNode = taxonomyMap.get(serviceInput).parentNode;
 				entry.getValue().inputsServicesToThisService.addAll(tNode.outputs);
 				tNode = null;
 			}
-			for(String output: outputs){
-				TaxonomyNode tNode = taxonomyMap.get(output).parentNode;
+			for(String serviceOutput: outputs){
+				TaxonomyNode tNode = taxonomyMap.get(serviceOutput).parentNode;
 				entry.getValue().outputsServicesToThisService.addAll(tNode.inputs);
 				tNode = null;
 			}
-			inputs.clear();
-			outputs.clear();
+			//		inputs.clear();
+			//		outputs.clear();
 
 		}
 
@@ -924,8 +1191,7 @@ public class Main {
 	 * @param fileName
 	 */
 	private void parseWSCServiceFile(String fileName) {
-		Set<String> inputs = new HashSet<String>();
-		Set<String> outputs = new HashSet<String>();
+
 		double[] qos = new double[4];
 
 		try {
@@ -937,6 +1203,8 @@ public class Main {
 			NodeList nList = doc.getElementsByTagName("service");
 
 			for (int i = 0; i < nList.getLength(); i++) {
+				Set<String> inputs = new HashSet<String>();
+				Set<String> outputs = new HashSet<String>();
 				org.w3c.dom.Node nNode = nList.item(i);
 				Element eElement = (Element) nNode;
 
@@ -968,12 +1236,11 @@ public class Main {
 					Element e = (Element) out;
 					outputs.add(e.getAttribute("name"));
 				}
-
 				ServiceNode ws = new ServiceNode(name, qos, inputs, outputs, i);
 				serviceNodes.add(ws);
 				serviceMap.put(name, ws);
-				inputs = new HashSet<String>();
-				outputs = new HashSet<String>();
+				//			inputs = new HashSet<String>();
+				//			outputs = new HashSet<String>();
 				//				inputs.clear();
 				//				outputs.clear();
 				qos = new double[4];
@@ -1146,17 +1413,7 @@ public class Main {
 	//			}
 	//		}
 	//	}
-	private String[] increaseArray(String[] theArray)
-	{
-		int i = theArray.length;
-		int n = ++i;
-		String[] newArray = new String[n];
-		for(int cnt=0;cnt<theArray.length;cnt++)
-		{
-			newArray[cnt] = theArray[cnt];
-		}
-		return newArray;
-	}
+	
 	private Node[] increaseNodeArray(Node[] theArray)
 	{
 		int i = theArray.length;
@@ -1171,9 +1428,10 @@ public class Main {
 	@SuppressWarnings("deprecation")
 	//http://neo4j.com/docs/stable/tutorials-java-embedded-graph-algo.html example
 	private List<String> findPath(Node startNode, Node endNode){
-		List<String> toReturn = new ArrayList<String>();
 		Transaction transaction = graphDatabaseService.beginTx();
-		System.out.println("between start input node: "+ startNode.getProperty("name") +"  and end output node: "+ endNode.getProperty("name"));
+//		System.out.println(startNode.getProperty("name")+"  -   "+endNode.getProperty("name"));
+		if(startNode==null| endNode == null)return null;
+		List<String> toReturn = new ArrayList<String>();
 		toReturn.add( (String) startNode.getProperty("name"));
 		toReturn.set(0, (String) startNode.getProperty("name"));
 		toReturn.add( (String) endNode.getProperty("name"));
@@ -1185,7 +1443,8 @@ public class Main {
 		Iterator<Path> iterator = paths.iterator();          
 		Path p;          
 		while(iterator.hasNext()) {              
-			p = iterator.next();              
+			p = iterator.next();        
+
 			System.out.println("shortestPath" + p.toString());              
 			System.out.println("From Start Node: "+p.startNode().getProperty("name") + " to End Node:  " + p.endNode().getProperty("name"));          
 		}                    
@@ -1193,20 +1452,132 @@ public class Main {
 		//取所有路径中的第一条         
 		p = finder.findSinglePath(startNode, endNode);          
 		System.out.println("shorestPath singlePath :" + p.toString());    
-		
-		PathFinder<WeightedPath> finder1 = GraphAlgoFactory.dijkstra(                  
-				Traversal.expanderForTypes( RelTypes.IN, Direction.INCOMING ), "weight" );                   
-		WeightedPath path = finder1.findSinglePath(startNode, endNode);     
-		toReturn.add(path.toString());
-		toReturn.set(2, path.toString());
-		toReturn.add(path.weight()+"");
-		toReturn.set(3, path.weight()+"");
-		// Get the weight for the found path          
-		System.out.println("Dijkstra Weight: "+path.weight());          
-		System.out.println("Dijkstra Path: "+path.toString());
+		//		
+		//		PathFinder<WeightedPath> finder1 = GraphAlgoFactory.dijkstra(                  
+		//				Traversal.expanderForTypes( RelTypes.IN, Direction.BOTH ), "weight" );                   
+		//		WeightedPath path = finder1.findSinglePath(startNode, endNode);  
+		//		if(path==null){
+		//			return null;
+		//		}
+		//	
+		//		// Get the weight for the found path          
+		//		System.out.println("Dijkstra Weight: "+path.weight());          
+		//		System.out.println("Dijkstra Path: "+path.toString());
 		transaction.success();
 		transaction.finish();
 		transaction.close();
 		return toReturn; 
+	}
+	private void findAllPath(Node startNode, Node endNode){
+		Map<String, Object>maps = new HashMap<String, Object>();
+		
+		Transaction transaction = graphDatabaseService.beginTx();
+		System.out.println(startNode.getProperty("name")+"  -   "+endNode.getProperty("name"));
+		int startNodeId = (int) startNode.getProperty("id");
+		int endNodeId = (int) endNode.getProperty("id");
+		String output = "";
+		TraversalDescription friendsTraversal = graphDatabaseService.traversalDescription()
+		        .depthFirst()
+		        .relationships( RelTypes.IN ,Direction.OUTGOING)
+		        //Traversals have uniqueness rules. Read that link, it talks about how the traverser works, and how you can configure it. By default, the uniqueness rules are set to NODE_GLOBAL meaning that a certain node cannot be traversed more than once.
+		        //should use RELATIONSHIP_PATH instead
+		        .uniqueness( Uniqueness.RELATIONSHIP_PATH );
+		List<List<Node>> p = new ArrayList<List<Node>>();
+		for ( Path path : friendsTraversal
+		        .evaluator( Evaluators.toDepth( 100 ) )
+		        .evaluator(Evaluators.returnWhereEndNodeIs(graphDatabaseService.getNodeById(endNodeId)))
+		        .traverse( startNode ) )
+		{
+			Set<Node> sNodes = new HashSet<Node>();
+			sNodes.add(startNode);
+			sNodes.add(endNode);
+		    for(Node n: path.nodes()){
+		    	sNodes.add(n);
+		    }
+			List<Node> sNodesToList = new ArrayList<Node>();
+			sNodesToList.addAll(sNodes);
+			sNodesToList.set(0, startNode);
+			if(sNodes.size()>1)
+				sNodesToList.set(1, endNode);
+
+			output += path + "\n";
+			p.add(sNodesToList);
+		}
+		paths.add(p);
+		System.out.println("p size: "+p.size());
+		System.out.println("paths size: "+paths.size());
+		System.out.println(output);
+//		maps.put("startNodeId",startNodeId+"");
+//		maps.put("endNodeId", endNodeId+"");
+//		TraversalDescription desc = Traversal.description()
+////		        .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL)
+//		        .evaluator(Evaluators.returnWhereEndNodeIs(graphDatabaseService.getNodeById(endNodeId)))
+////		        .evaluator(Evaluators.includingDepths(3, 3))
+//		        .relationships(RelTypes.IN);
+//
+//		Traverser traverse = desc.traverse(graphDatabaseService.getNodeById(startNodeId), graphDatabaseService.getNodeById(endNodeId));
+//		Iterator<Path> paths = traverse.iterator();	
+//		System.out.println(paths.hasNext());
+//
+//		while(paths.hasNext()){
+//			System.out.println("paht has next");
+//
+//			Path path = paths.next();
+//			System.out.println(path.toString());
+//		}
+//		Iterator<Node> pathNodes = null;
+//		try ( 
+//				//						Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
+//
+//				Result execResult = graphDatabaseService.execute( "START a=node({startNodeId}), d=node({endNodeId}) MATCH p=a-[r:IN*..]-d",maps))
+//
+//		{
+//			relation = null;
+//			pathNodes = null;
+//			pathNodes = execResult.columnAs("p");
+//			for (Node node : IteratorUtil.asIterable(pathNodes))
+//			{	   
+//				System.out.println(node.getProperty("name"));
+//				
+//			}
+//			pathNodes = null;
+//		}
+//		System.out.println(startNode.getProperty("name")+"  -   "+endNode.getProperty("name"));
+//		if(startNode==null| endNode == null)return null;
+//		List<String> toReturn = new ArrayList<String>();
+//		toReturn.add( (String) startNode.getProperty("name"));
+//		toReturn.set(0, (String) startNode.getProperty("name"));
+//		toReturn.add( (String) endNode.getProperty("name"));
+//		toReturn.set(1, (String) endNode.getProperty("name"));
+//
+//		PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), 5);                  
+//		//将经过的节点数相同的路径全部查询回来         
+//		Iterable<Path> paths = finder.findAllPaths(startNode, endNode);          
+//		Iterator<Path> iterator = paths.iterator();          
+//		Path p;          
+//		while(iterator.hasNext()) {              
+//			p = iterator.next();        
+//
+//			System.out.println("shortestPath" + p.toString());              
+//			System.out.println("From Start Node: "+p.startNode().getProperty("name") + " to End Node:  " + p.endNode().getProperty("name"));          
+//		}                    
+//
+//		//取所有路径中的第一条         
+//		p = finder.findSinglePath(startNode, endNode);          
+//		System.out.println("shorestPath singlePath :" + p.toString());    
+		//		
+		//		PathFinder<WeightedPath> finder1 = GraphAlgoFactory.dijkstra(                  
+		//				Traversal.expanderForTypes( RelTypes.IN, Direction.BOTH ), "weight" );                   
+		//		WeightedPath path = finder1.findSinglePath(startNode, endNode);  
+		//		if(path==null){
+		//			return null;
+		//		}
+		//	
+		//		// Get the weight for the found path          
+		//		System.out.println("Dijkstra Weight: "+path.weight());          
+		//		System.out.println("Dijkstra Path: "+path.toString());
+		transaction.success();
+		transaction.finish();
+		transaction.close();
 	}
 }
