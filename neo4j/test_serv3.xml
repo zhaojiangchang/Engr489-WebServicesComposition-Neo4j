@@ -18,6 +18,8 @@
 			<instance name="G_inst" />
 		</inputs>
 		<outputs>
+					<instance name="C_inst" />
+	
 			<instance name="K_inst" />
 			<instance name="L_inst" />
 		</outputs>
@@ -86,7 +88,6 @@
 		</inputs>
 		<outputs>
 			<instance name="Q_inst" />
-						<instance name="N_inst" />
 			
 		</outputs>
 	</service>
