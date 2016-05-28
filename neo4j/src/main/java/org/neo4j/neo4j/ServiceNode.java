@@ -9,6 +9,7 @@ public class ServiceNode implements Cloneable {
 	private List<Edge> incomingEdgeList = new ArrayList<Edge>();
 	private List<Edge> outgoingEdgeList = new ArrayList<Edge>();
 	private List<TaxonomyNode> taxonomyOutputs = new ArrayList<TaxonomyNode>();
+	private List<TaxonomyNode> taxonomyInputs = new ArrayList<TaxonomyNode>();
 	private String name;
 	private double[] qos;
 	public Set<String>inputs;
@@ -16,9 +17,9 @@ public class ServiceNode implements Cloneable {
 	private boolean consider = true;
 	public Set<String>outputsServicesToThisService;
 	public Set<String>inputsServicesToThisService;
-	public int index;
+	public long index;
 
-	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs, int index) {
+	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs, long index) {
 		this.index = index;
 		this.name = name;
 		this.qos = qos;
@@ -111,7 +112,9 @@ public class ServiceNode implements Cloneable {
 	public List<TaxonomyNode> getTaxonomyOutputs() {
 		return taxonomyOutputs;
 	}
-
+	public List<TaxonomyNode> getTaxonomyInputs() {
+		return taxonomyInputs;
+	}
 	public boolean isConsidered() {
 		return consider;
 	}

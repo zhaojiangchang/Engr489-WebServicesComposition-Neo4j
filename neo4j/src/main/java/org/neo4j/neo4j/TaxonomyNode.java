@@ -24,16 +24,20 @@ public class TaxonomyNode {
 	public String child = "";
 	public Set<String> childrenString;
 	public Set<String> parentsString;
+	public Set<TaxonomyNode> childrenInstance = new HashSet<TaxonomyNode>();
 	public TaxonomyNode parentNode = null;
 	public TaxonomyNode childNode = null;
 	public Set<TaxonomyNode> children_notGrandchildren = new HashSet<TaxonomyNode>();
 	public Set<TaxonomyNode> parents_notGrandparents = new HashSet<TaxonomyNode>();
-
+	public boolean isInstance = false;
 	public List<TaxonomyNode> parents = new ArrayList<TaxonomyNode>();
 	public List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
 	public String state = "Unvisited";
 	
-	public TaxonomyNode(String value) {
+	public TaxonomyNode(String value, String tagName) {
+		if(tagName.equals("instance")){
+			this.isInstance = true;
+		}
 		this.value = value;
 		inputs = new HashSet<String>();
 		outputs = new HashSet<String>();
