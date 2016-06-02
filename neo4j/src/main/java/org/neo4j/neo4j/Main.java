@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,6 +50,8 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
+import org.neo4j.graphdb.traversal.Evaluation;
+import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.Evaluators;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
@@ -280,16 +284,16 @@ public class Main {
 		// TODO Auto-generated method stub
 
 		Map<String, Object> maps = new HashMap<String, Object>();
-		Map<String,List<String>> serviceInputs = new HashMap<String,List<String>>();
+		Map<String,List<String>> inputServices = new HashMap<String,List<String>>();
 		Map<String,List<String>> serviceOutputs = new HashMap<String,List<String>>();
 		long[] ids = null;
 		for(Node sNode: neo4jServiceNodes){
 
-			addInputsServiceRelationship(sNode, ids, maps, serviceInputs);
+			addInputsServiceRelationship(sNode, ids, maps, inputServices);
 			//			addOutputsServiceRelationship(sNode, ids, maps, serviceOutputs);
 
 		}
-		servicesWithInputs = serviceInputs;
+		servicesWithInputs = inputServices;
 		servicesWithOutputs = serviceOutputs;
 
 
@@ -339,16 +343,17 @@ public class Main {
 		transaction.close();
 	}
 
-	private void addInputsServiceRelationship(Node sNode, long[]ids, Map<String, Object>maps, Map<String, List<String>> serviceInputs) {
+	private void addInputsServiceRelationship(Node sNode, long[]ids, Map<String, Object>maps, Map<String, List<String>> inputServices) {
 		// TODO Auto-generated method stub
 		Transaction transaction = graphDatabaseService.beginTx();
 
 		double sNodeWeight = (double) sNode.getProperty("weight");
 		String[] inputs = getNodePropertyArray(sNode, "inputServices");
-		serviceInputs.put((String) sNode.getProperty("name"), Arrays.asList(inputs));
+		inputServices.put((String) sNode.getProperty("name"), Arrays.asList(inputs));
 
 		ids = null;
 		ids = getServicesId(inputs);
+
 		maps.clear();
 		maps.put("input", ids);
 
@@ -356,24 +361,15 @@ public class Main {
 		try ( 
 				//						Result execResult = graphDatabaseService.execute( "match (n{name: {o}}) return n", MapUtil.map("o",input)))
 
-				Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE ID(n) IN {input} RETURN n",maps))
+				Result execResult = graphDatabaseService.execute( "MATCH (n) WHERE n.id IN {input} RETURN n",maps))
 
 		{
 			relation = null;
 			javaInputNodes = null;
 			javaInputNodes = execResult.columnAs("n");
 			for (Node node : IteratorUtil.asIterable(javaInputNodes))
-			{	   
-				List<String>nodeInputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
-				List<String>sNodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
-				List<String>temp = new ArrayList<String>(nodeInputs);
-				temp.retainAll(sNodeInputs);
-				String[] tempToArray = new String[temp.size()];
-				for(int i = 0; i<temp.size(); i++){
-					tempToArray[i] = temp.get(i);
-				}
-
-
+			{	
+				String[] tempToArray = getOutputs(node, sNode);
 				if(inputs.length>0){
 					double nodeWeight = (double) node.getProperty("weight");
 					relation = node.createRelationshipTo(sNode, RelTypes.IN);
@@ -395,6 +391,26 @@ public class Main {
 		transaction.finish();
 		transaction.close();
 	}
+	private String[] getOutputs(Node node, Node sNode) {
+		// TODO Auto-generated method stub
+		List<String>snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
+		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
+		List<String>snodeOutputsAllParents = new ArrayList<String>();
+		for(String output: snodeOutputs){
+			TaxonomyNode tNode = taxonomyMap.get(output);
+//			Set<String>tNodeParents = new HashSet<String>();
+			snodeOutputsAllParents.addAll(getTNodeParentsString(tNode));
+		}
+		List<String>temp = new ArrayList<String>(snodeOutputsAllParents);
+		temp.retainAll(nodeInputs);
+		String[] tempToArray = new String[temp.size()];
+		for(int i = 0; i<temp.size(); i++){
+			tempToArray[i] = temp.get(i);
+		}
+
+		return tempToArray;
+	}
+
 	public String[] increaseArray(String[] theArray)
 	{
 		int i = theArray.length;
@@ -421,7 +437,7 @@ public class Main {
 				ServiceNode sNode = serviceMap.get(input);
 				if(sNode!=null){
 					i++;
-					ids[i] = sNode.index;
+					ids[i] = sNode.index+1;
 				}
 			}
 		}
@@ -430,12 +446,12 @@ public class Main {
 	//run task
 	public boolean findNonFulfillNode = false;
 
+	@SuppressWarnings("unchecked")
 	private void runTask() {
 		System.out.println("run task");
 		Set<Set<Node>>allPossibleNeo4jInputServiceNodes = new HashSet<Set<Node>>();
 
 		findAllTaskInputsNodes(allPossibleNeo4jInputServiceNodes);
-		System.out.println("allPossibleNeo4jInputServiceNodes:  "+allPossibleNeo4jInputServiceNodes.size() +"     "+allPossibleNeo4jInputServiceNodes);
 		Transaction tx = graphDatabaseService.beginTx();
 		Set<Set<Node>>tempInputs = new HashSet<Set<Node>>(allPossibleNeo4jInputServiceNodes);
 		int index = -1;
@@ -492,125 +508,117 @@ public class Main {
 
 			}
 		}
+		List<List<Node>>allPossibleNeo4jInputServiceNodesAsList = sortSet(allPossibleNeo4jInputServiceNodes, "inputs");
+
 		tx.close();
 
 
 		Set<Set<Node>>allPossibleNeo4jOutputServiceNodes = new HashSet<Set<Node>>();
 		findAllTaskOutputsNodes(allPossibleNeo4jOutputServiceNodes);
-		System.out.println("allPossibleNeo4jOutputServiceNodes:  "+allPossibleNeo4jOutputServiceNodes.size() +"     "+allPossibleNeo4jOutputServiceNodes);
-
 		Transaction t = graphDatabaseService.beginTx();
-		for(Set<Node> nodes: allPossibleNeo4jOutputServiceNodes){
-			System.out.println();
-
-			for(Node node: nodes){
-				System.out.print(node.getProperty("name")+"    ");
-			}
-			System.out.println();
-
-		}
-		Set<Set<Node>>tempOutputs = new HashSet<Set<Node>>(allPossibleNeo4jOutputServiceNodes);
-		int index2 = -1;
-		for(Set<Node> nodes: allPossibleNeo4jOutputServiceNodes){
-			int totalOutputs = 0;
-			int i = -1;
-			for(Node n: nodes){
-				i++;
-				List<String> outputs = Arrays.asList(getNodePropertyArray(n, "outputs"));
-				totalOutputs += outputs.size();
-				if(totalOutputs==taskOutputs.size()){
-					index2 = i;
-				}
-			}
-			if(totalOutputs>taskOutputs.size()){
-				int j = -1;
-				for(Node node: nodes){
-					j++;
-					if(j>index2){
-						List<String> outputs = Arrays.asList(getNodePropertyArray(node, "outputs"));
-						System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
-						Node matchedNode = findMatchedOutputNode(outputs, nodes, taskOutputs, index2);
-						System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
-						if(matchedNode!=null){
-							System.out.println("find============");
-							Set<Node>newSetNodes = new HashSet<Node>();
-							int match = -1;
-							for(Node n: nodes){
-								if(n!=matchedNode && getNodePropertyArray(n, "outputs").length == getNodePropertyArray(matchedNode, "outputs").length ){
-									newSetNodes.add(n);
-								}
-							}
-							newSetNodes.add(node);
-							tempOutputs.add(newSetNodes);
-							Set<Node>updateSet = new HashSet<Node>();
-							int nodeIndex = -1;
-							for(Node n: nodes){
-								nodeIndex++;
-								if(nodeIndex<index2+1){
-									updateSet.add(n);
-								}
-							}
-							tempOutputs.add(updateSet);
-						}
-						else{
-							System.out.println("not find");
-						}
-
-
-					}
-				}
-				for(Set<Node> nds: allPossibleNeo4jOutputServiceNodes){
-					if(nds.size()>index2+1){
-						tempOutputs.remove(nds);
-					}
-				}
-
-				allPossibleNeo4jOutputServiceNodes = tempOutputs;
-			}
-		}
-		for(Set<Node> nodes: allPossibleNeo4jOutputServiceNodes){
-			System.out.println();
-
-			for(Node node: nodes){
-				System.out.print(node.getProperty("name")+"    ");
-			}
-			System.out.println();
-
-		}
+//		for(Set<Node> nodes: allPossibleNeo4jOutputServiceNodes){
+//			System.out.println();
+//
+//			for(Node node: nodes){
+//				System.out.print(node.getProperty("name")+"    ");
+//			}
+//			System.out.println();
+//
+//		}
+//		Set<Set<Node>>tempOutputs = new HashSet<Set<Node>>(allPossibleNeo4jOutputServiceNodes);
+//		int index2 = -1;
+//		for(Set<Node> nodes: allPossibleNeo4jOutputServiceNodes){
+//			int totalOutputs = 0;
+//			int i = -1;
+//			for(Node n: nodes){
+//				i++;
+//				List<String> outputs = Arrays.asList(getNodePropertyArray(n, "outputs"));
+//				check
+//				totalOutputs += outputs.size();
+//				if(totalOutputs==taskOutputs.size()){
+//					index2 = i;
+//				}
+//			}
+//			if(totalOutputs>=taskOutputs.size()){
+//				int j = -1;
+//				for(Node node: nodes){
+//					j++;
+//					if(j>index2){
+//						List<String> outputs = Arrays.asList(getNodePropertyArray(node, "outputs"));
+//						System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+//
+//						Node matchedNode = findMatchedOutputNode(outputs, nodes, taskOutputs, index2);
+//						System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+//
+//						if(matchedNode!=null){
+//							System.out.println("find============");
+//							Set<Node>newSetNodes = new HashSet<Node>();
+//							int match = -1;
+//							for(Node n: nodes){
+//								if(n!=matchedNode && getNodePropertyArray(n, "outputs").length == getNodePropertyArray(matchedNode, "outputs").length ){
+//									newSetNodes.add(n);
+//								}
+//							}
+//							newSetNodes.add(node);
+//							tempOutputs.add(newSetNodes);
+//							Set<Node>updateSet = new HashSet<Node>();
+//							int nodeIndex = -1;
+//							for(Node n: nodes){
+//								nodeIndex++;
+//								if(nodeIndex<index2+1){
+//									updateSet.add(n);
+//								}
+//							}
+//							tempOutputs.add(updateSet);
+//						}
+//						else{
+//							System.out.println("not find");
+//						}
+//
+//
+//					}
+//				}
+//				for(Set<Node> nds: allPossibleNeo4jOutputServiceNodes){
+//					if(nds.size()>index2+1){
+//						tempOutputs.remove(nds);
+//					}
+//				}
+//
+//				allPossibleNeo4jOutputServiceNodes = tempOutputs;
+//			}
+//		}
+		
 		t.close();
-		System.out.println("allPossibleNeo4jOutputServiceNodes:  "+allPossibleNeo4jOutputServiceNodes.size() +"     "+allPossibleNeo4jOutputServiceNodes);
-
-
+		List<List<Node>>allPossibleNeo4jOutputServiceNodesAsList = sortSet(allPossibleNeo4jOutputServiceNodes, "outputs");
 
 		Transaction transaction = graphDatabaseService.beginTx();
 		startNode.setProperty("outputs", taskInputs.toArray(new String[taskInputs.size()]));
 		endNode.setProperty("inputs", taskOutputs.toArray(new String[taskOutputs.size()]));
 		transaction.success();
 		transaction.close();
-		for(Set<Node> inputNodes: allPossibleNeo4jInputServiceNodes){
-			removeStartNodeAndEndNodeRel(startNode, endNode);
-			for(Set<Node> outputNodes: allPossibleNeo4jOutputServiceNodes){
+		for(List<Node> inputNodes: allPossibleNeo4jInputServiceNodesAsList){
+			for(List<Node> outputNodes: allPossibleNeo4jOutputServiceNodesAsList){
+				removeStartNodeAndEndNodeRel(startNode, endNode);
 				createRel(startNode, inputNodes);
 				createRel(endNode, outputNodes);
-				List<List<Node>> pathsBetweenNodes = findAllPath(startNode, endNode);
-				allPaths.add(pathsBetweenNodes);
+//				List<List<Node>> pathsBetweenNodes = findAllPath(startNode, endNode);
+//				allPaths.add(pathsBetweenNodes);
 			}	
 		}
 		System.out.println(allPaths.size()+"========");
-		int i = -1;
+		int id = -1;
 		List<List<List<Node>>>temp = new ArrayList<List<List<Node>>>(allPaths);
 		for(List<List<Node>> pathsBetweenNodes: allPaths){
-			i++;
+			id++;
 			removeUnrelatedPaths(pathsBetweenNodes);
+			
 			System.out.println(findNonFulfillNode);
 			if(findNonFulfillNode){
-				temp.remove(i);
+				System.out.println(temp.size());
+				temp.remove(id);
 			}
 		}
 		allPaths = temp;
-		System.out.println(allPaths.size()+"========");
 
 
 		//		for(Node input: neo4jInputServiceNodes){
@@ -660,6 +668,52 @@ public class Main {
 
 
 	}
+	private List<List<Node>> sortSet(Set<Set<Node>> allPossibleNeo4jServiceNodes, String identify) {
+		// TODO Auto-generated method stub
+		List<List<Node>>allPossibleNeo4jServiceNodesAsList = new ArrayList<List<Node>>();
+
+		for(Set<Node> nodes: allPossibleNeo4jServiceNodes){
+			List<Node> sNodes = new ArrayList<Node>();
+
+			for(Node node: nodes){
+				sNodes.add(node);
+			}
+			allPossibleNeo4jServiceNodesAsList.add(sNodes);
+		}
+		Map<Integer, List<Node>> toSortMap = new HashMap<Integer, List<Node>>();
+
+		Map<Integer, List<Node>> sortedMap = new HashMap<Integer, List<Node>>();
+		Map<Integer, Integer> forSortInt = new HashMap<Integer, Integer>();
+		int idx = -1;
+		for(List<Node> nodes:allPossibleNeo4jServiceNodesAsList ){
+			idx++;
+			forSortInt.put(idx, nodes.size());
+			toSortMap.put(idx, nodes);
+			
+		}
+		   Object[] a = forSortInt.entrySet().toArray();
+		    Arrays.sort(a, new Comparator<Object>() {
+		        public int compare(Object o1, Object o2) {
+		            return ((Map.Entry<Integer, Integer>) o1).getValue().compareTo(
+		            		((Map.Entry<Integer, Integer>) o2).getValue());
+		        }
+		    });
+//		    for (Object e : a) {
+//		        System.out.println(((Map.Entry<Integer, Integer>) e).getKey() + " : "
+//		                + ((Map.Entry<Integer, Integer>) e).getValue());
+//		    }		
+			Map<Integer, List<Node>> sorted = new HashMap<Integer, List<Node>>();
+			int i = -1;
+			for(Object e: a){
+				i++;
+				sortedMap.put(i, toSortMap.get(((Map.Entry<Integer, Integer>) e).getKey()));
+				allPossibleNeo4jServiceNodesAsList.set(i, toSortMap.get(((Map.Entry<Integer, Integer>) e).getKey()));
+			}
+		
+		System.out.println("allPossibleNeo4jServiceNodes "+ identify +":  "+allPossibleNeo4jServiceNodesAsList.size() +"     "+allPossibleNeo4jServiceNodesAsList);
+		return allPossibleNeo4jServiceNodesAsList;
+	}
+
 	private Node findMatchedOutputNode(List<String> outputs, Set<Node> nodes, Set<String>taskOutputs, int index) {
 		// TODO Auto-generated method stub
 		System.out.println("outputs");
@@ -897,26 +951,36 @@ public class Main {
 		}
 	}
 
-	private void createRel(Node node, Set<Node> nodes) {
+	private void createRel(Node node, List<Node> nodes) {
 		// TODO Auto-generated method stub
 		Transaction transaction = graphDatabaseService.beginTx();
 
+		
 
 		if(node.getProperty("name").equals("start")){
+			System.out.println(nodes.size());
+			for(Node n: nodes){
+				System.out.print(n.getProperty("name")+"   ");
+			}
+			System.out.println();
 			List<String>nodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
-			for(Node n: nodes){				
-				List<String>temp = new ArrayList<String>(nodeOutputs);
-				List<String>inputs = Arrays.asList(getNodePropertyArray(n, "inputs"));
+			for(Node n: nodes){			
+//				System.out.println(n.getProperty("name"));
+				
+				String[] tempToArray = getOutputs(node, n);
 
-				System.out.println();
-				temp.retainAll(inputs);
-				for(String s : temp){
-					System.out.print(s+ "  ");
-				}
-				String[] tempToArray = new String[temp.size()];
-				for(int i = 0; i<temp.size(); i++){
-					tempToArray[i] = temp.get(i);
-				}
+//				List<String>temp = new ArrayList<String>(nodeOutputs);
+//				List<String>inputs = Arrays.asList(getNodePropertyArray(n, "inputs"));
+//				
+//				System.out.println();
+//				temp.retainAll(inputs);
+//				for(String s : temp){
+//					System.out.print(s+ "  ");
+//				}
+//				String[] tempToArray = new String[temp.size()];
+//				for(int i = 0; i<temp.size(); i++){
+//					tempToArray[i] = temp.get(i);
+//				}
 				relation = node.createRelationshipTo(n, RelTypes.IN);
 				relation.setProperty("From", (String)node.getProperty("name"));
 				relation.setProperty("To", (String)n.getProperty("name"));
@@ -927,13 +991,14 @@ public class Main {
 		else if(node.getProperty("name").equals("end")){
 			List<String>nodeInputs = Arrays.asList(getNodePropertyArray(node,"inputs"));
 			for(Node n: nodes){
-				List<String>temp = new ArrayList<String>(nodeInputs);
-				List<String>outputs = Arrays.asList(getNodePropertyArray(n, "outputs"));
-				temp.retainAll(outputs);
-				String[] tempToArray = new String[temp.size()];
-				for(int i = 0; i<temp.size(); i++){
-					tempToArray[i] = temp.get(i);
-				}
+//				List<String>temp = new ArrayList<String>(nodeInputs);
+//				List<String>outputs = Arrays.asList(getNodePropertyArray(n, "outputs"));
+//				temp.retainAll(outputs);
+//				String[] tempToArray = new String[temp.size()];
+//				for(int i = 0; i<temp.size(); i++){
+//					tempToArray[i] = temp.get(i);
+//				}
+				String[] tempToArray = getOutputs(n, node);
 				relation = n.createRelationshipTo(node, RelTypes.IN);
 				relation.setProperty("From", (String)n.getProperty("name"));
 				relation.setProperty("To", (String)node.getProperty("name"));
@@ -992,7 +1057,10 @@ public class Main {
 			service.setProperty("id", (long)serviceNodes.size()+1);
 			service.setProperty("outputs", temp);
 			service.setProperty("priousNodeNames", temp);
+			
 		}
+		service.setProperty("visited", false);
+
 		return service;
 	}
 
@@ -1003,19 +1071,7 @@ public class Main {
 		for(String input: taskInputs){
 			TaxonomyNode tNode = taxonomyMap.get(input);
 			Set<String>tNodeParents = new HashSet<String>();
-			for(String t: tNode.parentsString){
-				TaxonomyNode taxNode = taxonomyMap.get(t);
-				if(!taxNode.isInstance){
-					Set<TaxonomyNode> taxNodeInstanceChildren = taxNode.childrenInstance;
-					for(TaxonomyNode childInstance: taxNodeInstanceChildren){
-						tNodeParents.add(childInstance.value);
-					}
-				}
-				else{
-					tNodeParents.add(t);
-				}
-
-			}
+			tNodeParents = getTNodeParentsString(tNode);
 			taskInputsAndParents.put(tNode.value ,tNodeParents);
 		}
 		for(ServiceNode sNode: serviceNodes){
@@ -1050,6 +1106,25 @@ public class Main {
 			allPossibleNeo4jInputServiceNodes.add(neo4jInputServiceNodes);
 		}
 
+	}
+
+	private Set<String> getTNodeParentsString(TaxonomyNode tNode) {
+		// TODO Auto-generated method stub
+		Set<String>tNodeParents = new HashSet<String>();
+		for(String t: tNode.parentsString){
+			TaxonomyNode taxNode = taxonomyMap.get(t);
+			if(!taxNode.isInstance){
+				Set<TaxonomyNode> taxNodeInstanceChildren = taxNode.childrenInstance;
+				for(TaxonomyNode childInstance: taxNodeInstanceChildren){
+					tNodeParents.add(childInstance.value);
+				}
+			}
+			else{
+				tNodeParents.add(t);
+			}
+
+		}
+		return tNodeParents;
 	}
 
 	private boolean findMatchInput(String sNodeInput, Set<String> matchedNodes, Map<String,Set<String>> taskInputsAndParents) {
@@ -1366,6 +1441,7 @@ public class Main {
 				service.setProperty("inputServices", value.getInputsServiceArray());
 				service.setProperty("outputServices", value.getOutputsServiceArray());
 				service.setProperty("priousNodeNames", priousNodeNames);
+				service.setProperty("visited", false);
 
 				neo4jServiceNodes = increaseNodeArray(neo4jServiceNodes);
 				neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
@@ -2142,8 +2218,9 @@ public class Main {
 
 		Transaction transaction = graphDatabaseService.beginTx();
 
-		//		System.out.println(startNode.getProperty("id")+"  -   "+endNode.getProperty("id"));
+		System.out.println(startNode.getProperty("id")+"  -   "+endNode.getProperty("id"));
 		long startNodeId = (long) startNode.getProperty("id");
+		long endNodeId = (long) endNode.getProperty("id");
 
 
 		Iterable<Node> ns = graphDatabaseService.getAllNodes();
@@ -2151,8 +2228,19 @@ public class Main {
 			System.out.print("<"+n.getProperty("name")+"     "+n.getProperty("id")+">   ||||||  ");
 		}
 		System.out.println();
-		long endNodeId = (long) endNode.getProperty("id");
 		String output = "";
+//		Traversal.description().uniqueness( Uniqueness.RELATIONSHIP_PATH ).breadthFirst().relationships(RelTypes.IN , Direction.OUTGOING ).evaluator( new Evaluator()
+//		{
+//		    @Override
+//		    public Evaluation evaluate( Path path )
+//		    {
+//		    	
+//		    	for(Node n: path.nodes()){
+//		    		n.setProperty("visited", true);
+//		    	}
+//		        return Evaluation.EXCLUDE_AND_PRUNE;
+//		    }
+//		} ).traverse( startNode );
 		TraversalDescription friendsTraversal = graphDatabaseService.traversalDescription()
 				.depthFirst()
 				.relationships( RelTypes.IN ,Direction.OUTGOING)
@@ -2161,10 +2249,34 @@ public class Main {
 				.uniqueness( Uniqueness.RELATIONSHIP_PATH );
 		List<List<Node>> p = new ArrayList<List<Node>>();
 		for ( Path path : friendsTraversal
-				.evaluator( Evaluators.toDepth( 100 ) )
+				.evaluator( Evaluators.toDepth( 100) )
 				.evaluator(Evaluators.returnWhereEndNodeIs(graphDatabaseService.getNodeById(endNodeId)))
+//				.evaluator(new Evaluator(){
+//
+//					@Override
+//					public Evaluation evaluate(Path path) {
+//						// TODO Auto-generated method stub
+//						boolean  notVisited = false;
+//						for(Node n: path.nodes()){
+//				    		if(!(Boolean)n.getProperty("visited")){
+//				    			notVisited = true;
+//				    		}
+//				    	}
+//						if(notVisited){
+//							for(Node n: path.nodes()){
+//					    		n.setProperty("visited", true);
+//					    	}
+//					        return Evaluation.EXCLUDE_AND_CONTINUE; 
+//						}
+//						
+//				    	
+//				        return Evaluation.EXCLUDE_AND_CONTINUE; 
+//				    }
+//					
+//				})
 				.traverse( startNode ) )
 		{
+			System.out.println("For loop");
 			Set<Node> sNodes = new HashSet<Node>();
 			List<Node>nodes = new ArrayList<Node>();
 			int i = -1;
@@ -2172,8 +2284,12 @@ public class Main {
 				i++;
 				nodes.add(node);
 				nodes.set(i, node);
+//				System.out.println("node: "+ node.getProperty("name"));
+
 			}
 			for(int j = nodes.size()-1; j>0; j--){
+//				System.out.println("j: "+ j);
+
 				String priousNodeName = (String) nodes.get(j-1).getProperty("name");
 				String[] priousNodeNames = getNodePropertyArray(nodes.get(j),"priousNodeNames");
 				//TODO: both input as same value serv3 node 4 and 7 have same output
@@ -2191,9 +2307,13 @@ public class Main {
 			sNodesToList.addAll(sNodes);
 			output += path + "\n";
 			p.add(sNodesToList);
+			System.out.println(p.size());
+
 		}
+		System.out.println(output);
 		//		System.out.println("p size: "+p.size());
 		System.out.println(output);
+
 		transaction.success();
 		transaction.finish();
 		transaction.close();

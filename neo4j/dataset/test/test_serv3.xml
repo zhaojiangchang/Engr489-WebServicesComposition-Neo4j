@@ -20,6 +20,7 @@
 		<outputs>	
 			<instance name="K_inst" />
 			<instance name="L_inst" />
+						<instance name="C_inst" />
 		</outputs>
 	</service>
 	<service name="3" Res="700" Ava="0.4" Suc="0.6" Rel="0.4"
