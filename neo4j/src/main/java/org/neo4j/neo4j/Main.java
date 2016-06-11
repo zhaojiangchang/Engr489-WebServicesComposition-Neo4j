@@ -3,6 +3,9 @@ package org.neo4j.neo4j;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 
@@ -83,6 +87,10 @@ public class Main {
 	public Set<String> taskOutputs;
 	public static Node startNode;
 	public static Node endNode;
+	public static Node subStartNode;
+	public static Node subEndNode;
+	public Map<String,Node>subGraphNodesMap = new HashMap<String,Node>();
+	public Set<Node>subGraphNodes = new HashSet<Node>();
 	public Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
 	public static Set<TaxonomyNode> children;
 	public static Set<TaxonomyNode> parents;
@@ -94,6 +102,8 @@ public class Main {
 	public static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private static final String Neo4j_testServicesDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/test_services";
 	private static final String Neo4j_ServicesDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/services";
+	private static final String Neo4j_subDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/sub_graph";
+
 	//	private static final String Neo4j_TaxonomyDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/taxonomy";
 
 	public final double minAvailability = 0.0;
@@ -124,6 +134,8 @@ public class Main {
 	Iterable<Relationship> relations;
 
 	static GraphDatabaseService graphDatabaseService;
+	static GraphDatabaseService subGraphDatabaseService;
+
 	public static IndexManager index = null;
 	public static Index<Node> services = null;
 	//	GraphDatabaseService graphDatabaseTaxonomy;
@@ -411,8 +423,12 @@ public class Main {
 	}
 	private String[] getOutputs(Node node, Node sNode) {
 		// TODO Auto-generated method stub
+		Transaction transaction = graphDatabaseService.beginTx();
 		List<String>snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
+		transaction.success();
+		transaction.finish();
+		transaction.close();
 		List<String>snodeOutputsAllParents = new ArrayList<String>();
 		for(String output: snodeOutputs){
 			TaxonomyNode tNode = taxonomyMap.get(output);
@@ -638,9 +654,9 @@ public class Main {
 			outputs[i] = s;
 		}
 		endNode.setProperty("inputServices", outputs);
+		
 		transaction.success();
 		transaction.close();
-		
 //		Set<Node> inputsNodes = new HashSet<Node>();
 //		for(List<Node> inputNodes: allPossibleNeo4jInputServiceNodesAsList){
 //			inputsNodes.addAll(inputNodes);
@@ -652,8 +668,9 @@ public class Main {
 		createRel(startNode);
 		createRel(endNode);
 		//		List<List<Node>> pathsBetweenNodes = findAllPath(startNode, endNode);
-		Set<Node> releatedNodes = findAllReleatedNodes();
-		removeNoneFulFillNodes(releatedNodes);
+		Set<Node> releatedNodes = new HashSet<Node>();
+		findAllReleatedNodes(releatedNodes, false);
+		createSubGraphDatabase(releatedNodes);
 		
 //		for(List<Node> inputNodes: allPossibleNeo4jInputServiceNodesAsList){
 //			for(List<Node> outputNodes: allPossibleNeo4jOutputServiceNodesAsList){
@@ -723,47 +740,259 @@ public class Main {
 		//		System.out.println("Path: "+ path);
 		//		System.out.println("min weight: "+ minWeight);
 	}
-	private Set<Node> findAllReleatedNodes() {
+	private void createSubGraphDatabase(Set<Node> releatedNodes) {
 		// TODO Auto-generated method stub
-		Set<Node> releatedNodes = new HashSet<Node>();
-		for(Entry<String, Node>entry: neo4jServNodes.entrySet()){
-			Node sNode = entry.getValue();
+		
+
+			try {
+				FileUtils.deleteRecursively(new File(Neo4j_subDBPath));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			subGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_subDBPath);
+			Transaction transaction = subGraphDatabaseService.beginTx();
+			try{
+				
+				
+				for(Node sNode: releatedNodes) {
+					String[] inputServices = getInputOutputServicesForSubGraph(sNode, releatedNodes, "inputServices");
+					String[] outputServices = getInputOutputServicesForSubGraph(sNode, releatedNodes,"outputServices");
+					String[] priousNodeNames = getInputOutputServicesForSubGraph(sNode, releatedNodes,"priousNodeNames");
+					if(inputServices==null){
+						inputServices = new String[0];
+					}
+					if(outputServices==null){
+						outputServices = new String[0];
+					}
+					if(priousNodeNames==null){
+						priousNodeNames = new String[0];
+					}
+
+					
+					
+					Node service = subGraphDatabaseService.createNode();
+					System.out.println(service);
+					Transaction tx = graphDatabaseService.beginTx();
+					Label nodeLable = DynamicLabel.label((String) sNode.getProperty("name"));
+					service.addLabel(nodeLable);
+					service.setProperty("name", (String) sNode.getProperty("name"));
+					service.setProperty("id", service.getId());
+					service.setProperty("qos", 0);
+					service.setProperty("weight", 0);
+					service.setProperty("inputs", getNodePropertyArray(sNode,"inputs"));
+					service.setProperty("outputs", getNodePropertyArray(sNode,"outputs"));
+					service.setProperty("inputServices", inputServices);
+					service.setProperty("outputServices", outputServices);
+					service.setProperty("priousNodeNames",priousNodeNames);
+					service.setProperty("visited", false);
+					subGraphNodes.add(service);
+					subGraphNodesMap.put((String) sNode.getProperty("name"), service);
+					tx.finish();
+					tx.close();
+				}	
+				for(Node sNode: subGraphNodes){
+//					double sNodeWeight = (double) sNode.getProperty("weight");
+					String[] inputs = getNodePropertyArray(sNode, "inputServices");
+//					List<Node>inputsServicesNodes = new ArrayList<Node>();
+					if(inputs.length>0){
+						for(String s: inputs){
+							Node inputsServicesNode = subGraphNodesMap.get(s);
+							String[] tempToArray = getOutputs(inputsServicesNode, sNode);
+							relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
+							relation.setProperty("From", s);
+							relation.setProperty("To", (String)sNode.getProperty("name"));
+							relation.setProperty("outputs", tempToArray);
+							relation.setProperty("Direction", "incoming");    
+						}
+					}	
+				if(sNode.getProperty("name").equals("end")){
+					subEndNode = sNode;
+				}
+				if(sNode.getProperty("name").equals("start")){
+					subStartNode = sNode;
+					String[] outputs = getNodePropertyArray(sNode, "outputServices");
+//					List<Node>inputsServicesNodes = new ArrayList<Node>();
+					if(outputs.length>0){
+						for(String s: outputs){
+							Node outputsServicesNode = subGraphNodesMap.get(s);
+							String[] tempToArray = getOutputs(sNode, outputsServicesNode);
+							relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
+							relation.setProperty("From", (String)sNode.getProperty("name"));
+							relation.setProperty("To", s);
+							relation.setProperty("outputs", tempToArray);
+							relation.setProperty("Direction", "incoming");    
+						}
+					}					
+				}
+				}
+				
+				
+				transaction.success();
+			}finally{
+				transaction.finish();
+				transaction.close();
+			}
+			findComposition();
+		
+	}
+
+	private void findComposition() {
+		// TODO Auto-generated method stub
+		Set<Node>result = new HashSet<Node>();
+		result.add(subEndNode);
+		compositon(subEndNode, result);
+		
+	}
+
+	private void compositon(Node subEndNode, Set<Node> result) {
+		// TODO Auto-generated method stub
+		Transaction tx = subGraphDatabaseService.beginTx();
+		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
+		List<String>relOutputs = new ArrayList<String>();
+		for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
+			List<String> temp = Arrays.asList(getNodeRelationshipPropertyArray(r, "outputs")); 
+			List<String> temp2 = new ArrayList<String>(temp);
+			temp2.retainAll(relOutputs);
+			if(nodeInputs.size()!=relOutputs.size() && nodeInputs.size()>=relOutputs.size()+temp.size() && temp2.size()==0){
+				relOutputs.addAll(temp);
+				Node node = subGraphNodesMap.get(r.getProperty("From"));
+				System.out.println(node.getProperty("name"));
+				result.add(node);
+				if(!node.getProperty("name").equals("start") && node!=subEndNode){
+					compositon(node, result);
+				}
+			}		
+		}
+		tx.success();
+		tx.close();
+	}
+
+	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
+		// TODO Auto-generated method stub
+		Transaction tx = graphDatabaseService.beginTx();
+		List<String>releatedNodesNames = new ArrayList<String>();
+		for(Node n: releatedNodes){
+			releatedNodesNames.add((String)n.getProperty("name"));
+		}
+	
+		String [] toReturn = null;
+		if(inputOrOutput.equals("inputServices")){
+			List<String>inputServicesList = Arrays.asList(getNodePropertyArray(sNode,"inputServices"));
+			if(inputServicesList.size()>0){
+				List<String>tempInputServices = new ArrayList<String>(inputServicesList);
+				tempInputServices.retainAll(releatedNodesNames);
+				String[] inputServices = new String[tempInputServices.size()];
+				for(int i = 0; i<tempInputServices.size(); i++){
+					inputServices[i] = tempInputServices.get(i);
+				}
+				toReturn = inputServices;
+			}
 			
-			if(hasRel(startNode, sNode) && hasRel(sNode, endNode)){
-				releatedNodes.add(sNode);
+		}
+		else if(inputOrOutput.equals("outputServices")){
+			List<String>outputServicesList = Arrays.asList(getNodePropertyArray(sNode,"outputServices"));
+			if(outputServicesList.size()>0){
+				List<String>tempOutputServices = new ArrayList<String>(outputServicesList);
+				tempOutputServices.retainAll(releatedNodesNames);
+				String[] outputServices = new String[tempOutputServices.size()];
+				for(int i = 0; i<tempOutputServices.size(); i++){
+					outputServices[i] = tempOutputServices.get(i);
+				}
+				toReturn = outputServices;
 			}
 		}
-		System.out.println(releatedNodes.size());
-		 
-		return releatedNodes;
+		else if(inputOrOutput.equals("priousNodeNames")){
+			List<String>priousNodeNames = Arrays.asList(getNodePropertyArray(sNode,"priousNodeNames"));
+			if(priousNodeNames.size()>0){
+				List<String>tempPriousNodeNames = new ArrayList<String>(priousNodeNames);
+				tempPriousNodeNames.retainAll(releatedNodesNames);
+				String[] priousNodes = new String[tempPriousNodeNames.size()];
+				for(int i = 0; i<tempPriousNodeNames.size(); i++){
+					priousNodes[i] = tempPriousNodeNames.get(i);
+				}
+				toReturn = priousNodes;
+			}
+		}
+		tx.success();
+		tx.close();
+		return toReturn;
 	}
-	private boolean hasRel(Node firstNode, Node secondNode) {
+
+	private void findAllReleatedNodes(Set<Node> releatedNodes, boolean b) {
+		// TODO Auto-generated method stub
+		if(!b){
+			for(Entry<String, Node>entry: neo4jServNodes.entrySet()){
+				Node sNode = entry.getValue();
+				
+				if(hasRel(startNode, sNode, releatedNodes) && hasRel(sNode, endNode, releatedNodes)){
+					releatedNodes.add(sNode);
+				}
+			}
+			System.out.println("r:  "+releatedNodes.size());
+			removeNoneFulFillNodes(releatedNodes);		
+		}else{
+			Set<Node>temp = new HashSet<Node>(releatedNodes);
+			for(Node sNode: temp){				
+				if(!hasRel(startNode, sNode, temp) || !hasRel(sNode, endNode, temp)){
+					releatedNodes.remove(sNode);
+					System.out.println("rrrrrr:  "+releatedNodes.size());
+
+				}
+			}
+			removeNoneFulFillNodes(releatedNodes);		
+		}
+		
+	}
+	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
 		// TODO Auto-generated method stub
 		Transaction transaction = graphDatabaseService.beginTx();
-		PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
-		
-		if(finder.findSinglePath(firstNode, secondNode)!=null){
-			transaction.finish();
-			transaction.close();
-			return true;
+		if(releatedNodes==null){
+			PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
+			
+			if(finder.findSinglePath(firstNode, secondNode)!=null){
+				transaction.finish();
+				transaction.close();
+				return true;
+			}
+				transaction.finish();
+				transaction.close();
+				return false;
 		}
-			transaction.finish();
-			transaction.close();
-			return false;
+		else{
+			PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
+			
+			if(finder.findSinglePath(firstNode, secondNode)!=null){
+				transaction.finish();
+				transaction.close();
+				return true;
+			}
+				transaction.finish();
+				transaction.close();
+				return false;
+		}
+	
 		
 	}
 	
 	private void removeNoneFulFillNodes(Set<Node> releatedNodes) {
 		// TODO Auto-generated method stub
-		System.out.println(releatedNodes.size());
+		Transaction transaction = graphDatabaseService.beginTx();
 		Set<Node>copied = new HashSet<Node>(releatedNodes);
+		boolean removed = false;
 		for(Node sNode: copied){
-			if(!fulfill(sNode, copied)){
+			if(!fulfill(sNode, copied) && !sNode.getProperty("name").equals("end")&& !sNode.getProperty("name").equals("start")){
+				removed = true;
 				releatedNodes.remove(sNode);
+				System.out.println("========:  "+releatedNodes.size());
 			}
 			
 		}
-		System.out.println(releatedNodes.size());
+		if(removed){
+			findAllReleatedNodes(releatedNodes, true);
+		}
+		transaction.finish();
+		transaction.close();
 	}
 	private boolean fulfill(Node sNode, Set<Node> releatedNodes) {
 		// TODO Auto-generated method stub
@@ -1250,6 +1479,9 @@ public class Main {
 			service.setProperty("priousNodeNames", temp);
 			
 		}
+		service.setProperty("inputServices", temp);
+		service.setProperty("outputServices", temp);
+
 		service.setProperty("visited", false);
 
 		return service;
@@ -1623,7 +1855,7 @@ public class Main {
 				Label nodeLable = DynamicLabel.label(key);
 				service.addLabel(nodeLable);
 				service.setProperty("name", key);
-				service.setProperty("id", value.index+1);
+				service.setProperty("id", service.getId());
 				services.add(service, "name", service.getProperty("name"));
 				service.setProperty("qos", value.getQos());
 				service.setProperty("weight", weight);
@@ -1873,11 +2105,9 @@ public class Main {
 			while (!queue.isEmpty()) {
 
 				TaxonomyNode current = queue.poll();
-				System.out.println(current.value);
 				if(!current.value.equals("")){
 					seenConceptsOutput.add( current );
 					current.servicesWithOutput.add(s);
-					System.out.println("outputs: "+s.getName());
 					for (TaxonomyNode parent : current.parents) {
 						current.parents_notGrandparents.add(parent);
 						if(!parent.value.equals("")){
