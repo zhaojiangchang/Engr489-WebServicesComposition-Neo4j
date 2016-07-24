@@ -154,5 +154,44 @@
 				</concept>
 			</concept>
 		</concept>
+		<concept name="a">
+			<instance name="a_inst" />
+			<concept name="b">
+				<instance name="b_inst" />
+				<concept name="c">
+					<instance name="c_inst" />
+					<concept name="d">
+						<instance name="d_inst" />
+					</concept>
+					<concept name="f">
+						<instance name="f_inst" />
+					</concept>
+				</concept>
+			</concept>
+			<concept name="g">
+				<instance name="g_inst" />
+				<concept name="h">
+					<instance name="h_inst" />
+				</concept>
+			</concept>
+			<concept name="i">
+				<instance name="i_inst" />
+				<concept name="k">
+					<instance name="k_inst" />
+				</concept>
+				<concept name="l">
+					<instance name="l_inst" />
+				</concept>
+			</concept>
+			<concept name="m">
+				<instance name="m_inst" />
+				<concept name="q">
+					<instance name="q_inst" />
+				</concept>
+				<concept name="z">
+					<instance name="z_inst" />
+				</concept>
+			</concept>
+		</concept>
 	</concept>
 </taxonomy>

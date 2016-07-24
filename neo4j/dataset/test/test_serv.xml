@@ -174,15 +174,49 @@
 			<instance name="shiraz_inst" />
 		</outputs>
 	</service>
-	<service name="serv9b" Res="500" Ava="0.5" Suc="0.5" Rel="0.5"
-		Lat="0" Pri="2">
+	<service name="serv11b" Res="900" Ava="0.5" Suc="0.6" Rel="0.9"
+		Lat="0" Pri="4">
 		<inputs>
-			<instance name="animal_inst" />
-			<instance name="beverage_inst" />
+			<instance name="a_inst" />
 		</inputs>
 		<outputs>
-			<instance name="newt_inst" />
-			<instance name="alligator_inst" />
+			<instance name="b_inst" />
+		</outputs>
+	</service>
+	<service name="serv12b" Res="900" Ava="0.5" Suc="0.6" Rel="0.9"
+		Lat="0" Pri="4">
+		<inputs>
+			<instance name="f_inst" />
+		</inputs>
+		<outputs>
+			<instance name="z_inst" />
+		</outputs>
+	</service>
+	<service name="serv13b" Res="900" Ava="0.5" Suc="0.6" Rel="0.9"
+		Lat="0" Pri="4">
+		<inputs>
+			<instance name="m_inst" />
+		</inputs>
+		<outputs>
+			<instance name="l_inst" />
+		</outputs>
+	</service>
+	<service name="serv14b" Res="900" Ava="0.5" Suc="0.6" Rel="0.9"
+		Lat="0" Pri="4">
+		<inputs>
+			<instance name="c_inst" />
+		</inputs>
+		<outputs>
+			<instance name="d_inst" />
+		</outputs>
+	</service>
+	<service name="serv15b" Res="900" Ava="0.5" Suc="0.6" Rel="0.9"
+		Lat="0" Pri="4">
+		<inputs>
+			<instance name="z_inst" />
+		</inputs>
+		<outputs>
+			<instance name="q_inst" />
 		</outputs>
 	</service>
 </services>
