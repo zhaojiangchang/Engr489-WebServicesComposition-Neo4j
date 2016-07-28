@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taxonomy>
+	<concept name="A">
+		<instance name="A_inst" />
+		<concept name="B">
+			<instance name="B_inst" />
+			<concept name="C">
+				<instance name="C_inst" />
+				<concept name="D">
+					<instance name="D_inst" />
+				</concept>
+			</concept>
+			<concept name="E">
+				<instance name="E_inst" />
+			</concept>
+		</concept>
+		<concept name="F">
+			<instance name="F_inst" />
+			<concept name="G">
+				<instance name="G_inst" ></instance>
+			</concept>
+			<concept name="H">
+				<instance name="H_inst" />
+			</concept>
+		</concept>
+	</concept>
+</taxonomy>

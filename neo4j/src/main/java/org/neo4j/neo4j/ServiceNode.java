@@ -9,16 +9,17 @@ public class ServiceNode implements Cloneable {
 	private List<Edge> incomingEdgeList = new ArrayList<Edge>();
 	private List<Edge> outgoingEdgeList = new ArrayList<Edge>();
 	private List<TaxonomyNode> taxonomyOutputs = new ArrayList<TaxonomyNode>();
+	private List<TaxonomyNode> taxonomyInputs = new ArrayList<TaxonomyNode>();
 	private String name;
 	private double[] qos;
-	private Set<String>inputs;
-	private Set<String>outputs;
+	public Set<String>inputs;
+	public Set<String>outputs;
 	private boolean consider = true;
 	public Set<String>outputsServicesToThisService;
 	public Set<String>inputsServicesToThisService;
-	public int index;
+	public long index;
 
-	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs, int index) {
+	public ServiceNode(String name, double[] qos, Set<String> inputs, Set<String> outputs, long index) {
 		this.index = index;
 		this.name = name;
 		this.qos = qos;
@@ -41,7 +42,7 @@ public class ServiceNode implements Cloneable {
 		return qos;
 	}
 
-	public String[] getInputsArray() {
+	public String[] getInputsServiceArray() {
 		String[] temp = new String[inputsServicesToThisService.size()];
 		int index = -1;
 		for(String s: inputsServicesToThisService){
@@ -53,8 +54,26 @@ public class ServiceNode implements Cloneable {
 	public Set<String> getInputs(){
 		return inputs;
 	}
-
-	public String[] getOutputsArray() {
+	
+	public String[] getInputsArray(){
+		String[] temp = new String[inputs.size()];
+		int index = -1;
+		for(String s: inputs){
+			index++;
+			temp[index] = s;
+		}
+		return temp;
+	}
+	public String[] getOutputsArray(){
+		String[] temp = new String[outputs.size()];
+		int index = -1;
+		for(String s: outputs){
+			index++;
+			temp[index] = s;
+		}
+		return temp;
+	}
+	public String[] getOutputsServiceArray() {
 		String[] temp = new String[outputsServicesToThisService.size()];
 		int index = -1;
 		for(String s: outputsServicesToThisService){
@@ -93,7 +112,9 @@ public class ServiceNode implements Cloneable {
 	public List<TaxonomyNode> getTaxonomyOutputs() {
 		return taxonomyOutputs;
 	}
-
+	public List<TaxonomyNode> getTaxonomyInputs() {
+		return taxonomyInputs;
+	}
 	public boolean isConsidered() {
 		return consider;
 	}
