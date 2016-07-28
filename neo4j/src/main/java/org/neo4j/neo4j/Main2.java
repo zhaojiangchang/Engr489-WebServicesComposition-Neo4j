@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,7 +27,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
-
+import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphdb.Direction;
@@ -38,16 +40,20 @@ import org.neo4j.graphdb.Path;
 //import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
+import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.io.fs.FileUtils;
 import org.neo4j.kernel.Traversal;
 
 
 @SuppressWarnings("deprecation")
-public class Main2 {
+//public class Main2 implements Runnable{
+public class Main2{
+
 	// Constants with of order of QoS attributes
 	public static final int TIME = 0;
 	public static final int COST = 1;
@@ -74,18 +80,17 @@ public class Main2 {
 	public Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
 	public static Set<TaxonomyNode> children;
 	public static Set<TaxonomyNode> parents;
-	private static String serviceFileName = "dataset/test/test_serv.xml";
-	private static String taxonomyFileName = "dataset/test/test_taxonomy.xml";
-	private static String taskFileName = "dataset/test/test_problem.xml";
+	private static String serviceFileName = null;
+	private static String taxonomyFileName = null;
+	private static String taskFileName = null;
 
 	public static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	public static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
-	private static final String Neo4j_testServicesDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/test_services";
-	private static final String Neo4j_ServicesDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/services";
-	private static final String Neo4j_subDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/sub_graph";
-	private static final String Neo4j_tempDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/temp_graph";
-	private static final String Neo4j_tempDBDirPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/";
+	private static final String Neo4j_testServicesDBPath = "database/test_services";
+	private static final String Neo4j_ServicesDBPath = "database/";
+	private static final String Neo4j_tempDBPath = "database/temp_graph";
 	//	private static final String Neo4j_TaxonomyDBPath = "/Users/JackyChang/Engr489-WebServicesComposition-Neo4j/neo4j/database/taxonomy";
+	private boolean running = true;  
 
 	public final double minAvailability = 0.0;
 	public double maxAvailability = -1.0;
@@ -120,6 +125,8 @@ public class Main2 {
 
 	public static IndexManager index = null;
 	public static Index<Node> services = null;
+	public static IndexManager tempIndex = null;
+	public static Index<Node> tempServices = null;
 	//	GraphDatabaseService graphDatabaseTaxonomy;
 	private static enum RelTypes implements RelationshipType{
 		PARENT, CHILD, OUTPUT, INPUT, TO, IN, OUT
@@ -128,22 +135,33 @@ public class Main2 {
 	public static Map<String, Integer> nodeCount = new HashMap<String, Integer>();
 	public static Map<String, Integer> edgeCount = new HashMap<String, Integer>();
 
-	private static boolean runTestFiles = true;
+	private static boolean runTestFiles = false;
+	private static String databasename = "wsc2008dataset01";
+	private static String dataset = "dataset/wsc2008/Set01MetaData/";
+	private static String testDataset = "dataset/test/";
+	private final int compositionSize = 12;
 
 	public static void main( String[] args ) throws IOException{
 		Main2 neo4jwsc = new Main2();
+		//		Thread t = new Thread(neo4jwsc,"Neo4jThread");  
+		//		t.start();
 		//		neo4jwsc.index = null;
 		neo4jwsc.servicesWithInputs= null;
 		//		neo4jwsc.graphDatabaseService = null;
-
-		if(runTestFiles){
-			serviceFileName = "dataset/wsc2008/Set08MetaData/services.xml";
-			taxonomyFileName = "dataset/wsc2008/Set08MetaData/taxonomy.xml";
-			taskFileName = "dataset/wsc2008/Set08MetaData/problem.xml";
+		long startTime = 0;
+		long endTime = 0;
+		if(!runTestFiles){
+			serviceFileName = dataset+"services.xml";
+			taxonomyFileName = dataset+"taxonomy.xml";
+			taskFileName = dataset+"problem.xml";
+		}else{
+			serviceFileName = testDataset+"test_serv.xml";
+			taxonomyFileName = testDataset+"test_taxonomy.xml";
+			taskFileName = testDataset+"test_problem.xml";
 		}
-		long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		neo4jwsc.parseWSCTaxonomyFile(taxonomyFileName);
-		long endTime = System.currentTimeMillis();
+		endTime = System.currentTimeMillis();
 		records.put("parse Taxonomy file", endTime - startTime);
 		System.out.println("parse Taxonomy file Total execution time: " + (endTime - startTime) );
 
@@ -172,16 +190,62 @@ public class Main2 {
 		endTime = System.currentTimeMillis();
 		records.put("populate Taxonomy Tree", endTime - startTime);
 		System.out.println("populate Taxonomy Tree Total execution time: " + (endTime - startTime) );
-		if(runTestFiles ){
+		if(!runTestFiles){
+			boolean dbExist = false;
+			File f = new File(Neo4j_ServicesDBPath+""+databasename+"/index");
+			if (f.exists() && f.isDirectory()) {
+				dbExist = true;
+			}else{
+				dbExist = false;   
+			}
+			if(dbExist){
+				graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath+""+databasename);
+				//				registerShutdownHook();  
+				Transaction transaction = graphDatabaseService.beginTx();
+				index = graphDatabaseService.index();
+				services = index.forNodes( "identifiers" );
+				transaction.success();
+				transaction.close();
+				signNodesToField(graphDatabaseService);
+			}else{
+				graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath+""+databasename);
+
+				startTime = 0;
+				endTime = 0;
+				startTime = System.currentTimeMillis();
+				neo4jwsc.createServicesDatabase(serviceMap, Neo4j_ServicesDBPath+""+databasename);
+				System.out.println(serviceMap.size());
+				endTime = System.currentTimeMillis();
+				records.put("createServicesDatabase", endTime - startTime);
+				System.out.println("createServicesDatabase Total execution time: " + (endTime - startTime) );
+
+				startTime = 0;
+				endTime = 0;
+				startTime = System.currentTimeMillis();
+				System.out.println("add relationship");
+				neo4jwsc.addServiceNodeRelationShip();
+				System.out.println("done");
+				endTime = System.currentTimeMillis();
+				records.put("addServiceNodeRelationShip", endTime - startTime);
+				System.out.println("addServiceNodeRelationShip Total execution time: " + (endTime - startTime) );
+				startTime = 0;
+				endTime = 0;
+			}
+			neo4jwsc.shutdown(graphDatabaseService);
+			neo4jwsc.runTask(Neo4j_ServicesDBPath+""+databasename);
+		}
+		else{
 			try {
 				FileUtils.deleteRecursively(new File(Neo4j_testServicesDBPath));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_testServicesDBPath);
+
 			startTime = 0;
 			endTime = 0;
 			startTime = System.currentTimeMillis();
-			neo4jwsc.createServicesDatabase(serviceMap);
+			neo4jwsc.createServicesDatabase(serviceMap,Neo4j_testServicesDBPath);
 			System.out.println(serviceMap.size());
 			endTime = System.currentTimeMillis();
 			records.put("createServicesDatabase", endTime - startTime);
@@ -196,49 +260,24 @@ public class Main2 {
 			System.out.println("addServiceNodeRelationShip Total execution time: " + (endTime - startTime) );
 			startTime = 0;
 			endTime = 0;
-
+			neo4jwsc.shutdown(graphDatabaseService);
+			neo4jwsc.runTask(Neo4j_testServicesDBPath);			
 		}
-		else{
-			try {
-				FileUtils.deleteRecursively(new File(Neo4j_testServicesDBPath));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_ServicesDBPath);
-			
-			Transaction transaction = graphDatabaseService.beginTx();
-			index = graphDatabaseService.index();
-			services = index.forNodes( "identifiers" );
-			transaction.success();
-			transaction.close();
-			signNodesToField();
-		}
-		neo4jwsc.runTask();
 		FileWriter fw = new FileWriter("timeRecord.txt");
 		for(Entry<String, Long> entry : records.entrySet()){
 			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
 		}
 		fw.close();
-		neo4jwsc.shutdown();
-	}
+		//		neo4jwsc.shutdown(graphDatabaseService);
+		//		neo4jwsc.setRunning(false);  
 
-	private static void signNodesToField() {
+	}
+	private static void signNodesToField(GraphDatabaseService graphDatabaseService) {
 		Transaction transaction = graphDatabaseService.beginTx();
 		Iterable<Node> nodes = graphDatabaseService.getAllNodes();
+		neo4jServNodes.clear();
 		for(Node n: nodes){
 			neo4jServNodes.put((String)n.getProperty("name"), n);
-			if(n.getProperty("name").equals("start")){
-				startNode = n;
-			}
-			if(n.getProperty("name").equals("end")){
-				endNode = n;
-			}
-			if(n.getProperty("name").equals("start")||n.getProperty("name").equals("end")){
-				Iterable<Relationship> relationships = n.getRelationships();
-				for(Relationship r: relationships){
-					r.delete();
-				}
-			}
 		}
 		transaction.success();
 		transaction.close();
@@ -264,7 +303,7 @@ public class Main2 {
 		if(inputs.length>0){
 			for(String s: inputs){
 				Node inputsServicesNode = neo4jServNodes.get(s);
-				String[] tempToArray = getOutputs(inputsServicesNode, sNode);
+				String[] tempToArray = getOutputs(inputsServicesNode, sNode, graphDatabaseService);
 				relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
 				relation.setProperty("From", s);
 				relation.setProperty("To", (String)sNode.getProperty("name"));
@@ -277,7 +316,7 @@ public class Main2 {
 		transaction.finish();
 		transaction.close();
 	}
-	private String[] getOutputs(Node node, Node sNode) {
+	private String[] getOutputs(Node node, Node sNode,GraphDatabaseService graphDatabaseService) {
 		Transaction transaction = graphDatabaseService.beginTx();
 		List<String>snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
@@ -317,68 +356,83 @@ public class Main2 {
 		return newArray;
 	}
 
-    private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException
-    {
-        //Check if sourceFolder is a directory or file
-        //If sourceFolder is file; then copy the file directly to new location
-        if (sourceFolder.isDirectory()) 
-        {
-            //Verify if destinationFolder is already present; If not then create it
-            if (!destinationFolder.exists()) 
-            {
-                destinationFolder.mkdir();
-                System.out.println("Directory created :: " + destinationFolder);
-            }
-             
-            //Get all files from source directory
-            String files[] = sourceFolder.list();
-             
-            //Iterate over all files and copy them to destinationFolder one by one
-            for (String file : files) 
-            {
-                File srcFile = new File(sourceFolder, file);
-                File destFile = new File(destinationFolder, file);
-                 
-                //Recursive function call
-                copyFolder(srcFile, destFile);
-            }
-        }
-        else
-        {
-            //Copy the file content from one place to another 
-            Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("File copied :: " + destinationFolder);
-        }
-    }
+	private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException
+	{
+		//Check if sourceFolder is a directory or file
+		//If sourceFolder is file; then copy the file directly to new location
+		if (sourceFolder.isDirectory()) 
+		{
+			//Verify if destinationFolder is already present; If not then create it
+			if (!destinationFolder.exists()) 
+			{
+				destinationFolder.mkdir();
+				System.out.println("Directory created :: " + destinationFolder);
+			}
+
+			//Get all files from source directory
+			String files[] = sourceFolder.list();
+
+			//Iterate over all files and copy them to destinationFolder one by one
+			for (String file : files) 
+			{
+				File srcFile = new File(sourceFolder, file);
+				File destFile = new File(destinationFolder, file);
+
+				//Recursive function call
+				copyFolder(srcFile, destFile);
+			}
+		}
+		else
+		{
+			//Copy the file content from one place to another 
+			Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			System.out.println("File copied :: " + destinationFolder);
+		}
+	}
 	//run task
 	public boolean findNonFulfillNode = false;
 
-	private void runTask() throws IOException {
+	private void runTask(String path) throws IOException {
 		System.out.println("run task");
 		long startTime = 0;
 		long endTime = 0;
+		startNode = null;
+		endNode = null;
 		startTime = System.currentTimeMillis();
-		removeStartNodeAndEndNodeRel(startNode, endNode);
-		Transaction transaction = tempGraphDatabaseService.beginTx();
-		File srcDir = new File(Neo4j_testServicesDBPath);
+		File srcDir = new File(path);
 		File destDir = new File(Neo4j_tempDBPath);
 		FileUtils.deleteRecursively(new File(Neo4j_tempDBPath));
 		copyFolder(srcDir, destDir);
 		System.out.println("copying of file from Java program is completed");
+		tempGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_tempDBPath);
+		Transaction transaction = tempGraphDatabaseService.beginTx();				
+		signNodesToField(tempGraphDatabaseService);
 
+		tempIndex = tempGraphDatabaseService.index();
+		tempServices = tempIndex.forNodes( "identifiers" );
+
+		startNode = createStartEndNode("start");
+		endNode = createStartEndNode("end");
+		neo4jServNodes.put("start", startNode);
+		neo4jServNodes.put("end", endNode);
 		startNode.setProperty("outputs", taskInputs.toArray(new String[taskInputs.size()]));
 		endNode.setProperty("inputs", taskOutputs.toArray(new String[taskOutputs.size()]));
+
 		Set<String> inputServices = new HashSet<String>();
 		for(String input: taskInputs){
+			System.out.println("task inputs: "+ input);
 			TaxonomyNode tNode = taxonomyMap.get(input).parentNode;
 			inputServices.addAll(tNode.inputs);
 		}
 		String[]inputs = new String[inputServices.size()];
 		int i = -1;
+		System.out.println("task inputs servies:");
 		for(String s: inputServices){
 			i++;
+			System.out.print(s+"   ");
 			inputs[i] = s;
 		}
+		System.out.println("=====");
 		startNode.setProperty("outputServices", inputs);
 		Set<String> outputServices = new HashSet<String>();
 		for(String output: taskOutputs){
@@ -398,10 +452,21 @@ public class Main2 {
 
 		createRel(startNode);
 		createRel(endNode);
+
 		Set<Node> relatedNodes = new HashSet<Node>();
 		findAllReleatedNodes(relatedNodes, false);
 		System.out.println("related Nodes size: "+relatedNodes.size());
 		createSubGraphDatabase(relatedNodes);
+		Transaction ttt = tempGraphDatabaseService.beginTx();
+		int ii =0;
+		for(Node n: getAllNodes()) {
+			ii++;
+			System.out.println("tttttttttttt:  "+n.getProperty("name")+"   "+ii);
+
+		}
+		ttt.finish();
+		ttt.success();
+		ttt.close();
 		endTime = System.currentTimeMillis();
 		System.out.println("create Sub Services Database Total execution time: " + (endTime - startTime) );
 		startTime = 0;
@@ -412,145 +477,170 @@ public class Main2 {
 		records.put("Find composition Nodes", endTime - startTime);
 		System.out.println("Find composition Nodes Total execution time: " + (endTime - startTime) );
 	}
-	private void createSubGraphDatabase(Set<Node> relatedNodes) {
-		try {
-			FileUtils.deleteRecursively(new File(Neo4j_subDBPath));
-		} catch (IOException e) {
-			e.printStackTrace();
+	private Node createStartEndNode(String nodeName) {
+		String[]temp = new String[0];
+		Node service = tempGraphDatabaseService.createNode();
+		Label nodeLable = DynamicLabel.label(nodeName);
+		service.addLabel(nodeLable);
+		service.setProperty("name", nodeName);
+		tempServices.add(service, "name", service.getProperty("name"));
+		if(nodeName.equals("start")){
+			service.setProperty("inputs", temp);
+			service.setProperty("priousNodeNames", temp);
+			service.setProperty("id", (long)0);
 		}
-		subGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_subDBPath);
-		Transaction transaction = subGraphDatabaseService.beginTx();
-		try{
-			for(Node sNode: relatedNodes) {
-				String[] inputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes, "inputServices");
-				String[] outputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes,"outputServices");
-				String[] priousNodeNames = getInputOutputServicesForSubGraph(sNode, relatedNodes,"priousNodeNames");
-				if(inputServices==null){
-					inputServices = new String[0];
-				}
-				if(outputServices==null){
-					outputServices = new String[0];
-				}
-				if(priousNodeNames==null){
-					priousNodeNames = new String[0];
-				}
+		else if(nodeName.equals("end")){
+			service.setProperty("id", (long)serviceNodes.size()+1);
+			service.setProperty("outputs", temp);
+			service.setProperty("priousNodeNames", temp);
+		}
+		service.setProperty("inputServices", temp);
+		service.setProperty("outputServices", temp);
+		service.setProperty("visited", false);
+		return service;
+	}
+	private void createSubGraphDatabase(Set<Node> relatedNodes) {
 
-				Node service = subGraphDatabaseService.createNode();
-				Transaction tx = graphDatabaseService.beginTx();
-				Label nodeLable = DynamicLabel.label((String) sNode.getProperty("name"));
-				service.addLabel(nodeLable);
-				service.setProperty("name", (String) sNode.getProperty("name"));
-				service.setProperty("id", service.getId());
-				service.setProperty("qos", 0);
-				service.setProperty("weight", 0);
-				service.setProperty("inputs", getNodePropertyArray(sNode,"inputs"));
-				service.setProperty("outputs", getNodePropertyArray(sNode,"outputs"));
-				service.setProperty("inputServices", inputServices);
-				service.setProperty("outputServices", outputServices);
-				service.setProperty("priousNodeNames",priousNodeNames);
-				service.setProperty("visited", false);
-				subGraphNodes.add(service);
-				subGraphNodesMap.put((String) sNode.getProperty("name"), service);
-				tx.finish();
-				tx.close();
-			}	
-			for(Node sNode: subGraphNodes){
-				//					double sNodeWeight = (double) sNode.getProperty("weight");
-				String[] inputs = getNodePropertyArray(sNode, "inputServices");
-				//					List<Node>inputsServicesNodes = new ArrayList<Node>();
-				if(inputs.length>0){
-					for(String s: inputs){
-						Node inputsServicesNode = subGraphNodesMap.get(s);
-						String[] tempToArray = getOutputs(inputsServicesNode, sNode);
-						relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
-						relation.setProperty("From", s);
-						relation.setProperty("To", (String)sNode.getProperty("name"));
-						relation.setProperty("outputs", tempToArray);
-						relation.setProperty("Direction", "incoming");    
-					}
-				}	
-				if(sNode.getProperty("name").equals("end")){
-					subEndNode = sNode;
+//		Transaction transaction = tempGraphDatabaseService.beginTx();
+		int i = 0;
+		List<Node> rNodes = new ArrayList<Node>(relatedNodes);
+		//		for(Node n: getAllNodes()){
+		//			rNodes.add(e)
+		//		}
+
+//		while(i<rNodes.size()){
+//			IndexHits<Node> hits = tempServices.get( "name", rNodes.get(i).getProperty("name") );
+//			Node n = hits.getSingle();
+//			if(!n.getProperty("name").equals("end") && !n.getProperty("name").equals("start")){
+//				i++;
+//				System.out.println("find "+ i);
+//				System.out.println(n.getProperty("name"));
+//				for (Relationship r : n.getRelationships()) {
+//					r.delete();
+//				}
+//				transaction.success();
+//				transaction.close();
+//				transaction = tempGraphDatabaseService.beginTx();	
+//				n.delete();
+//
+//				transaction.success();
+//				transaction.close();
+//
+//				transaction = tempGraphDatabaseService.beginTx();	
+//
+//			}
+//			i++;
+//		}
+
+		Transaction t = tempGraphDatabaseService.beginTx();
+
+		for(Node n: getAllNodes()) {
+			if(!relatedNodes.contains(n) && !n.getProperty("name").equals("end")&& !n.getProperty("name").equals("start")){
+				i++;
+				System.out.println("find "+ i);
+				//				IndexHits<Node> hits = tempServices.get( "name", n.getProperty("name") );
+				//				Node node = hits.getSingle();
+				System.out.println(n.getProperty("name"));
+				for (Relationship r : n.getRelationships()) {
+					r.delete();
 				}
-				if(sNode.getProperty("name").equals("start")){
-					subStartNode = sNode;
-					String[] outputs = getNodePropertyArray(sNode, "outputServices");
-					if(outputs.length>0){
-						for(String s: outputs){
-							Node outputsServicesNode = subGraphNodesMap.get(s);
-							String[] tempToArray = getOutputs(sNode, outputsServicesNode);
-							relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
-							relation.setProperty("From", (String)sNode.getProperty("name"));
-							relation.setProperty("To", s);
-							relation.setProperty("outputs", tempToArray);
-							relation.setProperty("Direction", "incoming");    
-						}
-					}					
-				}
+				n.delete();
+				t.success();
+				t.close();
+				t = tempGraphDatabaseService.beginTx();
+				//				
+				//								Map<String, Object> params = new HashMap<String, Object>();
+				//								params.put( "node", node);
+				//								ExecutionEngine e=new ExecutionEngine(tempGraphDatabaseService);
+				//								String query = "MATCH n where n = {node} DETACH DELETE n";
+				//								Result result = tempGraphDatabaseService.execute( query, params );
+				//								System.out.println(result);
+
 			}
-			transaction.success();
-		}finally{
-			transaction.finish();
-			transaction.close();
+
 		}
 		
+		
+
+	}
+	private void executeCypher(String cypher, String name){
+		Transaction tx = tempGraphDatabaseService.beginTx();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put( "node", name);
+		Result result = null;
+		try {
+			ExecutionEngine engine = new ExecutionEngine( tempGraphDatabaseService );
+			result = engine.execute( cypher, params );
+			tx.success();
+		} catch(Exception e){
+			throw new RuntimeException("Error executing cypher: ", e);
+		} finally {
+			tx.finish();
+		}
+	}
+	private Iterable<Node>  getAllNodes( ) {
+		Transaction transaction = tempGraphDatabaseService.beginTx();
+		Iterable<Node> nodes = tempGraphDatabaseService.getAllNodes();
+		transaction.success();
+		transaction.close();
+		return nodes;
 
 	}
 
 	private void findCompositionNodes() {
 		Set<Set<Node>> populations = new HashSet<Set<Node>>();
-		while(populations.size()<1){
+		while(populations.size()<10){
 			Set<Node>result = new HashSet<Node>();
-			result.add(subEndNode);
-			composition(subEndNode, result);	
+			result.add(endNode);
+			composition(endNode, result);	
 			result = checkDuplicateNodes(result);
 			if(result.size()<=32){
 				populations.add(result);
 				System.out.println("==========="+result.size()+"=================");
 			}
-			
+
 
 		}
-//		System.out.println();
-//		Transaction tx = subGraphDatabaseService.beginTx();
-//		for(Set<Node> n: populations){
-//			for(Node nn: n){
-//				System.out.print(nn.getProperty("name")+"  ");
-//
-//			}
-//			System.out.println();
-//
-//		}
-//		System.out.println();
-//		System.out.println(populations.size());
-//		tx.finish();
-//		tx.close();
+		//		System.out.println();
+		//		Transaction tx = subGraphDatabaseService.beginTx();
+		//		for(Set<Node> n: populations){
+		//			for(Node nn: n){
+		//				System.out.print(nn.getProperty("name")+"  ");
+		//
+		//			}
+		//			System.out.println();
+		//
+		//		}
+		//		System.out.println();
+		//		System.out.println(populations.size());
+		//		tx.finish();
+		//		tx.close();
 		//TODO: add relationships to each result to identify the rel between nodes
 		//		printAsPath(populations);
 	}
 
-	private void printAsPath(Set<Set<Node>> populations) {
-		Transaction tx = subGraphDatabaseService.beginTx();
-
-		for(Set<Node> composition: populations){
-			System.out.println();
-			print(subEndNode, composition);
-			System.out.println();
-		}
-		tx.close();
-	}
-
-	private void print(Node subEndNode, Set<Node> composition) {
-		List<String> inputServices = Arrays.asList(getNodePropertyArray(subEndNode, "inputServices"));
-		if(inputServices.size()>0){
-			for(String s: inputServices){
-				Node node = subGraphNodesMap.get(s);
-				if(composition.contains(node)){
-					print(node, composition);
-				}
-			}
-		}	
-	}
+	//	private void printAsPath(Set<Set<Node>> populations) {
+	//		Transaction tx = subGraphDatabaseService.beginTx();
+	//
+	//		for(Set<Node> composition: populations){
+	//			System.out.println();
+	//			print(subEndNode, composition);
+	//			System.out.println();
+	//		}
+	//		tx.close();
+	//	}
+	//
+	//	private void print(Node subEndNode, Set<Node> composition) {
+	//		List<String> inputServices = Arrays.asList(getNodePropertyArray(subEndNode, "inputServices"));
+	//		if(inputServices.size()>0){
+	//			for(String s: inputServices){
+	//				Node node = subGraphNodesMap.get(s);
+	//				if(composition.contains(node)){
+	//					print(node, composition);
+	//				}
+	//			}
+	//		}	
+	//	}
 
 	private Set<Node> checkDuplicateNodes(Set<Node> result) {
 		Transaction tx = subGraphDatabaseService.beginTx();
@@ -563,34 +653,40 @@ public class Main2 {
 				}
 			}
 		}
-		
+
 		tx.close();
 		return temp;
 	}
 
-	private void composition(Node subEndNode, Set<Node> result) {
-		Transaction tx = subGraphDatabaseService.beginTx();
-		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
+	private void composition(Node node, Set<Node> result) {
+		Transaction tx = tempGraphDatabaseService.beginTx();
+		//			try{
+		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(node, "inputs"));
 		//		List<String>relOutputs = new ArrayList<String>();
 		List<Relationship>rels = new ArrayList<Relationship>();
-		for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
+		for(Relationship r: node.getRelationships(Direction.INCOMING)){
 			rels.add(r);
 		}
 		Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels);
-		
+
 		if(fulfillSubEndNodes!=null){
-//			System.out.println(fulfillSubEndNodes.size() +"    " +subEndNode.getProperty("name"));
-//			for(Node n: fulfillSubEndNodes){
-//				System.out.println(n.getProperty("name"));
-//			}
+			//			System.out.println(fulfillSubEndNodes.size() +"    " +subEndNode.getProperty("name"));
+			//			for(Node n: fulfillSubEndNodes){
+			//				System.out.println(n.getProperty("name"));
+			//			}
 			result.addAll(fulfillSubEndNodes);
-				for (Node node: fulfillSubEndNodes){
-					composition(node, result);
+			for (Node n: fulfillSubEndNodes){
+				composition(n, result);
 			}
-			
+
 		}
 		tx.success();
+		//			}catch(Exception e){
+		//				System.out.println("composition:"+ e);
+		//			}finally{
 		tx.close();
+		//			}
+
 	}
 
 	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> relationships) {
@@ -688,7 +784,7 @@ public class Main2 {
 		}
 	}
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
-		Transaction transaction = graphDatabaseService.beginTx();
+		Transaction transaction = tempGraphDatabaseService.beginTx();
 		if(releatedNodes==null){
 			PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
 
@@ -716,7 +812,7 @@ public class Main2 {
 	}
 
 	private void removeNoneFulFillNodes(Set<Node> releatedNodes) {
-		Transaction transaction = graphDatabaseService.beginTx();
+		Transaction transaction = tempGraphDatabaseService.beginTx();
 		Set<Node>copied = new HashSet<Node>(releatedNodes);
 		boolean removed = false;
 		for(Node sNode: copied){
@@ -732,7 +828,7 @@ public class Main2 {
 		transaction.close();
 	}
 	private boolean fulfill(Node sNode, Set<Node> releatedNodes) {
-		Transaction transaction = graphDatabaseService.beginTx();
+		Transaction transaction = tempGraphDatabaseService.beginTx();
 		boolean fulfill = false;
 		Set<String> inputs = new HashSet<String>();
 		List<String> sNodeInputs = Arrays.asList(getNodePropertyArray(sNode,"inputs"));
@@ -753,22 +849,22 @@ public class Main2 {
 		return fulfill;
 	}
 
-	private void removeStartNodeAndEndNodeRel(Node startNode, Node endNode) {
-		try (Transaction tx = graphDatabaseService.beginTx()) {
-			for (Relationship r : startNode.getRelationships()) {
-				r.delete();
-			}
-			for (Relationship r : endNode.getRelationships()) {
-				r.delete();
-			}
-			tx.success();
-			tx.finish();
-			tx.close();
-		}
-	}
+	//	private void removeStartNodeAndEndNodeRel(Node startNode, Node endNode) {
+	//		try (Transaction tx = graphDatabaseService.beginTx()) {
+	//			for (Relationship r : startNode.getRelationships()) {
+	//				r.delete();
+	//			}
+	//			for (Relationship r : endNode.getRelationships()) {
+	//				r.delete();
+	//			}
+	//			tx.success();
+	//			tx.finish();
+	//			tx.close();
+	//		}
+	//	}
 
 	private void createRel(Node node) {
-		Transaction transaction = graphDatabaseService.beginTx();
+		Transaction transaction = tempGraphDatabaseService.beginTx();
 		//		double sNodeWeight = (double) sNode.getProperty("weight");
 		String nodeString = (String) node.getProperty("name");
 		if(nodeString.equals("start")){
@@ -776,7 +872,7 @@ public class Main2 {
 			if(outputs.length>0){
 				for(String s: outputs){
 					Node outputsServicesNode = neo4jServNodes.get(s);
-					String[] tempToArray = getOutputs(node, outputsServicesNode);
+					String[] tempToArray = getOutputs(node, outputsServicesNode, tempGraphDatabaseService);
 					relation = node.createRelationshipTo(outputsServicesNode, RelTypes.IN);
 					relation.setProperty("From", nodeString);
 					relation.setProperty("To", s);
@@ -790,7 +886,7 @@ public class Main2 {
 			if(inputs.length>0){
 				for(String s: inputs){
 					Node inputsServicesNode = neo4jServNodes.get(s);
-					String[] tempToArray = getOutputs(inputsServicesNode,node);
+					String[] tempToArray = getOutputs(inputsServicesNode,node, tempGraphDatabaseService);
 					relation = inputsServicesNode.createRelationshipTo(node, RelTypes.IN);
 					relation.setProperty("From", s);
 					relation.setProperty("To", nodeString);
@@ -844,13 +940,12 @@ public class Main2 {
 		return tNodeParents;
 	}
 
-	void shutdown(){
+	void shutdown(GraphDatabaseService graphDatabaseService){
 		graphDatabaseService.shutdown();
 		System.out.println("Neo4j database is shutdown");
 	}
 
-	private void createServicesDatabase(Map<String, ServiceNode> serviceMap){
-		graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_testServicesDBPath);
+	private void createServicesDatabase(Map<String, ServiceNode> serviceMap, String path){
 		Transaction transaction = graphDatabaseService.beginTx();
 		neo4jServiceNodes = new Node[0];
 		try{
@@ -880,10 +975,6 @@ public class Main2 {
 				neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
 				neo4jServNodes.put(entry.getKey(), service);
 			}
-			startNode = createNode("start");
-			endNode = createNode("end");
-			neo4jServNodes.put("start", startNode);
-			neo4jServNodes.put("end", endNode);
 			System.out.println("web service nodes created");			
 			transaction.success();
 		}finally{
@@ -1005,7 +1096,7 @@ public class Main2 {
 			seenConceptsInput.clear();
 		}
 	}
-	
+
 	private void removeInputsAndOutputsDuplicates() {
 		for(Entry<String, TaxonomyNode> entry : taxonomyMap.entrySet()){
 			TaxonomyNode node = entry.getValue();
@@ -1510,6 +1601,7 @@ public class Main2 {
 	}
 
 	private String[] getNodePropertyArray(Node sNode, String property){
+		System.out.println("======"+sNode.getProperty("name") +property);
 		Object obj =sNode.getProperty(property);
 		//    		//remove the "[" and "]" from string
 		String ips = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
@@ -1561,7 +1653,7 @@ public class Main2 {
 				Set<String> inputs = new HashSet<String>();
 				for(Relationship r: sNode.getRelationships(Direction.INCOMING)){
 					String from = (String) r.getProperty("From");
-					
+
 					Node fromNode = subGraphNodesMap.get(from);
 					if(releatedNodes.contains(fromNode)){
 						inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r,"outputs")));
@@ -1604,4 +1696,35 @@ public class Main2 {
 		}
 		return false;
 	}
+	//		@Override
+	//		public void run() {
+	//			// TODO Auto-generated method stub
+	//			while (running) {  
+	//				System.out.println(new Date() + " ### Neo4jService working.....！");  
+	//				try {  
+	//					Thread.sleep(20000);  
+	//				} catch (InterruptedException e) {  
+	//					System.out.println(e);  
+	//				}  
+	//			}  
+	//
+	//		}
+	//		public void setRunning(boolean running) {  
+	//			this.running = running;  
+	//		}  
+	//		private static void registerShutdownHook() {  
+	//			// Registers a shutdown hook for the Neo4j instance so that it  
+	//			// shuts down nicely when the VM exits (even if you "Ctrl-C" the  
+	//			// running example before it's completed)  
+	//			Runtime.getRuntime()  
+	//			.addShutdownHook( new Thread()  
+	//			{  
+	//				@Override  
+	//				public void run()  
+	//				{  
+	//					System.out.println("neo4j shutdown hook ... ");  
+	//					graphDatabaseService.shutdown();  
+	//				}  
+	//			} );  
+	//		}  
 }
