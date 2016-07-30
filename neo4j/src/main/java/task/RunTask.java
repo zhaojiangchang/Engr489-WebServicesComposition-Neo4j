@@ -52,27 +52,27 @@ public class RunTask {
 		addStartEndNodes();
 		createRel(startNode);
 		createRel(endNode);
-			
+
 	}
-	
+
 	public void setNeo4jServNodes(Map<String, Node> neo4jServNodes) {
 		this.neo4jServNodes = neo4jServNodes;
 	}
-	
+
 	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap) {
 		this.taxonomyMap = taxonomyMap;
 	}
 	public void setServiceNodes(Set<ServiceNode> serviceNodes) {
 		this.serviceNodes = serviceNodes;
 	}
-	
+
 	public void setTaskInputs(Set<String> taskInputs) {
 		this.taskInputs = taskInputs;
 	}
 	public void setTaskOutputs(Set<String> taskOutputs) {
 		this.taskOutputs = taskOutputs;
 	}
-	
+
 	public Node getStartNode() {
 		return startNode;
 	}
@@ -122,18 +122,22 @@ public class RunTask {
 	public void createTempDb() {
 		tempGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_tempDBPath);
 		Transaction transaction = tempGraphDatabaseService.beginTx();
-		tempIndex = tempGraphDatabaseService.index();
-		tempServices = tempIndex.forNodes( "identifiers" );
-		Iterable<Node> nodes = tempGraphDatabaseService.getAllNodes();
-		neo4jServNodes.clear();
-		int i = 0;
-		for(Node n: nodes){
-			i++;
-			neo4jServNodes.put((String)n.getProperty("name"), n);
-		}
-		transaction.success();
-		transaction.close();
-		}
+		try{
+			tempIndex = tempGraphDatabaseService.index();
+			tempServices = tempIndex.forNodes( "identifiers" );
+			Iterable<Node> nodes = tempGraphDatabaseService.getAllNodes();
+			neo4jServNodes.clear();
+			for(Node n: nodes){
+				neo4jServNodes.put((String)n.getProperty("name"), n);
+			}
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Runtask createTempDb error.."); 
+		} finally {
+			transaction.close();
+		}		
+	}
 	public void copyDb() {
 		File srcDir = new File(path);
 		File destDir = new File(Neo4j_tempDBPath);
@@ -188,64 +192,75 @@ public class RunTask {
 		String[]temp = new String[0];
 		Transaction transaction = tempGraphDatabaseService.beginTx();
 		Node service = tempGraphDatabaseService.createNode();
-		Label nodeLable = DynamicLabel.label(nodeName);
-		service.addLabel(nodeLable);
-		service.setProperty("name", nodeName);
-		tempServices.add(service, "name", service.getProperty("name"));
-		if(nodeName.equals("start")){
-			service.setProperty("inputs", temp);
-			service.setProperty("outputs", temp);
-			service.setProperty("priousNodeNames", temp);
-			service.setProperty("id", (long)0);
-		}
-		else if(nodeName.equals("end")){
-			service.setProperty("id", (long)serviceNodes.size()+1);
-			service.setProperty("inputs", temp);
-			service.setProperty("outputs", temp);
-			service.setProperty("priousNodeNames", temp);
-		}
-		service.setProperty("inputServices", temp);
-		service.setProperty("outputServices", temp);
-		service.setProperty("visited", false);
-		transaction.success();
-		transaction.close();
+		try{
+			Label nodeLable = DynamicLabel.label(nodeName);
+			service.addLabel(nodeLable);
+			service.setProperty("name", nodeName);
+			tempServices.add(service, "name", service.getProperty("name"));
+			if(nodeName.equals("start")){
+				service.setProperty("inputs", temp);
+				service.setProperty("outputs", temp);
+				service.setProperty("priousNodeNames", temp);
+				service.setProperty("id", (long)0);
+			}
+			else if(nodeName.equals("end")){
+				service.setProperty("id", (long)serviceNodes.size()+1);
+				service.setProperty("inputs", temp);
+				service.setProperty("outputs", temp);
+				service.setProperty("priousNodeNames", temp);
+			}
+			service.setProperty("inputServices", temp);
+			service.setProperty("outputServices", temp);
+			service.setProperty("visited", false);
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Runtask createTempDb error.."); 
+		} finally {
+			transaction.close();
+		}				
 		return service;
 	}
 	public void createRel(Node node) {
 		Transaction transaction = tempGraphDatabaseService.beginTx();
 		//		double sNodeWeight = (double) sNode.getProperty("weight");
-		String nodeString = (String) node.getProperty("name");
-		if(nodeString.equals("start")){
-			String[] outputs = getNodePropertyArray(node, "outputServices");
-			if(outputs.length>0){
-				for(String s: outputs){
-					Node outputsServicesNode = neo4jServNodes.get(s);
-					String[] tempToArray = getOutputs(node, outputsServicesNode, tempGraphDatabaseService);
-					relation = node.createRelationshipTo(outputsServicesNode, RelTypes.IN);
-					relation.setProperty("From", nodeString);
-					relation.setProperty("To", s);
-					relation.setProperty("outputs", tempToArray);
-					relation.setProperty("Direction", "incoming");    
+		try{
+			String nodeString = (String) node.getProperty("name");
+			if(nodeString.equals("start")){
+				String[] outputs = getNodePropertyArray(node, "outputServices");
+				if(outputs.length>0){
+					for(String s: outputs){
+						Node outputsServicesNode = neo4jServNodes.get(s);
+						String[] tempToArray = getOutputs(node, outputsServicesNode, tempGraphDatabaseService);
+						relation = node.createRelationshipTo(outputsServicesNode, RelTypes.IN);
+						relation.setProperty("From", nodeString);
+						relation.setProperty("To", s);
+						relation.setProperty("outputs", tempToArray);
+						relation.setProperty("Direction", "incoming");    
+					}
 				}
 			}
-		}
-		else if(nodeString.equals("end")){
-			String[] inputs = getNodePropertyArray(node, "inputServices");
-			if(inputs.length>0){
-				for(String s: inputs){
-					Node inputsServicesNode = neo4jServNodes.get(s);
-					String[] tempToArray = getOutputs(inputsServicesNode,node, tempGraphDatabaseService);
-					relation = inputsServicesNode.createRelationshipTo(node, RelTypes.IN);
-					relation.setProperty("From", s);
-					relation.setProperty("To", nodeString);
-					relation.setProperty("outputs", tempToArray);
-					relation.setProperty("Direction", "incoming");    
+			else if(nodeString.equals("end")){
+				String[] inputs = getNodePropertyArray(node, "inputServices");
+				if(inputs.length>0){
+					for(String s: inputs){
+						Node inputsServicesNode = neo4jServNodes.get(s);
+						String[] tempToArray = getOutputs(inputsServicesNode,node, tempGraphDatabaseService);
+						relation = inputsServicesNode.createRelationshipTo(node, RelTypes.IN);
+						relation.setProperty("From", s);
+						relation.setProperty("To", nodeString);
+						relation.setProperty("outputs", tempToArray);
+						relation.setProperty("Direction", "incoming");    
+					}
 				}
 			}
-		}
-		transaction.success();
-		transaction.finish();
-		transaction.close();
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Runtask createTempDb error.."); 
+		} finally {
+			transaction.close();
+		}	
 	}
 	private String[] getNodePropertyArray(Node sNode, String property){
 		Object obj =sNode.getProperty(property);
@@ -263,11 +278,18 @@ public class RunTask {
 	}
 	private String[] getOutputs(Node node, Node sNode,GraphDatabaseService graphDatabaseService) {
 		Transaction transaction = graphDatabaseService.beginTx();
-		List<String>snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
-		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
-		transaction.success();
-		transaction.finish();
-		transaction.close();
+		List<String>snodeOutputs = new ArrayList<String>();
+		List<String>nodeInputs = new ArrayList<String>();
+		try{
+			snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
+			nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Runtask getOutputs error.."); 
+		} finally {
+			transaction.close();
+		}	
 		List<String>snodeOutputsAllParents = new ArrayList<String>();
 		for(String output: snodeOutputs){
 			TaxonomyNode tNode = taxonomyMap.get(output);
@@ -327,5 +349,5 @@ public class RunTask {
 	public Map<String, Node> getNeo4jServNodes() {
 		return neo4jServNodes;
 	}
-	
+
 }

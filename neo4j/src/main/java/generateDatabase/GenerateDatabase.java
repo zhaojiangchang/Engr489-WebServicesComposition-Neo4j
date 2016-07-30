@@ -38,7 +38,7 @@ public class GenerateDatabase {
 	public Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	Relationship relation;
 
-	
+
 	public GenerateDatabase(String databasePath ){
 		this.databasePath = databasePath;
 	}
@@ -53,47 +53,59 @@ public class GenerateDatabase {
 
 	public void createDbService() {
 		graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(databasePath);
-		
+
 	}
 	public void addServiceNodeRelationShip() {
 		Map<String, Object> maps = new HashMap<String, Object>();
 		Map<String,List<String>> inputServices = new HashMap<String,List<String>>();
-//		Map<String,List<String>> serviceOutputs = new HashMap<String,List<String>>();
+		//		Map<String,List<String>> serviceOutputs = new HashMap<String,List<String>>();
 		for(Node sNode: neo4jServiceNodes){
 			addInputsServiceRelationship(sNode, maps, inputServices);
 		}
 		servicesWithInputs = inputServices;
-//		servicesWithOutputs = serviceOutputs;
+		//		servicesWithOutputs = serviceOutputs;
 	}
 
 	private void addInputsServiceRelationship(Node sNode, Map<String, Object>maps, Map<String, List<String>> inputServices) {
 		Transaction transaction = graphDatabaseService.beginTx();
 		//		double sNodeWeight = (double) sNode.getProperty("weight");
-		String[] inputs = getNodePropertyArray(sNode, "inputServices");
-		//		List<Node>inputsServicesNodes = new ArrayList<Node>();
-		if(inputs.length>0){
-			for(String s: inputs){
-				Node inputsServicesNode = neo4jServNodes.get(s);
-				String[] tempToArray = getOutputs(inputsServicesNode, sNode, graphDatabaseService);
-				relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
-				relation.setProperty("From", s);
-				relation.setProperty("To", (String)sNode.getProperty("name"));
-				relation.setProperty("outputs", tempToArray);
-				relation.setProperty("Direction", "incoming");    
+		try{
+			String[] inputs = getNodePropertyArray(sNode, "inputServices");
+			//		List<Node>inputsServicesNodes = new ArrayList<Node>();
+			if(inputs.length>0){
+				for(String s: inputs){
+					Node inputsServicesNode = neo4jServNodes.get(s);
+					String[] tempToArray = getOutputs(inputsServicesNode, sNode, graphDatabaseService);
+					relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
+					relation.setProperty("From", s);
+					relation.setProperty("To", (String)sNode.getProperty("name"));
+					relation.setProperty("outputs", tempToArray);
+					relation.setProperty("Direction", "incoming");    
+				}
 			}
-		}
-		inputServices.put((String) sNode.getProperty("name"), Arrays.asList(inputs));
-		transaction.success();
-		transaction.finish();
-		transaction.close();
+			inputServices.put((String) sNode.getProperty("name"), Arrays.asList(inputs));
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("GenerateDatabase addInputsServiceRelationship error.."); 
+		} finally {
+			transaction.close();
+		}		
 	}
 	private String[] getOutputs(Node node, Node sNode,GraphDatabaseService graphDatabaseService) {
 		Transaction transaction = graphDatabaseService.beginTx();
-		List<String>snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
-		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
-		transaction.success();
-		transaction.finish();
-		transaction.close();
+		List<String>snodeOutputs = new ArrayList<String>();
+		List<String>nodeInputs =  new ArrayList<String>();
+		try{
+			snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
+			nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("GenerateDatabase getOutputs error.."); 
+		} finally {
+			transaction.close();
+		}		
 		List<String>snodeOutputsAllParents = new ArrayList<String>();
 		for(String output: snodeOutputs){
 			TaxonomyNode tNode = taxonomyMap.get(output);
@@ -140,9 +152,12 @@ public class GenerateDatabase {
 			}
 			System.out.println("web service nodes created");			
 			transaction.success();
-		}finally{
-			transaction.finish();
-		}
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("GenerateDatabase createServicesDatabase error.."); 
+		} finally {
+			transaction.close();
+		}		
 	}
 	private Node[] increaseNodeArray(Node[] theArray)
 	{

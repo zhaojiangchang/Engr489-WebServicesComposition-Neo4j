@@ -56,11 +56,11 @@ import task.RunTask;
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private boolean runTestFiles = false;
-	private String databasename = "wsc2008dataset08";
-	private String dataset = "dataset/wsc2008/Set08MetaData/";
+	private boolean runTestFiles = true;
+	private String databasename = "wsc2008dataset01";
+	private String dataset = "dataset/wsc2008/Set01MetaData/";
 	private String testDataset = "dataset/test/";
-	private final int compositionSize = 32;
+	private final int compositionSize = 12;
 	//******************************************************//
 
 
@@ -166,7 +166,6 @@ import task.RunTask;
 		//2: connect to tempServiceDatabase
 		//3: use task inputs outputs create start and end nodes and link to tempservicedatabase
 		RunTask runtask = new RunTask(path);
-//		runtask.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
 		runtask.setServiceNodes(neo4jwsc.serviceNodes);
 		runtask.setTaxonomyMap(neo4jwsc.taxonomyMap);
 		runtask.setServiceNodes(neo4jwsc.serviceNodes);
@@ -184,16 +183,19 @@ import task.RunTask;
 		neo4jwsc.endNode = runtask.getEndNode();
 		runtask.createRel(neo4jwsc.startNode);
 		runtask.createRel(neo4jwsc.endNode);
-
+		System.out.println("run task: copied db, create temp db, add start and end nodes");
 
 		//reduce database use copied database
+		System.out.println("start reduce graph db");
 		ReduceGraphDb reduceGraphDb = new ReduceGraphDb(neo4jwsc.neo4jServNodes,neo4jwsc.tempGraphDatabaseService);
 		reduceGraphDb.setStartNode(neo4jwsc.startNode);
 		reduceGraphDb.setEndNode(neo4jwsc.endNode);
 		reduceGraphDb.runReduceGraph();
+		System.out.println("end reduce graph db");
 
 
 		//find compositions
+		System.out.println("start composition");
 		Set<Set<Node>> populations = new HashSet<Set<Node>>();
 		while(populations.size()<10){
 			FindComposition findComposition = new FindComposition(neo4jwsc.compositionSize, neo4jwsc.tempGraphDatabaseService);
@@ -202,12 +204,12 @@ import task.RunTask;
 			findComposition.setEndNode(neo4jwsc.endNode);
 			findComposition.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
 			findComposition.setTaxonomyMap(neo4jwsc.taxonomyMap);
-			System.out.println(reduceGraphDb.getSubGraphNodesMap().size());
 			findComposition.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
 			findComposition.runComposition();
 			populations.add(findComposition.getPopulation());
 
 		}
+		System.out.println("end composition");
 		neo4jwsc.setRunning(false);  
 	}
 

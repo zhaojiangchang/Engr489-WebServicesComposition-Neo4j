@@ -34,17 +34,22 @@ public class ReduceGraphDb {
 		relatedNodes = new HashSet<Node>();
 	}
 	public void runReduceGraph(){
+		System.out.println("start find all related nodes");
 		findAllReleatedNodes(relatedNodes, false);
+		System.out.println("end find all related nodes");
+		System.out.println("start reduce db");
 		reduceGraphDatabase(relatedNodes);
+		System.out.println("end reduce db");
+
 	}
-	
+
 	public void setStartNode(Node startNode) {
 		this.startNode = startNode;
 	}
 	public void setEndNode(Node endNode) {
 		this.endNode = endNode;
 	}
-	
+
 	public Map<String, Node> getSubGraphNodesMap() {
 		return subGraphNodesMap;
 	}
@@ -54,10 +59,7 @@ public class ReduceGraphDb {
 				Node sNode = entry.getValue();
 
 				if(hasRel(startNode, sNode, relatedNodes) && hasRel(sNode, endNode, relatedNodes)){
-					Transaction transaction = tempGraphDatabaseService.beginTx();
-				
 					relatedNodes.add(sNode);
-					transaction.close();
 				}
 			}
 			removeNoneFulFillNodes(relatedNodes);		
@@ -72,75 +74,82 @@ public class ReduceGraphDb {
 		}		
 	}
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
-		Transaction transaction = tempGraphDatabaseService.beginTx();
-		if(releatedNodes==null){
-			PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
-			if(finder.findSinglePath(firstNode, secondNode)!=null){
-				transaction.finish();
-				transaction.close();
-
-				return true;
+		Transaction t = tempGraphDatabaseService.beginTx();
+		boolean hasR = false;
+		try{
+			if(releatedNodes==null){
+				PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
+				if(finder.findSinglePath(firstNode, secondNode)!=null){
+					hasR = true;
+				}
 			}
-			transaction.finish();
-			transaction.close();
-			return false;
-		}
-		else{
-			PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
-			if(finder.findSinglePath(firstNode, secondNode)!=null){
-				transaction.finish();
-				transaction.close();
-
-				return true;
+			else{
+				PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
+				if(finder.findSinglePath(firstNode, secondNode)!=null){
+					hasR = true;
+				}
 			}
-			transaction.finish();
-			transaction.close();
-			return false;
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("hasRel error.."); 
+		} finally {
+			t.close();
 		}
+		return hasR;	
 	}
 
 	private void removeNoneFulFillNodes(Set<Node> releatedNodes) {
-		Transaction transaction = tempGraphDatabaseService.beginTx();
+		Transaction t = tempGraphDatabaseService.beginTx();
 		Set<Node>copied = new HashSet<Node>(releatedNodes);
-		
+
 		boolean removed = false;
-		for(Node sNode: copied){
-			if(!fulfill(sNode, copied) && !sNode.getProperty("name").equals("end")&& !sNode.getProperty("name").equals("start")){
-				removed = true;
-				releatedNodes.remove(sNode);
+		try{
+			for(Node sNode: copied){
+				if(!fulfill(sNode, copied) && !sNode.getProperty("name").equals("end")&& !sNode.getProperty("name").equals("start")){
+					removed = true;
+					releatedNodes.remove(sNode);
+				}
 			}
-		}
-		if(removed){
-			findAllReleatedNodes(releatedNodes, true);
-		}
-		transaction.finish();
-		transaction.close();
+			if(removed){
+				findAllReleatedNodes(releatedNodes, true);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("removeNoneFulFillNodes error.."); 
+		} finally {
+			t.close();
+		}		
 	}
 	private boolean fulfill(Node sNode, Set<Node> releatedNodes) {
-		Transaction transaction = tempGraphDatabaseService.beginTx();
+		Transaction t = tempGraphDatabaseService.beginTx();
 		boolean fulfill = false;
-		Set<String> inputs = new HashSet<String>();
-		List<String> sNodeInputs = Arrays.asList(getNodePropertyArray(sNode,"inputs"));
-		for(Relationship r: sNode.getRelationships(Direction.INCOMING)){
-			String from = (String) r.getProperty("From");
-			Node fromNode = neo4jServNodes.get(from);
-			if(releatedNodes.contains(fromNode)){
-				inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r,"outputs")));
+
+		try{
+			Set<String> inputs = new HashSet<String>();
+			List<String> sNodeInputs = Arrays.asList(getNodePropertyArray(sNode,"inputs"));
+			for(Relationship r: sNode.getRelationships(Direction.INCOMING)){
+				String from = (String) r.getProperty("From");
+				Node fromNode = neo4jServNodes.get(from);
+				if(releatedNodes.contains(fromNode)){
+					inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r,"outputs")));
+				}
+				List<String> temp = new ArrayList<String>(sNodeInputs); 
+				temp.retainAll(inputs);
+				if(temp.size()==sNodeInputs.size()){
+					fulfill = true;
+				}
 			}
-			List<String> temp = new ArrayList<String>(sNodeInputs); 
-			temp.retainAll(inputs);
-			if(temp.size()==sNodeInputs.size()){
-				fulfill = true;
-			}
-		}
-		transaction.finish();
-		transaction.close();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("fulfill error.."); 
+		} finally {
+			t.close();
+		}		
 		return fulfill;
 	}
 	private String[] getNodePropertyArray(Node node, String property){
 		Transaction transaction = tempGraphDatabaseService.beginTx();
 		Object obj =node.getProperty(property);
-		transaction.finish();
 		transaction.close();
 		//    		//remove the "[" and "]" from string
 		String ips = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
@@ -156,20 +165,26 @@ public class ReduceGraphDb {
 		return array;
 	}
 	private String[] getNodeRelationshipPropertyArray(Relationship relationship, String property){
-		Transaction transaction = tempGraphDatabaseService.beginTx();
-		Object obj =relationship.getProperty(property);
-		//    		//remove the "[" and "]" from string
-		String string = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
-		String[] tempOutputs = string.split("\\s*,\\s*");
+		Transaction t = tempGraphDatabaseService.beginTx();
 		String[] array = new String[0];
-		for(String s: tempOutputs){
-			if(s.length()>0){
-				array =increaseArray(array);
-				array[array.length-1] = s;
+		try{
+			Object obj =relationship.getProperty(property);
+			//    		//remove the "[" and "]" from string
+			String string = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
+			String[] tempOutputs = string.split("\\s*,\\s*");
+
+			for(String s: tempOutputs){
+				if(s.length()>0){
+					array =increaseArray(array);
+					array[array.length-1] = s;
+				}
 			}
-		}
-		transaction.finish();
-		transaction.close();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("getNodeRelationshipPropertyArray error.."); 
+		} finally {
+			t.close();
+		}		
 		return array;
 	}
 	public String[] increaseArray(String[] theArray)
@@ -189,25 +204,37 @@ public class ReduceGraphDb {
 
 		return newArray;
 	}
-	
+
 	private void reduceGraphDatabase(Set<Node> relatedNodes) {
 		// TODO Auto-generated method stub
 		Transaction t = tempGraphDatabaseService.beginTx();
-		for(Node n: getAllNodes()) {
-			if(!relatedNodes.contains(n) && !n.getProperty("name").equals("end")&& !n.getProperty("name").equals("start")){
-				for (Relationship r : n.getRelationships()) {
-					r.delete();
+		try{
+			int i = 0;
+			for(Node n: getAllNodes()) {
+				if(i%3000 == 0){
+					t = tempGraphDatabaseService.beginTx();
 				}
-				n.delete();
-				t.success();
-				t.close();
-				t = tempGraphDatabaseService.beginTx();
+				if(!relatedNodes.contains(n) && !n.getProperty("name").equals("end")&& !n.getProperty("name").equals("start")){
+					for (Relationship r : n.getRelationships()) {
+						r.delete();
+					}
+					n.delete();
+				}
 			}
+			t.success();
+
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("reduceGraphDatabase error.."); 
+		} finally {
+			t.close();
 		}
 		t = tempGraphDatabaseService.beginTx();
 		for(Node n: getAllNodes()) {
 			subGraphNodesMap.put((String)n.getProperty("name"), n);			
 		}
+		System.out.println("subGraphNodesMap: "+subGraphNodesMap.size());
+
 		t.close();
 	}
 	private Iterable<Node>  getAllNodes( ) {
