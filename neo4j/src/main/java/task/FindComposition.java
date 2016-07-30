@@ -44,12 +44,17 @@ public class FindComposition {
 	public void runComposition(){
 		Set<Node>result = new HashSet<Node>();
 		result.add(endNode);
-		composition(endNode, result);	
-		result = checkDuplicateNodes(result);
-		if(result.size()<=compositionSize){
-			population = result;
-			System.out.println("==========="+result.size()+"=================");
+		boolean isResult = composition(endNode, result);	
+		if(isResult){
+			result = checkDuplicateNodes(result);
+			if(result.size()<=compositionSize){
+				population = result;
+			}
+			else{
+				population = null;
+			}
 		}
+		
 	}
 
 	public Set<Node> getPopulation() {
@@ -72,8 +77,9 @@ public class FindComposition {
 		this.subGraphNodesMap = subGraphNodesMap;
 	}
 
-	private void composition(Node node, Set<Node> result) {
+	private boolean composition(Node node, Set<Node> result) {
 		Transaction tx = tempGraphDatabaseService.beginTx();
+		boolean toReturn =false;
 		try{
 			List<String>nodeInputs = Arrays.asList(getNodePropertyArray(node, "inputs"));
 			//		List<String>relOutputs = new ArrayList<String>();
@@ -85,10 +91,17 @@ public class FindComposition {
 
 			if(fulfillSubEndNodes!=null){
 				result.addAll(fulfillSubEndNodes);
-				if(result.size()>compositionSize) return;
-				for (Node n: fulfillSubEndNodes){
-					composition(n, result);
+				if(result.size()<=compositionSize){
+					for (Node n: fulfillSubEndNodes){
+						composition(n, result);
+						toReturn =true;
+						return true;
+					}
+				}else{
+					toReturn =false;
+					return false;
 				}
+				
 
 			}
 			tx.success();
@@ -97,6 +110,7 @@ public class FindComposition {
 		}finally{
 			tx.close();
 		}
+		return toReturn;
 
 	}
 

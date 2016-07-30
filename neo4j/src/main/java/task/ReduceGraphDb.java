@@ -34,12 +34,8 @@ public class ReduceGraphDb {
 		relatedNodes = new HashSet<Node>();
 	}
 	public void runReduceGraph(){
-		System.out.println("start find all related nodes");
 		findAllReleatedNodes(relatedNodes, false);
-		System.out.println("end find all related nodes");
-		System.out.println("start reduce db");
 		reduceGraphDatabase(relatedNodes);
-		System.out.println("end reduce db");
 
 	}
 

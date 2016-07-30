@@ -1,5 +1,6 @@
-Find composition Nodes    774
-parse Taxonomy file    303
-parse service file    48
-parse task file    9
-populate Taxonomy Tree    302
+Populate Taxonomy Tree    12
+run task: copied db, create temp db, add start and end nodes    396
+generate compositions    171
+Load files    101
+Create new test db    2025
+reduce graph db     70

@@ -1,10 +1,12 @@
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -26,7 +28,7 @@ import task.RunTask;
 
 
 //public class Main {
-	public class Main implements Runnable{
+public class Main implements Runnable{
 	private String serviceFileName = null;
 	private String taxonomyFileName = null;
 	private String taskFileName = null;
@@ -60,7 +62,7 @@ import task.RunTask;
 	private String databasename = "wsc2008dataset01";
 	private String dataset = "dataset/wsc2008/Set01MetaData/";
 	private String testDataset = "dataset/test/";
-	private final int compositionSize = 12;
+	private final int compositionSize = 8;
 	//******************************************************//
 
 
@@ -79,6 +81,7 @@ import task.RunTask;
 			neo4jwsc.taskFileName = neo4jwsc.testDataset+"test_problem.xml";
 		}
 		//load files
+		long startTime = System.currentTimeMillis();
 		LoadFiles loadFiles = new LoadFiles(neo4jwsc.serviceFileName,neo4jwsc.taxonomyFileName, neo4jwsc.taskFileName);
 		loadFiles.runLoadFiles();
 		neo4jwsc.taxonomyMap = loadFiles.getTaxonomyMap();
@@ -86,10 +89,22 @@ import task.RunTask;
 		neo4jwsc.taskInputs = loadFiles.getTaskInputs();
 		neo4jwsc.taskOutputs = loadFiles.getTaskOutputs();
 		neo4jwsc.serviceNodes = loadFiles.getServiceNodes();
+		long endTime = System.currentTimeMillis();
+		neo4jwsc.records.put("Load files", endTime - startTime);
+		System.out.println("Load files Total execution time: " + (endTime - startTime) );
+
+		startTime = 0;
+		endTime = 0;
+		startTime = System.currentTimeMillis();
 		PopulateTaxonomyTree populateTaxonomyTree = new PopulateTaxonomyTree();
 		populateTaxonomyTree.setTaxonomyMap(neo4jwsc.taxonomyMap);
 		populateTaxonomyTree.setServiceMap(neo4jwsc.serviceMap);
 		populateTaxonomyTree.populateTaxonomyTree();
+		endTime = System.currentTimeMillis();
+		neo4jwsc.records.put("Populate Taxonomy Tree", endTime - startTime);
+		System.out.println("Populate Taxonomy Tree total execution time: " + (endTime - startTime) );
+
+
 		//Identify run test file or not
 		//if database exist read database
 		//else if database not exist create database
@@ -102,6 +117,9 @@ import task.RunTask;
 				dbExist = false;   
 			}
 			if(dbExist){
+				startTime = 0;
+				endTime = 0;
+				startTime = System.currentTimeMillis();
 				neo4jwsc.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databasename);
 				registerShutdownHook(neo4jwsc.graphDatabaseService);  
 				Transaction transaction = neo4jwsc.graphDatabaseService.beginTx();
@@ -110,8 +128,14 @@ import task.RunTask;
 				transaction.success();
 				transaction.close();
 				signNodesToField(neo4jwsc.neo4jServNodes, neo4jwsc.graphDatabaseService);
+				endTime = System.currentTimeMillis();
+				neo4jwsc.records.put("Load existing db", endTime - startTime);
+				System.out.println("Load existing db Total execution time: " + (endTime - startTime) );
+
 			}else{
-				
+				startTime = 0;
+				endTime = 0;
+				startTime = System.currentTimeMillis();
 				GenerateDatabase generateDatabase = new GenerateDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databasename);
 				generateDatabase.createDbService();
 				neo4jwsc.graphDatabaseService = generateDatabase.getGraphDatabaseService();
@@ -123,14 +147,27 @@ import task.RunTask;
 				neo4jwsc.neo4jServNodes.clear();
 				neo4jwsc.neo4jServNodes = generateDatabase.getNeo4jServNodes();
 				Transaction transaction = neo4jwsc.graphDatabaseService.beginTx();
-				neo4jwsc.index = neo4jwsc.graphDatabaseService.index();
-				neo4jwsc.services = neo4jwsc.index.forNodes( "identifiers" );
-				transaction.success();
-				transaction.close();
+				try{
+					neo4jwsc.index = neo4jwsc.graphDatabaseService.index();
+					neo4jwsc.services = neo4jwsc.index.forNodes( "identifiers" );
+					transaction.success();
+				} catch (Exception e) {
+					System.out.println(e);
+					System.out.println("Main set index and services error.."); 
+				} finally {
+					transaction.close();
+				}		
+				endTime = System.currentTimeMillis();
+				neo4jwsc.records.put("Create new db", endTime - startTime);
+				System.out.println("Create new db Total execution time: " + (endTime - startTime) );
+
 			}
 			path = neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databasename;
 		}
 		else{
+			startTime = 0;
+			endTime = 0;
+			startTime = System.currentTimeMillis();
 			try {
 				FileUtils.deleteRecursively(new File(neo4jwsc.Neo4j_testServicesDBPath));
 			} catch (IOException e) {
@@ -148,23 +185,30 @@ import task.RunTask;
 			neo4jwsc.neo4jServNodes = generateDatabase.getNeo4jServNodes();
 
 			Transaction transaction = neo4jwsc.graphDatabaseService.beginTx();
-			neo4jwsc.index = neo4jwsc.graphDatabaseService.index();
-			neo4jwsc.services = neo4jwsc.index.forNodes( "identifiers" );
-			transaction.success();
-			transaction.close();
+			try{
+				neo4jwsc.index = neo4jwsc.graphDatabaseService.index();
+				neo4jwsc.services = neo4jwsc.index.forNodes( "identifiers" );
+				transaction.success();
+			} catch (Exception e) {
+				System.out.println(e);
+				System.out.println("Main test set index and services error.."); 
+			} finally {
+				transaction.close();
+			}				
+			endTime = System.currentTimeMillis();
+			neo4jwsc.records.put("Create new test db", endTime - startTime);
+			System.out.println("Create new test db Total execution time: " + (endTime - startTime) );
+
 			path = neo4jwsc.Neo4j_testServicesDBPath;
 		}
-		//		FileWriter fw = new FileWriter("timeRecord.txt");
-		//		for(Entry<String, Long> entry : records.entrySet()){
-		//			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
-		//		}
-		//		fw.close();
-		//		neo4jwsc.shutdown(graphDatabaseService);
 
 		//run task
 		//1: copy database and call->tempServiceDatabase
 		//2: connect to tempServiceDatabase
 		//3: use task inputs outputs create start and end nodes and link to tempservicedatabase
+		startTime = 0;
+		endTime = 0;
+		startTime = System.currentTimeMillis();
 		RunTask runtask = new RunTask(path);
 		runtask.setServiceNodes(neo4jwsc.serviceNodes);
 		runtask.setTaxonomyMap(neo4jwsc.taxonomyMap);
@@ -183,19 +227,26 @@ import task.RunTask;
 		neo4jwsc.endNode = runtask.getEndNode();
 		runtask.createRel(neo4jwsc.startNode);
 		runtask.createRel(neo4jwsc.endNode);
-		System.out.println("run task: copied db, create temp db, add start and end nodes");
+		endTime = System.currentTimeMillis();
+		neo4jwsc.records.put("run task: copied db, create temp db, add start and end nodes", endTime - startTime);
+		System.out.println("run task: copied db, create temp db, add start and end nodes Total execution time: " + (endTime - startTime) );
 
 		//reduce database use copied database
-		System.out.println("start reduce graph db");
+		startTime = 0;
+		endTime = 0;
+		startTime = System.currentTimeMillis();
 		ReduceGraphDb reduceGraphDb = new ReduceGraphDb(neo4jwsc.neo4jServNodes,neo4jwsc.tempGraphDatabaseService);
 		reduceGraphDb.setStartNode(neo4jwsc.startNode);
 		reduceGraphDb.setEndNode(neo4jwsc.endNode);
 		reduceGraphDb.runReduceGraph();
-		System.out.println("end reduce graph db");
-
+		endTime = System.currentTimeMillis();
+		neo4jwsc.records.put("reduce graph db ", endTime - startTime);
+		System.out.println("reduce graph db Total execution time: " + (endTime - startTime) );
 
 		//find compositions
-		System.out.println("start composition");
+		startTime = 0;
+		endTime = 0;
+		startTime = System.currentTimeMillis();
 		Set<Set<Node>> populations = new HashSet<Set<Node>>();
 		while(populations.size()<10){
 			FindComposition findComposition = new FindComposition(neo4jwsc.compositionSize, neo4jwsc.tempGraphDatabaseService);
@@ -206,10 +257,30 @@ import task.RunTask;
 			findComposition.setTaxonomyMap(neo4jwsc.taxonomyMap);
 			findComposition.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
 			findComposition.runComposition();
-			populations.add(findComposition.getPopulation());
+			Set<Node> population = findComposition.getPopulation();
+			if(population!=null){
+				populations.add(population);
+				System.out.println();
+				Transaction transaction = neo4jwsc.graphDatabaseService.beginTx();
+				for(Node n: population){
+					System.out.print(n.getProperty("name")+"  ");
+				}
+				System.out.println();
+				transaction.close();
+				System.out.println("Composition "+ populations.size()+": "+population.size());
+			}
+		
+
 
 		}
-		System.out.println("end composition");
+		endTime = System.currentTimeMillis();
+		neo4jwsc.records.put("generate compositions", endTime - startTime);
+		System.out.println("generate compositions Total execution time: " + (endTime - startTime) );
+		FileWriter fw = new FileWriter("timeRecord.txt");
+		for(Entry<String, Long> entry : neo4jwsc.records.entrySet()){
+			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
+		}
+		fw.close();
 		neo4jwsc.setRunning(false);  
 	}
 
