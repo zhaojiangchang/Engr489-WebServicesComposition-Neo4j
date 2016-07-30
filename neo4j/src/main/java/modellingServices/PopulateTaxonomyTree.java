@@ -1,4 +1,4 @@
-package org.neo4j.neo4j;
+package modellingServices;
 
 import java.util.HashMap;
 import java.util.HashSet;

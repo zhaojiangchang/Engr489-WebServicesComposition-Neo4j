@@ -1,4 +1,4 @@
-package org.neo4j.neo4j;
+package generateDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;

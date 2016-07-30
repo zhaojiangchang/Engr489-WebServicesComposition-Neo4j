@@ -14,12 +14,12 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.io.fs.FileUtils;
-import org.neo4j.neo4j.GenerateDatabase;
-import org.neo4j.neo4j.LoadFiles;
-import org.neo4j.neo4j.PopulateTaxonomyTree;
 
 import component.ServiceNode;
 import component.TaxonomyNode;
+import generateDatabase.GenerateDatabase;
+import modellingServices.LoadFiles;
+import modellingServices.PopulateTaxonomyTree;
 import task.FindComposition;
 import task.ReduceGraphDb;
 import task.RunTask;

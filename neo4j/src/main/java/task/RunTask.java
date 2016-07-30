@@ -23,9 +23,6 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.io.fs.FileUtils;
-import org.neo4j.neo4j.GenerateDatabase;
-import org.neo4j.neo4j.LoadFiles;
-
 import component.ServiceNode;
 import component.TaxonomyNode;
 
