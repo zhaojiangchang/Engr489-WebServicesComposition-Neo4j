@@ -22,7 +22,7 @@ import component.TaxonomyNode;
 import generateDatabase.GenerateDatabase;
 import modellingServices.LoadFiles;
 import modellingServices.PopulateTaxonomyTree;
-import task.FindComposition;
+import task.FindCompositions;
 import task.ReduceGraphDb;
 import task.RunTask;
 
@@ -58,11 +58,12 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private boolean runTestFiles = true;
-	private String databasename = "wsc2008dataset01";
-	private String dataset = "dataset/wsc2008/Set01MetaData/";
+	private boolean runTestFiles = false;
+	private String databasename = "wsc2008dataset08";
+	private String dataset = "dataset/wsc2008/Set08MetaData/";
 	private String testDataset = "dataset/test/";
-	private final int compositionSize = 8;
+	private final int compositionSize = 32;
+	private int totalCompositions = 10;
 	//******************************************************//
 
 
@@ -209,6 +210,7 @@ public class Main implements Runnable{
 		startTime = 0;
 		endTime = 0;
 		startTime = System.currentTimeMillis();
+		
 		RunTask runtask = new RunTask(path);
 		runtask.setServiceNodes(neo4jwsc.serviceNodes);
 		runtask.setTaxonomyMap(neo4jwsc.taxonomyMap);
@@ -227,6 +229,7 @@ public class Main implements Runnable{
 		neo4jwsc.endNode = runtask.getEndNode();
 		runtask.createRel(neo4jwsc.startNode);
 		runtask.createRel(neo4jwsc.endNode);
+		
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("run task: copied db, create temp db, add start and end nodes", endTime - startTime);
 		System.out.println("run task: copied db, create temp db, add start and end nodes Total execution time: " + (endTime - startTime) );
@@ -247,32 +250,56 @@ public class Main implements Runnable{
 		startTime = 0;
 		endTime = 0;
 		startTime = System.currentTimeMillis();
-		Set<Set<Node>> populations = new HashSet<Set<Node>>();
-		while(populations.size()<10){
-			FindComposition findComposition = new FindComposition(neo4jwsc.compositionSize, neo4jwsc.tempGraphDatabaseService);
+		FindCompositions findCompositions = new FindCompositions(neo4jwsc.totalCompositions, neo4jwsc.compositionSize, neo4jwsc.tempGraphDatabaseService);
+		findCompositions.setStartNode(neo4jwsc.startNode);
+		findCompositions.setEndNode(neo4jwsc.endNode);
+		findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
+		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
+		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
+		Set<Set<Node>> populations = findCompositions.run();
 
-			findComposition.setStartNode(neo4jwsc.startNode);
-			findComposition.setEndNode(neo4jwsc.endNode);
-			findComposition.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
-			findComposition.setTaxonomyMap(neo4jwsc.taxonomyMap);
-			findComposition.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
-			findComposition.runComposition();
-			Set<Node> population = findComposition.getPopulation();
-			if(population!=null){
-				populations.add(population);
+		Transaction transaction = neo4jwsc.tempGraphDatabaseService.beginTx();
+		try{
+			for(Set<Node> pop: populations){
 				System.out.println();
-				Transaction transaction = neo4jwsc.graphDatabaseService.beginTx();
-				for(Node n: population){
+				for(Node n: pop){
 					System.out.print(n.getProperty("name")+"  ");
 				}
 				System.out.println();
-				transaction.close();
-				System.out.println("Composition "+ populations.size()+": "+population.size());
+				System.out.println("composition size: "+pop.size());
 			}
-		
-
-
-		}
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("print populations error.."); 
+		} finally {
+			transaction.close();
+		}		
+		//		Set<Set<Node>> populations = new HashSet<Set<Node>>();
+//		while(populations.size()<10){
+//			FindComposition findComposition = new FindComposition(neo4jwsc.compositionSize, neo4jwsc.tempGraphDatabaseService);
+//
+//			findComposition.setStartNode(neo4jwsc.startNode);
+//			findComposition.setEndNode(neo4jwsc.endNode);
+//			findComposition.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
+//			findComposition.setTaxonomyMap(neo4jwsc.taxonomyMap);
+//			findComposition.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
+//			findComposition.runComposition();
+//			Set<Node> population = findComposition.getPopulation();
+//			if(population!=null){
+//				populations.add(population);
+//				System.out.println();
+//				Transaction transaction = neo4jwsc.graphDatabaseService.beginTx();
+//				for(Node n: population){
+//					System.out.print(n.getProperty("name")+"  ");
+//				}
+//				System.out.println();
+//				transaction.close();
+//				System.out.println("Composition "+ populations.size()+": "+population.size());
+//			}
+//		
+//
+//
+//		}
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("generate compositions", endTime - startTime);
 		System.out.println("generate compositions Total execution time: " + (endTime - startTime) );
@@ -289,9 +316,12 @@ public class Main implements Runnable{
 		Transaction transaction = graphDatabaseService.beginTx();
 		Iterable<Node> nodes = graphDatabaseService.getAllNodes();
 		neo4jServNodes.clear();
+		int i = 0;
 		for(Node n: nodes){
+			i++;
 			neo4jServNodes.put((String)n.getProperty("name"), n);
 		}
+		System.out.println("total service nodes: "+i);
 		transaction.success();
 		transaction.close();
 	}

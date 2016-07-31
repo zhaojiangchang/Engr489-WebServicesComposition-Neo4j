@@ -34,7 +34,10 @@ public class ReduceGraphDb {
 		relatedNodes = new HashSet<Node>();
 	}
 	public void runReduceGraph(){
-		findAllReleatedNodes(relatedNodes, false);
+		for(Entry<String, Node>entry: neo4jServNodes.entrySet()){
+			relatedNodes.add(entry.getValue());
+		}
+		findAllReleatedNodes(relatedNodes);
 		reduceGraphDatabase(relatedNodes);
 
 	}
@@ -49,49 +52,69 @@ public class ReduceGraphDb {
 	public Map<String, Node> getSubGraphNodesMap() {
 		return subGraphNodesMap;
 	}
-	private void findAllReleatedNodes(Set<Node> relatedNodes, boolean b) {
-		if(!b){
-			for(Entry<String, Node>entry: neo4jServNodes.entrySet()){
-				Node sNode = entry.getValue();
-
-				if(hasRel(startNode, sNode, relatedNodes) && hasRel(sNode, endNode, relatedNodes)){
-					relatedNodes.add(sNode);
+	private void findAllReleatedNodes(Set<Node> relatedNodes) {
+		Transaction t = tempGraphDatabaseService.beginTx();
+		try{
+			int i = 0;
+//			if(!b){
+//				for(Entry<String, Node>entry: neo4jServNodes.entrySet()){
+//					i++;
+//					if(i%2000 == 0){
+//						t = tempGraphDatabaseService.beginTx();
+//					}
+//					Node sNode = entry.getValue();
+//
+//					if(hasRel(startNode, sNode, relatedNodes) && hasRel(sNode, endNode, relatedNodes)){
+//						relatedNodes.add(sNode);
+//					}
+//				}
+//				removeNoneFulFillNodes(relatedNodes);	
+//				
+//			}else{
+				i = 0;
+				Set<Node>temp = new HashSet<Node>(relatedNodes);
+				for(Node sNode: temp){	
+					i++;
+					System.out.println(i);
+					if(i%2000 == 0){
+						t = tempGraphDatabaseService.beginTx();
+					}
+					if(!hasRel(startNode, sNode, temp) || !hasRel(sNode, endNode, temp)){
+						relatedNodes.remove(sNode);
+					}
 				}
-			}
-			removeNoneFulFillNodes(relatedNodes);		
-		}else{
-			Set<Node>temp = new HashSet<Node>(relatedNodes);
-			for(Node sNode: temp){				
-				if(!hasRel(startNode, sNode, temp) || !hasRel(sNode, endNode, temp)){
-					relatedNodes.remove(sNode);
-				}
-			}
-			removeNoneFulFillNodes(relatedNodes);		
-		}		
+				removeNoneFulFillNodes(relatedNodes);		
+//			}	
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("findAllReleatedNodes error.."); 
+		} finally {
+			t.close();
+		}
 	}
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
-		Transaction t = tempGraphDatabaseService.beginTx();
+//		Transaction t = tempGraphDatabaseService.beginTx();
 		boolean hasR = false;
-		try{
+//		try{
 			if(releatedNodes==null){
 				PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
 				if(finder.findSinglePath(firstNode, secondNode)!=null){
-					hasR = true;
+					return true;
 				}
 			}
 			else{
 				PathFinder<Path> finder = GraphAlgoFactory.shortestPath(Traversal.expanderForTypes(RelTypes.IN, Direction.OUTGOING), neo4jServNodes.size());                  
 				if(finder.findSinglePath(firstNode, secondNode)!=null){
-					hasR = true;
+					return true;
 				}
 			}
-		} catch (Exception e) {
-			System.out.println(e);
-			System.out.println("hasRel error.."); 
-		} finally {
-			t.close();
-		}
-		return hasR;	
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			System.out.println("hasRel error.."); 
+//		} finally {
+//			t.close();
+//		}
+		return false;	
 	}
 
 	private void removeNoneFulFillNodes(Set<Node> releatedNodes) {
@@ -107,7 +130,7 @@ public class ReduceGraphDb {
 				}
 			}
 			if(removed){
-				findAllReleatedNodes(releatedNodes, true);
+				findAllReleatedNodes(releatedNodes);
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -207,7 +230,8 @@ public class ReduceGraphDb {
 		try{
 			int i = 0;
 			for(Node n: getAllNodes()) {
-				if(i%3000 == 0){
+				i++;
+				if(i%2000 == 0){
 					t = tempGraphDatabaseService.beginTx();
 				}
 				if(!relatedNodes.contains(n) && !n.getProperty("name").equals("end")&& !n.getProperty("name").equals("start")){
@@ -229,7 +253,7 @@ public class ReduceGraphDb {
 		for(Node n: getAllNodes()) {
 			subGraphNodesMap.put((String)n.getProperty("name"), n);			
 		}
-		System.out.println("subGraphNodesMap: "+subGraphNodesMap.size());
+		System.out.println("db reduced to: "+subGraphNodesMap.size()+" nodes;");
 
 		t.close();
 	}

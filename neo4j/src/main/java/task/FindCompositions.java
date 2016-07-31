@@ -23,7 +23,7 @@ import org.neo4j.kernel.Traversal;
 
 import component.TaxonomyNode;
 
-public class FindComposition {
+public class FindCompositions {
 	private GraphDatabaseService tempGraphDatabaseService;
 	private Node endNode = null;
 	private Node startNode = null;
@@ -35,85 +35,64 @@ public class FindComposition {
 	Set<Node> population = null;
 	private int compositionSize = 0;
 	public Map<String,Node>subGraphNodesMap = null;
+	private int totalCompositions = 0;
 
-	public FindComposition(int compositionSize, GraphDatabaseService tempGraphDatabaseService ){
+	public FindCompositions(int totalCompositions, int compositionSize, GraphDatabaseService tempGraphDatabaseService ){
 		this.tempGraphDatabaseService = tempGraphDatabaseService;
 		this.compositionSize = compositionSize;
+		this.totalCompositions = totalCompositions;
 		population = new HashSet<Node>();
 	}
-	public void runComposition(){
-		Set<Node>result = new HashSet<Node>();
-		result.add(endNode);
-		boolean isResult = composition(endNode, result);	
-		if(isResult){
+	public Set<Set<Node>> run(){
+		Set<Set<Node>> populations = new HashSet<Set<Node>>();
+		while(populations.size()<totalCompositions){
+			Set<Node>result = new HashSet<Node>();
+			result.add(endNode);
+			composition(endNode, result);	
 			result = checkDuplicateNodes(result);
 			if(result.size()<=compositionSize){
-				population = result;
-			}
-			else{
-				population = null;
+				populations.add(result);
 			}
 		}
-		
+		return populations;
 	}
-
-	public Set<Node> getPopulation() {
-		return population;
-	}
-	public void setEndNode(Node endNode) {
-		this.endNode = endNode;
-	}
-	public void setStartNode(Node startNode) {
-		this.startNode = startNode;
-	}
-	public void setNeo4jServNodes(Map<String, Node> neo4jServNodes) {
-		this.neo4jServNodes = neo4jServNodes;
-	}
-	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap) {
-		this.taxonomyMap = taxonomyMap;
-	}
-
-	public void setSubGraphNodesMap(Map<String, Node> subGraphNodesMap) {
-		this.subGraphNodesMap = subGraphNodesMap;
-	}
-
-	private boolean composition(Node node, Set<Node> result) {
+	private void composition(Node subEndNode, Set<Node> result) {
 		Transaction tx = tempGraphDatabaseService.beginTx();
-		boolean toReturn =false;
+
 		try{
-			List<String>nodeInputs = Arrays.asList(getNodePropertyArray(node, "inputs"));
+			List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
+
 			//		List<String>relOutputs = new ArrayList<String>();
 			List<Relationship>rels = new ArrayList<Relationship>();
-			for(Relationship r: node.getRelationships(Direction.INCOMING)){
+			for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
 				rels.add(r);
 			}
 			Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels);
 
 			if(fulfillSubEndNodes!=null){
+				//			System.out.println(fulfillSubEndNodes.size() +"    " +subEndNode.getProperty("name"));
+				//			for(Node n: fulfillSubEndNodes){
+				//				System.out.println(n.getProperty("name"));
+				//			}
+				
 				result.addAll(fulfillSubEndNodes);
-				if(result.size()<=compositionSize){
-					for (Node n: fulfillSubEndNodes){
-						composition(n, result);
-						toReturn =true;
-						return true;
-					}
+				if(result.size()>compositionSize){
+					return;
 				}else{
-					toReturn =false;
-					return false;
+					for (Node node: fulfillSubEndNodes){
+						composition(node, result);
+					}
 				}
 				
 
 			}
 			tx.success();
 		}catch(Exception e){
-			System.out.println("composition:"+ e);
+			System.out.println("find composition - composition: "+ e);
 		}finally{
 			tx.close();
 		}
-		return toReturn;
-
 	}
-
 	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> relationships) {
 		// TODO Auto-generated method stub
 		int i = 100;
@@ -138,6 +117,139 @@ public class FindComposition {
 		}
 		return null;
 	}
+	private Set<Node> checkDuplicateNodes(Set<Node> result) {
+		Transaction tx = tempGraphDatabaseService.beginTx();
+		Set<Node>temp = new HashSet<Node>(result);
+		try{
+			for(Node n : result){
+				if(!n.getProperty("name").equals("start") && !n.getProperty("name").equals("end") ){
+					temp.remove(n);
+					if(!fulfillSubGraphNodes(temp)){
+						temp.add(n);
+					}
+				}
+			}
+
+		}catch(Exception e){
+			System.out.println("composition:"+ e);
+		}finally{
+			tx.close();
+		}
+		return temp;
+	}
+
+
+	//	public void runComposition(){
+	//		Set<Node>result = new HashSet<Node>();
+	//		result.add(endNode);
+	//		boolean isResult = composition(endNode, result);	
+	//		if(isResult){
+	//			result = checkDuplicateNodes(result);
+	//			if(result.size()<=compositionSize){
+	//				population = result;
+	//				
+	//			}
+	//			else{
+	//				population = null;
+	//			}
+	//		}
+	//		
+	//	}
+
+
+	public Set<Node> getPopulation() {
+		return population;
+	}
+	public void setEndNode(Node endNode) {
+		this.endNode = endNode;
+	}
+	public void setStartNode(Node startNode) {
+		this.startNode = startNode;
+	}
+	public void setNeo4jServNodes(Map<String, Node> neo4jServNodes) {
+		this.neo4jServNodes = neo4jServNodes;
+	}
+	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap) {
+		this.taxonomyMap = taxonomyMap;
+	}
+
+	public void setSubGraphNodesMap(Map<String, Node> subGraphNodesMap) {
+		this.subGraphNodesMap = subGraphNodesMap;
+	}
+
+	//	private boolean composition(Node node, Set<Node> result) {
+	//		
+	//		Transaction tx = tempGraphDatabaseService.beginTx();
+	//		System.out.println(node.getProperty("name"));
+	//		boolean toReturn =false;
+	//		try{
+	//			List<String>nodeInputs = Arrays.asList(getNodePropertyArray(node, "inputs"));
+	//			//		List<String>relOutputs = new ArrayList<String>();
+	//			List<Relationship>rels = new ArrayList<Relationship>();
+	//			for(Relationship r: node.getRelationships(Direction.INCOMING)){
+	//				rels.add(r);
+	//			}
+	//			Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels);
+	//
+	//			if(fulfillSubEndNodes!=null){
+	//				result.addAll(fulfillSubEndNodes);
+	////				for(Node nn: fulfillSubEndNodes){
+	////					System.out.print(node.getProperty("name")+"    ");
+	////
+	////				}
+	////				System.out.println();
+	//
+	//				if(result.size()<=compositionSize){
+	//					
+	//					for (Node n: fulfillSubEndNodes){
+	//						composition(n, result);
+	//						toReturn =true;
+	//						return true;
+	//					}
+	//				}else{
+	//					toReturn =false;
+	//					return false;
+	//				}
+	//				
+	//
+	//			}
+	//			tx.success();
+	//		}catch(Exception e){
+	//			System.out.println("composition:"+ e);
+	//		}finally{
+	//			tx.close();
+	//		}
+	//		return toReturn;
+	//
+	//	}
+
+	//	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> relationships) {
+	//		// TODO Auto-generated method stub
+	//		System.out.println();
+	//		int i = 100;
+	//		while(i!=0){
+	//			Collections.shuffle(relationships);
+	//			Set<Node>toReturn = new HashSet<Node>();
+	//			List<String>relOutputs = new ArrayList<String>();
+	//			for(Relationship r: relationships){
+	//				Node node = subGraphNodesMap.get(r.getProperty("From"));
+	//				System.out.print("incoming node: " + node.getProperty("name")+"    ");
+	//				List<String> commonValue = Arrays.asList(getNodeRelationshipPropertyArray(r, "outputs"));
+	//				List<String> temp = new ArrayList<String>(commonValue);
+	//				temp.retainAll(relOutputs);
+	//				if(temp.size()==0){
+	//					relOutputs.addAll(commonValue);
+	//					toReturn.add(node);
+	//				}
+	//				if(relOutputs.size()==nodeInputs.size()){
+	//					System.out.println();
+	//					return toReturn;
+	//				}
+	//			}
+	//			i--;
+	//		}
+	//		return null;
+	//	}
 
 	private void findAllReleatedNodes(Set<Node> releatedNodes, boolean b) {
 		if(!b){
@@ -233,27 +345,27 @@ public class FindComposition {
 		}
 		return fulfill;
 	}
-	private Set<Node> checkDuplicateNodes(Set<Node> result) {
-		Transaction transaction = tempGraphDatabaseService.beginTx();
-		Set<Node>temp = new HashSet<Node>(result);
-		try{
-			for(Node n : result){
-				if(!n.getProperty("name").equals("start") && !n.getProperty("name").equals("end") ){
-					temp.remove(n);
-					if(!fulfillSubGraphNodes(temp)){
-						temp.add(n);
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			System.out.println(e);
-			System.out.println("find composition checkDuplicateNodes error.."); 
-		} finally {
-			transaction.close();
-		}		
-		return temp;
-	}
+	//	private Set<Node> checkDuplicateNodes(Set<Node> result) {
+	//		Transaction transaction = tempGraphDatabaseService.beginTx();
+	//		Set<Node>temp = new HashSet<Node>(result);
+	//		try{
+	//			for(Node n : result){
+	//				if(!n.getProperty("name").equals("start") && !n.getProperty("name").equals("end") ){
+	//					temp.remove(n);
+	//					if(!fulfillSubGraphNodes(temp)){
+	//						temp.add(n);
+	//					}
+	//				}
+	//			}
+	//
+	//		} catch (Exception e) {
+	//			System.out.println(e);
+	//			System.out.println("find composition checkDuplicateNodes error.."); 
+	//		} finally {
+	//			transaction.close();
+	//		}		
+	//		return temp;
+	//	}
 	private boolean fulfillSubGraphNodes(Set<Node> releatedNodes) {
 		Transaction transaction = tempGraphDatabaseService.beginTx();
 		boolean toReturn = false;

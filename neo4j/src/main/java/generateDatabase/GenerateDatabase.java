@@ -126,7 +126,9 @@ public class GenerateDatabase {
 		try{
 			index = graphDatabaseService.index();
 			services = index.forNodes( "identifiers" );
+			int i = 0;
 			for(Entry<String, ServiceNode> entry : serviceMap.entrySet()) {
+				i++;
 				String key = entry.getKey();
 				ServiceNode value = entry.getValue();
 				//double weight = calculateWeight(value.getQos());
@@ -145,12 +147,11 @@ public class GenerateDatabase {
 				service.setProperty("inputServices", value.getInputsServiceArray());
 				service.setProperty("outputServices", value.getOutputsServiceArray());
 				service.setProperty("priousNodeNames", priousNodeNames);
-				service.setProperty("visited", false);
 				neo4jServiceNodes = increaseNodeArray(neo4jServiceNodes);
 				neo4jServiceNodes[neo4jServiceNodes.length-1] =service;
 				neo4jServNodes.put(entry.getKey(), service);
 			}
-			System.out.println("web service nodes created");			
+			System.out.println("web service nodes created:  "+ i+" nodes;");			
 			transaction.success();
 		} catch (Exception e) {
 			System.out.println(e);

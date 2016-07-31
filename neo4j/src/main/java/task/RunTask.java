@@ -128,7 +128,7 @@ public class RunTask {
 			Iterable<Node> nodes = tempGraphDatabaseService.getAllNodes();
 			neo4jServNodes.clear();
 			for(Node n: nodes){
-				neo4jServNodes.put((String)n.getProperty("name"), n);
+				neo4jServNodes.put(n.getProperty("name").toString(), n);
 			}
 			transaction.success();
 		} catch (Exception e) {
@@ -211,11 +211,11 @@ public class RunTask {
 			}
 			service.setProperty("inputServices", temp);
 			service.setProperty("outputServices", temp);
-			service.setProperty("visited", false);
+
 			transaction.success();
 		} catch (Exception e) {
 			System.out.println(e);
-			System.out.println("Runtask createTempDb error.."); 
+			System.out.println("Runtask createStartEndNode error.."); 
 		} finally {
 			transaction.close();
 		}				
@@ -231,6 +231,7 @@ public class RunTask {
 				if(outputs.length>0){
 					for(String s: outputs){
 						Node outputsServicesNode = neo4jServNodes.get(s);
+						
 						String[] tempToArray = getOutputs(node, outputsServicesNode, tempGraphDatabaseService);
 						relation = node.createRelationshipTo(outputsServicesNode, RelTypes.IN);
 						relation.setProperty("From", nodeString);
@@ -245,6 +246,7 @@ public class RunTask {
 				if(inputs.length>0){
 					for(String s: inputs){
 						Node inputsServicesNode = neo4jServNodes.get(s);
+						
 						String[] tempToArray = getOutputs(inputsServicesNode,node, tempGraphDatabaseService);
 						relation = inputsServicesNode.createRelationshipTo(node, RelTypes.IN);
 						relation.setProperty("From", s);
@@ -254,6 +256,7 @@ public class RunTask {
 					}
 				}
 			}
+		
 			transaction.success();
 		} catch (Exception e) {
 			System.out.println(e);
@@ -349,5 +352,4 @@ public class RunTask {
 	public Map<String, Node> getNeo4jServNodes() {
 		return neo4jServNodes;
 	}
-
 }
