@@ -81,6 +81,7 @@ public class Main implements Runnable{
 			neo4jwsc.taskFileName = "dataset/test/test_problem.xml";
 		}
 		//load files
+		neo4jwsc.records.put("TIME: ", System.currentTimeMillis());
 		long startTime = System.currentTimeMillis();
 		LoadFiles loadFiles = new LoadFiles(neo4jwsc.serviceFileName,neo4jwsc.taxonomyFileName, neo4jwsc.taskFileName);
 		loadFiles.runLoadFiles();

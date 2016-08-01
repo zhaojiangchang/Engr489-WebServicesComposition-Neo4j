@@ -1,10 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e16e07db-58b2-4846-9b2b-fbd78e0928d9" name="Default" comment="" />
+    <list default="true" id="9479b7d3-63f9-4665-ac50-2f54cc736815" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/services-output.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem2.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem3.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem4.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem5.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem6.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv.out.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv2.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv3.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv4.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv5.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv6.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy2.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy3.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy4.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy5.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy6.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet01/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet01/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet02/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet02/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet03/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet03/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet04/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet04/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet05/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet05/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet06/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet06/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet07/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet07/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet08/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet08/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet09/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet09/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet10/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet10/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Services.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Taxonomy.owl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Readme.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/Solution.bpel" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/taxonomy.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/Challenge.wsdl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/problem.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/services.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/taxonomy.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/neo4j/src/main/java/Main.java" afterPath="$PROJECT_DIR$/neo4j/src/main/java/Main.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/neo4j/wscNeo4j-Engr489.iml" afterPath="$PROJECT_DIR$/neo4j/wscNeo4j-Engr489.iml" />
+    </list>
     <ignored path="Engr489-WebServicesComposition-Neo4j.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/target/classes/" />
+    <ignored path="$PROJECT_DIR$/neo4j/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,39 +127,63 @@
     <favorites_list name="Engr489-WebServicesComposition-Neo4j" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
+    <leaf>
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/neo4j/src/main/java/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReduceGraphDb.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/neo4j/src/main/java/task/ReduceGraphDb.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
-              <folding />
+            <state relative-caret-position="300">
+              <caret line="83" column="65" selection-start-line="83" selection-start-column="65" selection-end-line="83" selection-end-column="65" />
+              <folding>
+                <element signature="e#1172#1185#0" expanded="true" />
+                <element signature="e#1244#1258#0" expanded="true" />
+                <element signature="e#1389#1410#0" expanded="true" />
+                <element signature="e#1474#1496#0" expanded="true" />
+                <element signature="e#13468#13635#0" expanded="true" />
+                <element signature="e#13634#13635#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
       <projects_view />
     </option>
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/neo4j/src/main/java/Main.java" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Bundled (Maven 3)" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+      </PATH>
+    </treeState>
+  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="20" />
-    <option name="y" value="37" />
-    <option name="width" value="1260" />
-    <option name="height" value="684" />
+    <option name="x" value="272" />
+    <option name="y" value="23" />
+    <option name="width" value="1242" />
+    <option name="height" value="809" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -80,7 +211,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -89,13 +219,104 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Engr489-WebServicesComposition-Neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="neo4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/neo4j/pom.xml" />
   </component>
   <component name="RunManager" selected="Application.Main">
     <configuration default="false" name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -109,7 +330,7 @@
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="main" />
+      <module name="wscNeo4j-Engr489" />
       <envs />
       <method />
     </configuration>
@@ -283,7 +504,7 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="main" />
+      <module name="Engr489-WebServicesComposition-Neo4j" />
       <envs />
       <method />
     </configuration>
@@ -377,42 +598,42 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e16e07db-58b2-4846-9b2b-fbd78e0928d9" name="Default" comment="" />
-      <created>1470016264003</created>
+      <changelist id="9479b7d3-63f9-4665-ac50-2f54cc736815" name="Default" comment="" />
+      <created>1470052500152</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1470016264003</updated>
+      <updated>1470052500152</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="20" y="37" width="1260" height="684" extended-state="0" />
-    <editor active="false" />
+    <frame x="272" y="23" width="1242" height="809" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32775453" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12583333" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16875872" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3284553" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -437,33 +658,16 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/neo4j/src/main/java/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/neo4j/src/main/java/task/ReduceGraphDb.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/neo4j/src/main/java/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/neo4j/src/main/java/task/ReduceGraphDb.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
-          <folding />
+        <state relative-caret-position="300">
+          <caret line="83" column="65" selection-start-line="83" selection-start-column="65" selection-end-line="83" selection-end-column="65" />
+          <folding>
+            <element signature="e#1172#1185#0" expanded="true" />
+            <element signature="e#1244#1258#0" expanded="true" />
+            <element signature="e#1389#1410#0" expanded="true" />
+            <element signature="e#1474#1496#0" expanded="true" />
+            <element signature="e#13468#13635#0" expanded="true" />
+            <element signature="e#13634#13635#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

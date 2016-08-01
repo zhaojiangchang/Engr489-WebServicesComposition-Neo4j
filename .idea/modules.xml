@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/neo4j/src/main/main.iml" filepath="$PROJECT_DIR$/neo4j/src/main/main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/neo4j/src/test/test.iml" filepath="$PROJECT_DIR$/neo4j/src/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Engr489-WebServicesComposition-Neo4j.iml" filepath="$PROJECT_DIR$/Engr489-WebServicesComposition-Neo4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/neo4j/wscNeo4j-Engr489.iml" filepath="$PROJECT_DIR$/neo4j/wscNeo4j-Engr489.iml" />
     </modules>
   </component>
 </project>
