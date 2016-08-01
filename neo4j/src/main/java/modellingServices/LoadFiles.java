@@ -24,11 +24,11 @@ public class LoadFiles {
 	private String serviceFileName;
 	private String taxonomyFileName;
 	private String taskFileName;
-	public Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
-	public Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
-	public Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
-	public Set<String> taskInputs;
-	public Set<String> taskOutputs;
+	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
+	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
+	private Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
+	private Set<String> taskInputs;
+	private Set<String> taskOutputs;
 	
 	public LoadFiles(String serviceFileName, String taxonomyFileName, String taskFileName) {
 		this.serviceFileName = serviceFileName;

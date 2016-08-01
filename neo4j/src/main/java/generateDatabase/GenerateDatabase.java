@@ -24,18 +24,18 @@ import component.ServiceNode;
 import component.TaxonomyNode;
 
 public class GenerateDatabase {
-	public GraphDatabaseService graphDatabaseService;
+	private GraphDatabaseService graphDatabaseService;
 	private String databasePath;
-	Node[] neo4jServiceNodes;
-	public IndexManager index = null;
+	private Node[] neo4jServiceNodes;
+	private IndexManager index = null;
 	public Index<Node> services = null;
-	public static Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
-	public long startTime = 0;
-	public long endTime = 0;
-	public Map<String,List<String>> servicesWithOutputs = new HashMap<String,List<String>>();
-	public Map<String,List<String>> servicesWithInputs = new HashMap<String,List<String>>();
-	public Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
-	public Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
+	private static Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
+	private long startTime = 0;
+	private long endTime = 0;
+	private Map<String,List<String>> servicesWithOutputs = new HashMap<String,List<String>>();
+	private Map<String,List<String>> servicesWithInputs = new HashMap<String,List<String>>();
+	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
+	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	Relationship relation;
 
 

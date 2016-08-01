@@ -27,14 +27,14 @@ public class FindCompositions {
 	private GraphDatabaseService tempGraphDatabaseService;
 	private Node endNode = null;
 	private Node startNode = null;
-	public  Map<String, Node> neo4jServNodes = new HashMap<String, Node>();
-	public  Map<String, TaxonomyNode> taxonomyMap = null;
+	private  Map<String, Node> neo4jServNodes = new HashMap<String, Node>();
+	private  Map<String, TaxonomyNode> taxonomyMap = null;
 	private enum RelTypes implements RelationshipType{
 		PARENT, CHILD, OUTPUT, INPUT, TO, IN, OUT
 	}
 	Set<Node> population = null;
 	private int compositionSize = 0;
-	public Map<String,Node>subGraphNodesMap = null;
+	private Map<String,Node>subGraphNodesMap = null;
 	private int totalCompositions = 0;
 
 	public FindCompositions(int totalCompositions, int compositionSize, GraphDatabaseService tempGraphDatabaseService ){
@@ -488,7 +488,7 @@ public class FindCompositions {
 		}
 		return array;
 	}
-	public String[] increaseArray(String[] theArray)
+	private String[] increaseArray(String[] theArray)
 	{
 		int i = theArray.length;
 		int n = ++i;

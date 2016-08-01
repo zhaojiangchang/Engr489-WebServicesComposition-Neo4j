@@ -12,15 +12,15 @@ import component.ServiceNode;
 import component.TaxonomyNode;
 
 public class PopulateTaxonomyTree {
-	public Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
-	public Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
+	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
+	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 
-	public Set<TaxonomyNode> children;
-	public Set<TaxonomyNode> parents;
+	private Set<TaxonomyNode> children;
+	private Set<TaxonomyNode> parents;
 	//Key: taxonomyNode name Value: set of children
-	public Map<String, Set<TaxonomyNode>> cs = new HashMap<String,Set<TaxonomyNode>>();
+	private Map<String, Set<TaxonomyNode>> cs = new HashMap<String,Set<TaxonomyNode>>();
 	//Key: taxonomyNode name Value: set of parents
-	public Map<String, Set<TaxonomyNode>> ps = new HashMap<String,Set<TaxonomyNode>>();
+	private Map<String, Set<TaxonomyNode>> ps = new HashMap<String,Set<TaxonomyNode>>();
 
 	public PopulateTaxonomyTree(){
 	}		

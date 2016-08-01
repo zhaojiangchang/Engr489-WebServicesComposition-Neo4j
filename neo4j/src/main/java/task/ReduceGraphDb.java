@@ -206,7 +206,7 @@ public class ReduceGraphDb {
 		}		
 		return array;
 	}
-	public String[] increaseArray(String[] theArray)
+	private String[] increaseArray(String[] theArray)
 	{
 		int i = theArray.length;
 		int n = ++i;

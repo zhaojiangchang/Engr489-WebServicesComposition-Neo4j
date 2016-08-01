@@ -27,32 +27,24 @@ import component.ServiceNode;
 import component.TaxonomyNode;
 
 public class RunTask {
-	public String path;
-	public Set<String> taskInputs;
-	public Set<String> taskOutputs;
-	public Node startNode;
-	public Node endNode;
-	static GraphDatabaseService tempGraphDatabaseService;
-	public Map<String, Node> neo4jServNodes = new HashMap<String, Node>();
-	public Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
+	private String path;
+	private Set<String> taskInputs;
+	private Set<String> taskOutputs;
+	private Node startNode;
+	private Node endNode;
+	private static GraphDatabaseService tempGraphDatabaseService;
+	private Map<String, Node> neo4jServNodes = new HashMap<String, Node>();
+	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private final String Neo4j_tempDBPath = "database/temp_graph";
-	public IndexManager tempIndex = null;
-	public Index<Node> tempServices = null;
-	public Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
+	private IndexManager tempIndex = null;
+	private Index<Node> tempServices = null;
+	private Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
 	Relationship relation;
 
 	public RunTask(String path){
 		this.path = path;
 		taskInputs = new HashSet<String>();
 		taskOutputs = new HashSet<String>();
-	}
-	public void runtask(){
-		copyDb();
-		createTempDb();
-		addStartEndNodes();
-		createRel(startNode);
-		createRel(endNode);
-
 	}
 
 	public void setNeo4jServNodes(Map<String, Node> neo4jServNodes) {
