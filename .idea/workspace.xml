@@ -2,110 +2,112 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9479b7d3-63f9-4665-ac50-2f54cc736815" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/services-output.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem2.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem5.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_problem6.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv.out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv2.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv5.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_serv6.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy2.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy5.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/test/test_taxonomy6.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet01/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet01/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet02/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet02/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet03/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet03/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet04/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet04/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet05/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet05/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet06/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet06/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet07/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet07/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet08/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet08/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet09/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet09/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet10/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/ChallengeSet10/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Services.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/Taxonomy.owl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/MegaChallengeSet01/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Readme.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set01MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set02MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set03MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set04MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set05MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set06MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set07MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/Solution.bpel" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set08MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set09MetaData/taxonomy.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/Challenge.wsdl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/problem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/neo4j/dataset/wsc2008/Set10MetaData/taxonomy.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.fdt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.fdx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.fnm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.frq" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.nrm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.prx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.tii" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_0.tis" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.fdt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.fdx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.fnm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.frq" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.nrm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.prx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.tii" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_1.tis" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.fdt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.fdx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.fnm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.frq" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.nrm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.prx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.tii" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/_2.tis" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/segments.gen" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/index/lucene/node/identifiers/segments_2" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/messages.log" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.counts.db.a" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.counts.db.b" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.labeltokenstore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.labeltokenstore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.labeltokenstore.db.names" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.labeltokenstore.db.names.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.nodestore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.nodestore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.nodestore.db.labels" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.nodestore.db.labels.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.arrays" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.arrays.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.index" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.index.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.index.keys" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.index.keys.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.strings" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.propertystore.db.strings.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshipgroupstore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshipgroupstore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshipstore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshipstore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshiptypestore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshiptypestore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshiptypestore.db.names" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.relationshiptypestore.db.names.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.schemastore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.schemastore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/neostore.transaction.db.0" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/schema/label/lucene/_4.cfs" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/schema/label/lucene/segments.gen" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/schema/label/lucene/segments_3" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/temp_graph/store_lock" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/index.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/index/lucene/node/identifiers/_0.fdt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/index/lucene/node/identifiers/_0.fdx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/index/lucene/node/identifiers/write.lock" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/messages.log" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.counts.db.a" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.labeltokenstore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.labeltokenstore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.labeltokenstore.db.names" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.labeltokenstore.db.names.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.nodestore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.nodestore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.nodestore.db.labels" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.nodestore.db.labels.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.arrays" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.arrays.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.index" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.index.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.index.keys" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.index.keys.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.strings" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.propertystore.db.strings.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshipgroupstore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshipgroupstore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshipstore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshipstore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshiptypestore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshiptypestore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshiptypestore.db.names" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.relationshiptypestore.db.names.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.schemastore.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.schemastore.db.id" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/neostore.transaction.db.0" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/schema/label/lucene/_0.cfs" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/schema/label/lucene/write.lock" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/test_services/store_lock" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/neo4j/src/main/java/Main.java" afterPath="$PROJECT_DIR$/neo4j/src/main/java/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/neo4j/wscNeo4j-Engr489.iml" afterPath="$PROJECT_DIR$/neo4j/wscNeo4j-Engr489.iml" />
     </list>
     <ignored path="Engr489-WebServicesComposition-Neo4j.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -180,8 +182,8 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="272" />
-    <option name="y" value="23" />
+    <option name="x" value="608" />
+    <option name="y" value="120" />
     <option name="width" value="1242" />
     <option name="height" value="809" />
   </component>
@@ -607,8 +609,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="272" y="23" width="1242" height="809" extended-state="0" />
-    <editor active="true" />
+    <frame x="608" y="120" width="1242" height="809" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -622,7 +624,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
