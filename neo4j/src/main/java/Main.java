@@ -266,7 +266,6 @@ public class Main implements Runnable{
 		//find compositions
 		startTime = System.currentTimeMillis();
 		FindCompositions findCompositions = new FindCompositions(neo4jwsc.totalCompositions, neo4jwsc.compositionSize,subGraphDatabaseService);
-		findCompositions.setStartNode(neo4jwsc.startNode);
 		findCompositions.setEndNode(neo4jwsc.endNode);
 		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
 		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());

@@ -8,25 +8,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
-
-import org.neo4j.graphalgo.GraphAlgoFactory;
-import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.Traversal;
 
 import component.TaxonomyNode;
 
 public class FindCompositions {
 	private GraphDatabaseService tempGraphDatabaseService;
 	private Node endNode = null;
-	private Node startNode = null;
 	private  Map<String, TaxonomyNode> taxonomyMap = null;
 
 	Set<Node> population = null;
@@ -44,17 +36,17 @@ public class FindCompositions {
 		this.tempGraphDatabaseService = gb;
 	}
 	public Set<Set<Node>> run(){
-		Set<Set<Node>> populations = new HashSet<Set<Node>>();
-		while(populations.size()<totalCompositions){
+		Set<Set<Node>> candidates = new HashSet<Set<Node>>();
+		while(candidates.size()<totalCompositions){
 			Set<Node>result = new HashSet<Node>();
 			result.add(endNode);
 			composition(endNode, result);	
 			result = checkDuplicateNodes(result);
 			if(result.size()<=compositionSize){
-				populations.add(result);
+				candidates.add(result);
 			}
 		}
-		return populations;
+		return candidates;
 	}
 	private void composition(Node subEndNode, Set<Node> result){
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
@@ -148,9 +140,6 @@ public class FindCompositions {
 	}
 	public void setEndNode(Node endNode) {
 		this.endNode = endNode;
-	}
-	public void setStartNode(Node startNode) {
-		this.startNode = startNode;
 	}
 
 	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap) {
