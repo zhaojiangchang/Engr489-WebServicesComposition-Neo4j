@@ -56,7 +56,7 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private final boolean runTestFiles = false;
+	private final boolean runTestFiles = true;
 	private final String year = "2008";
 	private final String dataSet = "01";
 	private final int compositionSize = 32;
@@ -252,7 +252,8 @@ public class Main implements Runnable{
 		Set<Node> relatedNodes = new HashSet<Node>();;
 		reduceGraphDb.findAllReleatedNodes(relatedNodes, false);
 		System.out.println(relatedNodes.size());
-		reduceGraphDb.createGraphDatabase(relatedNodes);
+		reduceGraphDb.createNodes(relatedNodes);
+		reduceGraphDb.createRel();
 		relatedNodes = reduceGraphDb.getRelatedNodes();
 		neo4jwsc.startNode = reduceGraphDb.getStartNode();
 		neo4jwsc.endNode = reduceGraphDb.getEndNode();
@@ -263,36 +264,36 @@ public class Main implements Runnable{
 		System.out.println("reduce graph db Total execution time: " + (endTime - startTime) );
 
 		//find compositions
-		startTime = System.currentTimeMillis();
-		FindCompositions findCompositions = new FindCompositions(neo4jwsc.totalCompositions, neo4jwsc.compositionSize,subGraphDatabaseService);
-		findCompositions.setStartNode(neo4jwsc.startNode);
-		findCompositions.setEndNode(neo4jwsc.endNode);
-		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
-		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
-		Set<Set<Node>> populations = findCompositions.run();
-		Transaction transaction = null;
-		transaction = subGraphDatabaseService.beginTx();
-		try{
-			for(Set<Node> pop: populations){
-				System.out.println();
-				for(Node n: pop){
-					System.out.print(n.getProperty("name")+"  ");
-				}
-				System.out.println();
-				System.out.println("composition size: "+pop.size());
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-			System.out.println("print populations error.."); 
-		} finally {
-			transaction.close();
-		}		
-		
-
-
-		endTime = System.currentTimeMillis();
-		neo4jwsc.records.put("generate compositions", endTime - startTime);
-		System.out.println("generate compositions Total execution time: " + (endTime - startTime) );
+//		startTime = System.currentTimeMillis();
+//		FindCompositions findCompositions = new FindCompositions(neo4jwsc.totalCompositions, neo4jwsc.compositionSize,subGraphDatabaseService);
+//		findCompositions.setStartNode(neo4jwsc.startNode);
+//		findCompositions.setEndNode(neo4jwsc.endNode);
+//		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
+//		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
+//		Set<Set<Node>> populations = findCompositions.run();
+//		Transaction transaction = null;
+//		transaction = subGraphDatabaseService.beginTx();
+//		try{
+//			for(Set<Node> pop: populations){
+//				System.out.println();
+//				for(Node n: pop){
+//					System.out.print(n.getProperty("name")+"  ");
+//				}
+//				System.out.println();
+//				System.out.println("composition size: "+pop.size());
+//			}
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			System.out.println("print populations error.."); 
+//		} finally {
+//			transaction.close();
+//		}		
+//		
+//
+//
+//		endTime = System.currentTimeMillis();
+//		neo4jwsc.records.put("generate compositions", endTime - startTime);
+//		System.out.println("generate compositions Total execution time: " + (endTime - startTime) );
 		FileWriter fw = new FileWriter("timeRecord.txt");
 		for(Entry<String, Long> entry : neo4jwsc.records.entrySet()){
 			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");

@@ -23,6 +23,8 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.graphdb.index.Index;
+import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.io.fs.FileUtils;
 import org.neo4j.kernel.Traversal;
 
@@ -49,7 +51,9 @@ public class ReduceGraphDb {
 	private static final int COST = 1;
 	private static final int AVAILABILITY = 2;
 	private static final int RELIABILITY = 3;
-	
+	private IndexManager index = null;
+	private Index<Node> services = null;
+
 	public ReduceGraphDb(GraphDatabaseService graphDatabaseService){
 		relatedNodes = new HashSet<Node>();
 		this.graphDatabaseService = graphDatabaseService;
@@ -185,6 +189,20 @@ public class ReduceGraphDb {
 
 		return array;
 	}
+	private String[] getNodePropertyArray(Node sNode, String property){
+		Object obj =sNode.getProperty(property);
+		//    		//remove the "[" and "]" from string
+		String ips = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
+		String[] tempInputs = ips.split("\\s*,\\s*");
+		String[] array = new String[0];
+		for(String s: tempInputs){
+			if(s.length()>0){
+				array =increaseArray(array);
+				array[array.length-1] = s;
+			}
+		}
+		return array;
+	}
 	private String[] getNodeRelationshipPropertyArray(Relationship relationship, String property){
 		Transaction t = graphDatabaseService.beginTx();
 		String[] array = new String[0];
@@ -225,19 +243,99 @@ public class ReduceGraphDb {
 
 		return newArray;
 	}
-	public void createGraphDatabase(Set<Node>relatedNodes){
+	public void createRel(){
+		for(Node sNode: subGraphNodes){
+			Transaction transaction = subGraphDatabaseService.beginTx();
+			String nodeName = (String) sNode.getProperty("name");
+			transaction.close();
+			if(nodeName.equals("start")){
+				startNode = sNode;
+				addStartNodeRel(sNode);
+			}
+			else {
+				addInputsServiceRelationship(sNode);
+			}				
+		}
+	}
+	private void addStartNodeRel(Node sNode){
+		Transaction transaction = subGraphDatabaseService.beginTx();
+		try{
+			String[] outputs = getNodePropertyArray(sNode, "outputServices");
+			if(outputs.length>0){
+				for(String s: outputs){
+					Node outputsServicesNode = subGraphNodesMap.get(s);
+
+					String[] tempToArray = getOutputs(sNode, outputsServicesNode,subGraphDatabaseService);
+					relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
+					relation.setProperty("From", (String)sNode.getProperty("name"));
+					relation.setProperty("To", s);
+					relation.setProperty("outputs", tempToArray);
+					relation.setProperty("Direction", "incoming");  
+				}
+			}					
+
+			transaction.success();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			transaction.close();
+		}
+	}
+	private void addInputsServiceRelationship(Node sNode) {
+		Transaction transaction = subGraphDatabaseService.beginTx();
+		//		double sNodeWeight = (double) sNode.getProperty("weight");
+		try{
+			String[] inputs = getNodePropertyArray(sNode, "inputServices");
+			//		List<Node>inputsServicesNodes = new ArrayList<Node>();
+			if(inputs.length>0){
+				for(String s: inputs){
+					ServiceNode serviceNode = serviceMap.get(s);
+					Node inputsServicesNode = subGraphNodesMap.get(s);
+					String[] tempToArray = getOutputs(inputsServicesNode, sNode, subGraphDatabaseService);
+					relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
+					relation.setProperty("From", s);
+					relation.setProperty("To", (String)sNode.getProperty("name"));
+					relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
+					relation.setProperty("weightCost", serviceNode.getQos()[COST]);
+					relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
+					relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+
+					relation.setProperty("outputs", tempToArray);
+					relation.setProperty("Direction", "incoming");    
+				}
+			}
+			transaction.success();			
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("GenerateDatabase addInputsServiceRelationship error.."); 
+		} finally {
+			transaction.close();
+		}	
+		transaction = subGraphDatabaseService.beginTx();
+		if(sNode.getProperty("name").equals("end")){
+			endNode = sNode;
+		}
+		transaction.close();
+	}
+	public void createNodes(Set<Node>relatedNodes){
 		try {
 			FileUtils.deleteRecursively(new File(Neo4j_subDBPath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		subGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_subDBPath);
+		Transaction t = subGraphDatabaseService.beginTx();
+		index = subGraphDatabaseService.index();
+		services = index.forNodes( "identifiers" );
+		t.close();
+
 		Transaction transaction = graphDatabaseService.beginTx();
+
 		for(Node sNode: relatedNodes) {
 			//			try{
-			String[] inputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes, "inputServices",graphDatabaseService);				
-			String[] outputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes,"outputServices",graphDatabaseService);
-			String[] priousNodeNames = getInputOutputServicesForSubGraph(sNode, relatedNodes,"priousNodeNames",graphDatabaseService);
+			String[] inputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes, "inputServices");				
+			String[] outputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes,"outputServices");
+			String[] priousNodeNames = getInputOutputServicesForSubGraph(sNode, relatedNodes,"priousNodeNames");
 			if(inputServices==null){
 				inputServices = new String[0];
 			}
@@ -263,6 +361,7 @@ public class ReduceGraphDb {
 				service.addLabel(nodeLable);
 				service.setProperty("name", (String) sNode.getProperty("name"));
 				service.setProperty("id", service.getId());
+				services.add(service, "name", service.getProperty("name"));
 				service.setProperty("qos", qos);
 				service.setProperty("weight", 0);
 				service.setProperty("inputs", getNodePropertyArray(sNode,"inputs",graphDatabaseService));
@@ -282,74 +381,77 @@ public class ReduceGraphDb {
 
 		}	
 		transaction.close();
-		for(Node sNode: subGraphNodes){
-			//					double sNodeWeight = (double) sNode.getProperty("weight");
-			String[] inputs = getNodePropertyArray(sNode, "inputServices",subGraphDatabaseService);
-			//					List<Node>inputsServicesNodes = new ArrayList<Node>();
-			if(inputs.length>0){
-				for(String s: inputs){
-					ServiceNode serviceNode = serviceMap.get(s);
-					Node inputsServicesNode = subGraphNodesMap.get(s);
-					String[] tempToArray = getOutputs(inputsServicesNode, sNode);
-					transaction = subGraphDatabaseService.beginTx();
-					try{
-						relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
-						relation.setProperty("From", s);
-						relation.setProperty("To", (String)sNode.getProperty("name"));
-						relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
-						relation.setProperty("weightCost", serviceNode.getQos()[COST]);
-						relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
-						relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+		//		for(Node sNode: subGraphNodes){
+		//			//					double sNodeWeight = (double) sNode.getProperty("weight");
+		//			Transaction tat = subGraphDatabaseService.beginTx();
+		//			Node node = services.get("name",sNode.getProperty("name")).getSingle(); // node or null
+		//			String[] inputs = getNodePropertyArray(node, "inputServices",subGraphDatabaseService);
+		//			//					List<Node>inputsServicesNodes = new ArrayList<Node>();
+		//
+		//			if(inputs.length>0){
+		//				for(String s: inputs){
+		//					tat = subGraphDatabaseService.beginTx();
+		////					ServiceNode serviceNode = serviceMap.get(s);
+		////					Transaction ttt = subGraphDatabaseService.beginTx();
+		//					Node inputsServicesNode = services.get("name",s).getSingle(); 
+		////					ttt.close();
+		////					String[] tempToArray = getOutputs(inputsServicesNode, node);
+		////					Transaction tx = subGraphDatabaseService.beginTx();
+		//					relation = inputsServicesNode.createRelationshipTo(node, RelTypes.IN);
+		////					relation.setProperty("From", s);
+		////					relation.setProperty("To", (String)node.getProperty("name"));
+		////					relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
+		////					relation.setProperty("weightCost", serviceNode.getQos()[COST]);
+		////					relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
+		////					relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+		////
+		////					relation.setProperty("outputs", tempToArray);
+		////					relation.setProperty("Direction", "incoming");    
+		////					tx.success();
+		//
+		//					tat.success();
+		//					tat.close();
+		//				}
+		//
+		//			}	
+		////			Transaction tx = subGraphDatabaseService.beginTx();
+		//			if(sNode.getProperty("name").equals("end")){
+		//				endNode = sNode;
+		//			}
+		////			tx.close();
+		////			Transaction txn = subGraphDatabaseService.beginTx();
+		//			if(sNode.getProperty("name").equals("start")){
+		//				startNode = sNode;
+		////				txn.close();
+		//				String[] outputs = getNodePropertyArray(sNode, "outputServices",subGraphDatabaseService);
+		//				if(outputs.length>0){
+		//					for(String s: outputs){
+		////						Transaction tran = subGraphDatabaseService.beginTx();
+		////						try{
+		//							Node outputsServicesNode = subGraphNodesMap.get(s);
+		//
+		//							String[] tempToArray = getOutputs(sNode, outputsServicesNode);
+		//							relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
+		//							relation.setProperty("From", (String)sNode.getProperty("name"));
+		//							relation.setProperty("To", s);
+		//							relation.setProperty("outputs", tempToArray);
+		//							relation.setProperty("Direction", "incoming");  
+		////							tran.success();
+		////						}
+		////						catch(Exception e){
+		////							System.out.println(e);
+		////						}finally{
+		////							tran.close();
+		////						}
+		//					}
+		//				}					
+		//			}
+		//			tat.close();
 
-						relation.setProperty("outputs", tempToArray);
-						relation.setProperty("Direction", "incoming");    
-						transaction.success();
-					}
-					catch(Exception e){
-						System.out.println(e);
-					}finally{
-						transaction.close();
-					}
-				}
-				//				transaction.success();
-				//				transaction.close();
-			}	
-			transaction = subGraphDatabaseService.beginTx();
-			if(sNode.getProperty("name").equals("end")){
-				endNode = sNode;
-			}
-			transaction.close();
-			transaction = subGraphDatabaseService.beginTx();
-			if(sNode.getProperty("name").equals("start")){
-				startNode = sNode;
-				transaction.close();
-				String[] outputs = getNodePropertyArray(sNode, "outputServices",subGraphDatabaseService);
-				if(outputs.length>0){
-					for(String s: outputs){
-						transaction = subGraphDatabaseService.beginTx();
-						try{
-							Node outputsServicesNode = subGraphNodesMap.get(s);
-
-							String[] tempToArray = getOutputs(sNode, outputsServicesNode);
-							relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
-							relation.setProperty("From", (String)sNode.getProperty("name"));
-							relation.setProperty("To", s);
-							relation.setProperty("outputs", tempToArray);
-							relation.setProperty("Direction", "incoming");  
-							transaction.success();
-						}
-						catch(Exception e){
-							System.out.println(e);
-						}finally{
-							transaction.close();
-						}
-					}
-				}					
-			}
-		}
+		//		}
 	}
-	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput, GraphDatabaseService graphDatabaseService) {
-		Transaction tx = graphDatabaseService.beginTx();
+	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
+		Transaction tx = subGraphDatabaseService.beginTx();
 		String [] toReturn = null;
 		try{
 			List<String>releatedNodesNames = new ArrayList<String>();
@@ -405,25 +507,32 @@ public class ReduceGraphDb {
 	private static enum RelTypes implements RelationshipType{
 		PARENT, CHILD, OUTPUT, INPUT, TO, IN, OUT
 	}
-	private String[] getOutputs(Node node, Node sNode) {
-		//		Transaction transaction = subGraphDatabaseService.beginTx();
-		//		System.out.println(node.getProperty("name")+"    "+sNode.getProperty("name"));
-		List<String>snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs",subGraphDatabaseService));
-		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs",subGraphDatabaseService));
-		//		transaction.success();
-		//		transaction.close();
+	private String[] getOutputs(Node node, Node sNode,GraphDatabaseService graphDatabaseService) {
+		Transaction transaction = graphDatabaseService.beginTx();
+		List<String>snodeOutputs = new ArrayList<String>();
+		List<String>nodeInputs =  new ArrayList<String>();
+		try{
+			snodeOutputs = Arrays.asList(getNodePropertyArray(node,"outputs"));
+			nodeInputs = Arrays.asList(getNodePropertyArray(sNode, "inputs"));
+			transaction.success();
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("GenerateDatabase getOutputs error.."); 
+		} finally {
+			transaction.close();
+		}		
 		List<String>snodeOutputsAllParents = new ArrayList<String>();
 		for(String output: snodeOutputs){
 			TaxonomyNode tNode = taxonomyMap.get(output);
 			snodeOutputsAllParents.addAll(getTNodeParentsString(tNode));
 		}
-
 		List<String>temp = new ArrayList<String>(snodeOutputsAllParents);
 		temp.retainAll(nodeInputs);
 		String[] tempToArray = new String[temp.size()];
 		for(int i = 0; i<temp.size(); i++){
 			tempToArray[i] = temp.get(i);
 		}
+
 		return tempToArray;
 	}
 	private Set<String> getTNodeParentsString(TaxonomyNode tNode) {

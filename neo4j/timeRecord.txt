@@ -1,7 +1,6 @@
-Create new db    3520
-Populate Taxonomy Tree    255
-run task: copied db, create temp db, add start and end nodes    690
-generate compositions    757
-Load files    197
-TIME:     1470467773760
-reduce graph db     1223
+Populate Taxonomy Tree    13
+run task: copied db, create temp db, add start and end nodes    314
+Load files    77
+Create new test db    1738
+TIME:     1470489048354
+reduce graph db     943
