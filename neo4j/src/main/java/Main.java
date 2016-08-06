@@ -58,10 +58,10 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "08";
+	private final String dataSet = "01";
 	private final int compositionSize = 32;
 	private final int totalCompositions = 50;
-
+	private final boolean runQosDataset = true;
 
 	//******************************************************//
 
@@ -73,9 +73,17 @@ public class Main implements Runnable{
 		neo4jwsc.databaseName = "wsc"+neo4jwsc.year+"dataset"+neo4jwsc.dataSet;
 		String path;
 		if(!neo4jwsc.runTestFiles){
-			neo4jwsc.serviceFileName = "dataset/wsc"+neo4jwsc.year+"/Set"+neo4jwsc.dataSet+"MetaData/services.xml";
-			neo4jwsc.taxonomyFileName = "dataset/wsc"+neo4jwsc.year+"/Set"+neo4jwsc.dataSet+"MetaData/taxonomy.xml";
-			neo4jwsc.taskFileName = "dataset/wsc"+neo4jwsc.year+"/Set"+neo4jwsc.dataSet+"MetaData/problem.xml";
+			if(!neo4jwsc.runQosDataset){
+				neo4jwsc.serviceFileName = "dataset/wsc"+neo4jwsc.year+"/Set"+neo4jwsc.dataSet+"MetaData/services.xml";
+				neo4jwsc.taxonomyFileName = "dataset/wsc"+neo4jwsc.year+"/Set"+neo4jwsc.dataSet+"MetaData/taxonomy.xml";
+				neo4jwsc.taskFileName = "dataset/wsc"+neo4jwsc.year+"/Set"+neo4jwsc.dataSet+"MetaData/problem.xml";
+			}else{
+				neo4jwsc.serviceFileName = "dataset/dataset/Set"+neo4jwsc.dataSet+"MetaData/services-output.xml";
+				neo4jwsc.taxonomyFileName = "dataset/dataset/Set"+neo4jwsc.dataSet+"MetaData/taxonomy.xml";
+				neo4jwsc.taskFileName = "dataset/dataset/Set"+neo4jwsc.dataSet+"MetaData/problem.xml";
+			}
+			
+
 		}else{
 			neo4jwsc.serviceFileName = "dataset/test/test_serv.xml";
 			neo4jwsc.taxonomyFileName = "dataset/test/test_taxonomy.xml";
@@ -238,7 +246,9 @@ public class Main implements Runnable{
 		reduceGraphDb.setStartNode(neo4jwsc.startNode);
 		reduceGraphDb.setEndNode(neo4jwsc.endNode);
 		reduceGraphDb.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
-		reduceGraphDb.setTaxonomyMap(neo4jwsc.taxonomyMap);
+		reduceGraphDb.setTaxonomyMap(neo4jwsc.taxonomyMap);		
+		reduceGraphDb.setServiceMap(neo4jwsc.serviceMap);
+		
 		Set<Node> relatedNodes = new HashSet<Node>();;
 		reduceGraphDb.findAllReleatedNodes(relatedNodes, false);
 		System.out.println(relatedNodes.size());

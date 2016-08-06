@@ -26,6 +26,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.io.fs.FileUtils;
 import org.neo4j.kernel.Traversal;
 
+import component.ServiceNode;
 import component.TaxonomyNode;
 
 public class ReduceGraphDb {
@@ -41,9 +42,14 @@ public class ReduceGraphDb {
 	private final String Neo4j_subDBPath = "database/sub_graph";
 
 	private Set<Node>subGraphNodes = new HashSet<Node>();
-	Relationship relation;
+	private Relationship relation;
 	private static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
-
+	private static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
+	private static final int TIME = 0;
+	private static final int COST = 1;
+	private static final int AVAILABILITY = 2;
+	private static final int RELIABILITY = 3;
+	
 	public ReduceGraphDb(GraphDatabaseService graphDatabaseService){
 		relatedNodes = new HashSet<Node>();
 		this.graphDatabaseService = graphDatabaseService;
@@ -63,6 +69,9 @@ public class ReduceGraphDb {
 	}
 	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap){
 		this.taxonomyMap = taxonomyMap;
+	}
+	public void setServiceMap(Map<String, ServiceNode> serviceMap){
+		this.serviceMap = serviceMap;
 	}
 
 	public Map<String, Node> getSubGraphNodesMap() {
@@ -242,11 +251,19 @@ public class ReduceGraphDb {
 			Transaction tx = subGraphDatabaseService.beginTx();
 			Node service = subGraphDatabaseService.createNode();
 			try{
+				double[] qos = new double[4];
+				if(sNode.getProperty("name").equals("start")||sNode.getProperty("name").equals("end")){
+					qos = new double[4];
+				}else{
+					ServiceNode serviceNode = serviceMap.get((String) sNode.getProperty("name"));
+					qos = serviceNode.getQos();
+				}
+
 				Label nodeLable = DynamicLabel.label((String) sNode.getProperty("name"));
 				service.addLabel(nodeLable);
 				service.setProperty("name", (String) sNode.getProperty("name"));
 				service.setProperty("id", service.getId());
-				service.setProperty("qos", 0);
+				service.setProperty("qos", qos);
 				service.setProperty("weight", 0);
 				service.setProperty("inputs", getNodePropertyArray(sNode,"inputs",graphDatabaseService));
 				service.setProperty("outputs", getNodePropertyArray(sNode,"outputs",graphDatabaseService));
@@ -271,6 +288,7 @@ public class ReduceGraphDb {
 			//					List<Node>inputsServicesNodes = new ArrayList<Node>();
 			if(inputs.length>0){
 				for(String s: inputs){
+					ServiceNode serviceNode = serviceMap.get(s);
 					Node inputsServicesNode = subGraphNodesMap.get(s);
 					String[] tempToArray = getOutputs(inputsServicesNode, sNode);
 					transaction = subGraphDatabaseService.beginTx();
@@ -278,6 +296,11 @@ public class ReduceGraphDb {
 						relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
 						relation.setProperty("From", s);
 						relation.setProperty("To", (String)sNode.getProperty("name"));
+						relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
+						relation.setProperty("weightCost", serviceNode.getQos()[COST]);
+						relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
+						relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+
 						relation.setProperty("outputs", tempToArray);
 						relation.setProperty("Direction", "incoming");    
 						transaction.success();
