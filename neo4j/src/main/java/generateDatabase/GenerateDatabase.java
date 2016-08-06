@@ -30,12 +30,14 @@ public class GenerateDatabase {
 	private IndexManager index = null;
 	public Index<Node> services = null;
 	private static Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
-	private long startTime = 0;
-	private long endTime = 0;
 	private Map<String,List<String>> servicesWithOutputs = new HashMap<String,List<String>>();
 	private Map<String,List<String>> servicesWithInputs = new HashMap<String,List<String>>();
 	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
+	private static final int TIME = 0;
+	private static final int COST = 1;
+	private static final int AVAILABILITY = 2;
+	private static final int RELIABILITY = 3;
 	Relationship relation;
 
 
@@ -74,11 +76,17 @@ public class GenerateDatabase {
 			//		List<Node>inputsServicesNodes = new ArrayList<Node>();
 			if(inputs.length>0){
 				for(String s: inputs){
+					ServiceNode serviceNode = serviceMap.get(s);
 					Node inputsServicesNode = neo4jServNodes.get(s);
 					String[] tempToArray = getOutputs(inputsServicesNode, sNode, graphDatabaseService);
 					relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
 					relation.setProperty("From", s);
 					relation.setProperty("To", (String)sNode.getProperty("name"));
+					relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
+					relation.setProperty("weightCost", serviceNode.getQos()[COST]);
+					relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
+					relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+
 					relation.setProperty("outputs", tempToArray);
 					relation.setProperty("Direction", "incoming");    
 				}

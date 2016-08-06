@@ -29,7 +29,11 @@ public class LoadFiles {
 	private Set<ServiceNode> serviceNodes = new HashSet<ServiceNode>();
 	private Set<String> taskInputs;
 	private Set<String> taskOutputs;
-	
+	public static final int TIME = 0;
+	public static final int COST = 1;
+	public static final int AVAILABILITY = 2;
+	public static final int RELIABILITY = 3;
+
 	public LoadFiles(String serviceFileName, String taxonomyFileName, String taskFileName) {
 		this.serviceFileName = serviceFileName;
 		this.taxonomyFileName = taxonomyFileName;
@@ -40,7 +44,7 @@ public class LoadFiles {
 		parseWSCServiceFile(serviceFileName);
 		parseWSCTaskFile(taskFileName);
 	}
-	
+
 	/**
 	 * Parses the WSC taxonomy file with the given name, building a
 	 * tree-like structure.
@@ -129,13 +133,14 @@ public class LoadFiles {
 				Element eElement = (Element) nNode;
 
 				String name = eElement.getAttribute("name");
-				//				if (!runningOwls) {
-				//					qos[TIME] = Double.valueOf(eElement.getAttribute("Res"));
-				//					qos[COST] = Double.valueOf(eElement.getAttribute("Pri"));
-				//					qos[AVAILABILITY] = Double.valueOf(eElement.getAttribute("Ava"));
-				//					qos[RELIABILITY] = Double.valueOf(eElement.getAttribute("Rel"));
-				//				}
+				if(!eElement.getAttribute("Res").equals("")){
+					qos[TIME] = Double.valueOf(eElement.getAttribute("Res"));
+					qos[COST] = Double.valueOf(eElement.getAttribute("Pri"));
+					qos[AVAILABILITY] = Double.valueOf(eElement.getAttribute("Ava"));
+					qos[RELIABILITY] = Double.valueOf(eElement.getAttribute("Rel"));
 
+				}
+			
 				// Get inputs
 				org.w3c.dom.Node inputNode = eElement.getElementsByTagName("inputs").item(0);
 				NodeList inputNodes = ((Element)inputNode).getElementsByTagName("instance");
@@ -237,6 +242,6 @@ public class LoadFiles {
 	public Set<String> getTaskOutputs() {
 		return taskOutputs;
 	}
-	
+
 
 }
