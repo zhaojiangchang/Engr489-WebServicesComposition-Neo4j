@@ -56,10 +56,10 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private final boolean runTestFiles = true;
+	private final boolean runTestFiles = false;
 	private final String year = "2008";
 	private final String dataSet = "01";
-	private final int compositionSize = 32;
+	private final int compositionSize = 12;
 	private final int totalCompositions = 50;
 	private final boolean runQosDataset = true;
 

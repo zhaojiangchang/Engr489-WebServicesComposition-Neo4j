@@ -41,7 +41,16 @@ public class ReduceGraphDb {
 	private Map<String,Node>subGraphNodesMap = new HashMap<String,Node>();
 	private Set<Node> relatedNodes;
 	private final String Neo4j_subDBPath = "database/sub_graph";
-
+	
+	private final double minAvailability = 0.0;
+	private double maxAvailability = -1.0;
+	private final double minReliability = 0.0;
+	private double maxReliability = -1.0;
+	private double minTime = Double.MAX_VALUE;
+	private double maxTime = -1.0;
+	private double minCost = Double.MAX_VALUE;
+	private double maxCost = -1.0;
+	
 	private Set<Node>subGraphNodes = new HashSet<Node>();
 	private Relationship relation;
 	private static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
@@ -270,6 +279,10 @@ public class ReduceGraphDb {
 					relation.setProperty("To", s);
 					relation.setProperty("outputs", tempToArray);
 					relation.setProperty("Direction", "incoming");  
+					relation.setProperty("weightTime", 0);
+					relation.setProperty("weightCost", 0);
+					relation.setProperty("weightAvailibility", 0);
+					relation.setProperty("weightReliability", 0);
 				}
 			}					
 
@@ -289,15 +302,17 @@ public class ReduceGraphDb {
 			if(inputs.length>0){
 				for(String s: inputs){
 					ServiceNode serviceNode = serviceMap.get(s);
+					double[]qos = serviceNode.getQos();
+					calculateNormalisationBounds(qos);
 					Node inputsServicesNode = subGraphNodesMap.get(s);
 					String[] tempToArray = getOutputs(inputsServicesNode, sNode, subGraphDatabaseService);
 					relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
 					relation.setProperty("From", s);
 					relation.setProperty("To", (String)sNode.getProperty("name"));
-					relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
-					relation.setProperty("weightCost", serviceNode.getQos()[COST]);
-					relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
-					relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+					relation.setProperty("weightTime", qos[TIME]);
+					relation.setProperty("weightCost", qos[COST]);
+					relation.setProperty("weightAvailibility", qos[AVAILABILITY]);
+					relation.setProperty("weightReliability", qos[RELIABILITY]);
 
 					relation.setProperty("outputs", tempToArray);
 					relation.setProperty("Direction", "incoming");    
@@ -354,6 +369,7 @@ public class ReduceGraphDb {
 				}else{
 					ServiceNode serviceNode = serviceMap.get((String) sNode.getProperty("name"));
 					qos = serviceNode.getQos();
+					calculateNormalisationBounds(qos);
 				}
 
 				Label nodeLable = DynamicLabel.label((String) sNode.getProperty("name"));
@@ -368,6 +384,10 @@ public class ReduceGraphDb {
 				service.setProperty("inputServices", inputServices);
 				service.setProperty("outputServices", outputServices);
 				service.setProperty("priousNodeNames",priousNodeNames);
+				service.setProperty("weightTime", qos[TIME]);
+				service.setProperty("weightCost", qos[COST]);
+				service.setProperty("weightAvailibility", qos[AVAILABILITY]);
+				service.setProperty("weightReliability", qos[RELIABILITY]);
 				service.setProperty("visited", false);
 				subGraphNodes.add(service);
 				subGraphNodesMap.put((String) sNode.getProperty("name"), service);
@@ -381,6 +401,37 @@ public class ReduceGraphDb {
 		}	
 		transaction.close();
 	}
+	private void calculateNormalisationBounds(double[] qos) {
+
+		// Availability
+		double availability = qos[AVAILABILITY];
+		if (availability > maxAvailability)
+			maxAvailability = availability;
+
+		// Reliability
+		double reliability = qos[RELIABILITY];
+		if (reliability > maxReliability)
+			maxReliability = reliability;
+
+		// Time
+		double time = qos[TIME];
+		if (time > maxTime)
+			maxTime = time;
+		if (time < minTime)
+			minTime = time;
+
+		// Cost
+		double cost = qos[COST];
+		if (cost > maxCost)
+			maxCost = cost;
+		if (cost < minCost)
+			minCost = cost;
+	
+	// Adjust max. cost and max. time based on the number of services in shrunk repository
+	maxCost *= relatedNodes.size();
+	maxTime *= relatedNodes.size();
+	}
+
 	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
 		Transaction tx = subGraphDatabaseService.beginTx();
 		String [] toReturn = null;

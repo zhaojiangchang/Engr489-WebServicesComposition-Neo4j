@@ -201,6 +201,10 @@ public class RunTask {
 				service.setProperty("outputs", temp);
 				service.setProperty("priousNodeNames", temp);
 			}
+			service.setProperty("weightTime", 0);
+			service.setProperty("weightCost", 0);
+			service.setProperty("weightAvailibility", 0);
+			service.setProperty("weightReliability", 0);
 			service.setProperty("inputServices", temp);
 			service.setProperty("outputServices", temp);
 
@@ -230,6 +234,10 @@ public class RunTask {
 						relation.setProperty("To", s);
 						relation.setProperty("outputs", tempToArray);
 						relation.setProperty("Direction", "incoming");    
+						relation.setProperty("weightTime", 0);
+						relation.setProperty("weightCost", 0);
+						relation.setProperty("weightAvailibility", 0);
+						relation.setProperty("weightReliability", 0);
 					}
 				}
 			}

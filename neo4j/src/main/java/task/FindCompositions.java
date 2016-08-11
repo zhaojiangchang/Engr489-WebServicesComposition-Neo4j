@@ -25,7 +25,7 @@ public class FindCompositions {
 	private int compositionSize = 0;
 	private Map<String,Node>subGraphNodesMap = null;
 	private int totalCompositions = 0;
-
+	private boolean skipRecursive = false;
 	public FindCompositions(int totalCompositions, int compositionSize,GraphDatabaseService tempGraphDatabaseService){
 		this.compositionSize = compositionSize;
 		this.totalCompositions = totalCompositions;
@@ -35,20 +35,51 @@ public class FindCompositions {
 	public void setGraphDb(GraphDatabaseService gb){
 		this.tempGraphDatabaseService = gb;
 	}
-	public Set<Set<Node>> run(){
+	public Set<Set<Node>> run() {
 		Set<Set<Node>> candidates = new HashSet<Set<Node>>();
 		while(candidates.size()<totalCompositions){
+			skipRecursive = false;
+			System.out.println("start while");
 			Set<Node>result = new HashSet<Node>();
+			List<Double> A = new ArrayList<Double>();
+			List<Double> R = new ArrayList<Double>();
+			List<Double> C = new ArrayList<Double>();
+			List<Double> T = new ArrayList<Double>();
+			int depth = 0;
 			result.add(endNode);
-			composition(endNode, result);	
-			result = checkDuplicateNodes(result);
-			if(result.size()<=compositionSize){
-				candidates.add(result);
+			System.out.println("complllllll");
+			try{
+				composition(depth, endNode, result, A, R, C, T);	
+			}catch(OuchException e){
+				e.printStackTrace();
 			}
+			System.out.println("after returned");
+			result = checkDuplicateNodes(result);
+			if(result.size()<=compositionSize && result.size()>1){
+				System.out.println("after returned 2222");
+				candidates.add(result);
+				for(Double a: A){
+					System.out.print(a+"  ");
+				}
+				System.out.println();
+				for(Double a: R){
+					System.out.print(a+"  ");
+				}
+				System.out.println();
+				for(Double a: C){
+					System.out.print(a+"  ");
+				}
+				System.out.println();
+				for(Double a: T){
+					System.out.print(a+"  ");
+				}
+				System.out.println();
+			}
+			System.out.println("end while");
 		}
 		return candidates;
 	}
-	private void composition(Node subEndNode, Set<Node> result){
+	private void composition(int depth, Node subEndNode, Set<Node> result,List<Double>A,List<Double>R, List<Double>T,List<Double>C) throws OuchException{
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
 		List<Relationship>rels = new ArrayList<Relationship>();
 		Transaction tx = tempGraphDatabaseService.beginTx();
@@ -57,14 +88,43 @@ public class FindCompositions {
 		}
 		tx.close();
 		Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels);
-
+//		if(depth>10){
+//			A.clear();
+//			R.clear();
+//			C.clear();
+//			T.clear();
+//			result.clear();
+//			return;
+//		}
 		if(fulfillSubEndNodes!=null){
 			result.addAll(fulfillSubEndNodes);
 			if(result.size()>compositionSize){
-				return;
+				System.out.println("returned");
+				A.clear();
+				R.clear();
+				C.clear();
+				T.clear();
+				result.clear();
+				throw new OuchException("result>compositionSize");
 			}else{
 				for (Node node: fulfillSubEndNodes){
-					composition(node, result);
+					A.add((Double) node.getProperty("weightAvailibility"));
+					R.add((Double) node.getProperty("weightReliability"));
+					C.add((Double) node.getProperty("weightCost"));
+					double mix = Double.MAX_VALUE;
+					for(Node n: fulfillSubEndNodes){
+						if((Double)n.getProperty("weightTime")<mix){
+							mix = (Double)n.getProperty("weightTime");
+						}
+					}
+					T.add(mix);
+					if(!node.getProperty("name").equals("sart")){
+						depth++;
+					}
+					if(node.getProperty("name").equals("sart")){
+						System.out.println("====================================="+ depth);;
+					}
+					composition(depth, node, result,A,R,T,C);
 				}
 			}
 		}
