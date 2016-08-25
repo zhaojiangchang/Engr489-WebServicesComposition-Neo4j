@@ -37,15 +37,66 @@ public class FindCompositions {
 	private Map<String,Node>subGraphNodesMap = null;
 	private int totalCompositions = 0;
 	private boolean skipRecursive = false;
+	
+	public  double minAvailability = 0.0;
+	public double maxAvailability = -1.0;
+	public  double minReliability = 0.0;
+	public double maxReliability = -1.0;
+	public double minTime = Double.MAX_VALUE;
+	public double maxTime = -1.0;
+	public double minCost = Double.MAX_VALUE;
+	public double maxCost = -1.0;
+	ReduceGraphDb reduceGraphDb;
 
 	public FindCompositions(int totalCompositions, int compositionSize, GraphDatabaseService tempGraphDatabaseService ){
 		this.tempGraphDatabaseService = tempGraphDatabaseService;
 		this.compositionSize = compositionSize;
 		this.totalCompositions = totalCompositions;
 		population = new HashSet<Node>();
+		minAvailability = 
+		maxAvailability = -1.0;
+		minReliability = 0.0;
+		maxReliability = -1.0;
+		minTime = Double.MAX_VALUE;
+		maxTime = -1.0;
+		minCost = Double.MAX_VALUE;
+		maxCost = -1.0;
 	}
-	public Set<Set<Node>> run(){
-		Set<Set<Node>> candidates = new HashSet<Set<Node>>();
+	public List<List<Node>> run(){
+		List<List<Node>> candidates = findCandidates();
+		Map<List<Node>, Map<String,Double>> candidatesWithQos = calculateQos(candidates);
+		List<Node> bestAvailability = getBest(candidatesWithQos, "A");
+		List<Node> bestReliability = getBest(candidatesWithQos, "R");
+		List<Node> bestCost = getBest(candidatesWithQos, "C");
+		return candidates;
+	}
+
+	private List<Node> getBest(Map<List<Node>, Map<String, Double>> candidatesWithQos, String id) {
+		// TODO Auto-generated method stub
+		double best = -1.0;
+		List<Node>bestList = null;
+		for (Map.Entry<List<Node>, Map<String, Double>> entry : candidatesWithQos.entrySet()) {
+			List<Node> key = entry.getKey();
+			Map<String, Double> value = entry.getValue();
+			for (Map.Entry<String, Double> entry2 : value.entrySet()) {
+				if(entry2.getKey().equals(id)){
+					if(entry2.getValue()>best){
+						best = entry2.getValue();
+						bestList = entry.getKey();
+					}
+				}
+			}
+
+		    // ...
+		}
+		System.out.println("best "+ id+":  "+best);
+		return bestList;
+	}
+	
+	private List<List<Node>> findCandidates() {
+		// TODO Auto-generated method stub
+		Set<List<Node>> candidates = new HashSet<List<Node>>();
+		List<List<Node>> candidates2 = new ArrayList<List<Node>>();
 		while(candidates.size()<totalCompositions){
 			skipRecursive = false;
 			Set<Node>result = new HashSet<Node>();
@@ -58,11 +109,91 @@ public class FindCompositions {
 			}	
 			result = checkDuplicateNodes(result);
 			if(result.size()<=compositionSize && result.size()>0){
-				System.out.println(candidates.size());
-				candidates.add(result);
+				List<Node> result2 = new ArrayList<Node>(result);
+				candidates.add(result2);
+				candidates2 = new ArrayList<List<Node>>(candidates);
+
 			}
 		}
-		return candidates;
+		return candidates2;
+	}
+
+	private Map<List<Node>, Map<String,Double>> calculateQos(List<List<Node>> candidates) {
+		// TODO Auto-generated method stub
+		Map<List<Node>, Map<String,Double>> candidatesWithQos = new HashMap<List<Node>, Map<String,Double>>();
+
+		for(int i = 0; i < candidates.size(); i++){
+			List<Double> A = new ArrayList<Double>();
+			List<Double> R = new ArrayList<Double>();
+			List<Double> C = new ArrayList<Double>();
+			List<Double> T = new ArrayList<Double>();
+			for(int j = 0; j<candidates.get(i).size(); j++){
+				Node candidate = candidates.get(i).get(j);
+				Transaction tx = tempGraphDatabaseService.beginTx();
+				A.add(Double.parseDouble(candidate.getProperty("weightAvailibility")+""));
+				R.add(Double.parseDouble(candidate.getProperty("weightReliability")+""));
+				C.add(Double.parseDouble(candidate.getProperty("weightCost")+""));
+				System.out.println(Double.parseDouble(candidate.getProperty("weightCost")+""));
+				tx.close();
+			}
+			Map<String,Double> normalized = normalize(A,R,C);
+			candidatesWithQos.put(candidates.get(i), normalized);
+		}
+		return candidatesWithQos;
+	}
+
+	private Map<String,Double> normalize(List<Double> a, List<Double> r, List<Double> c) {
+		// TODO Auto-generated method stub
+		Map<String,Double> toReturn = new HashMap<String,Double>();
+		double meanA = mean(a);
+		double meanR = mean(r);
+		double meanC = mean(c);
+		System.out.println("meanc: "+meanC);
+		double normalizedA = normalize(meanA, "A");
+		double normalizedR = normalize(meanR, "R");
+		double normalizedC = normalize(meanC, "C");
+		
+		toReturn.put("A",normalizedA);
+		toReturn.put("R",normalizedR);
+		toReturn.put("C",normalizedC);
+		
+		return toReturn;
+
+	}
+	private double normalize(double mean, String id) {
+		// TODO Auto-generated method stub
+		if(id.equals("A")){
+			if(ReduceGraphDb.maxAvailability-ReduceGraphDb.minAvailability == 0)
+				return 1;
+			else{
+				return (mean - ReduceGraphDb.minAvailability)/(ReduceGraphDb.maxAvailability-ReduceGraphDb.minAvailability);
+			}
+		}
+		else if(id.equals("R")){
+			if(ReduceGraphDb.maxReliability-ReduceGraphDb.minReliability == 0)
+				return 1;
+			else{
+				return (mean - ReduceGraphDb.minReliability)/(ReduceGraphDb.maxReliability-ReduceGraphDb.minReliability);
+			}
+		}
+		else if(id.equals("C")){
+			if(ReduceGraphDb.maxCost-ReduceGraphDb.minCost == 0)
+				return 1;
+			else{
+				System.out.println(ReduceGraphDb.maxCost+"    "+ReduceGraphDb.minCost);
+				return (ReduceGraphDb.maxCost- mean)/(ReduceGraphDb.maxCost-ReduceGraphDb.minCost);
+			}
+		}	
+		else return -1;
+	}
+	
+	private double mean(List<Double>list){
+		double total = 0;
+		for(Double d: list){
+			total += d;
+		}
+		double toReturn = total/(double)list.size();
+		return toReturn;
 	}
 	private void composition(Node subEndNode, Set<Node> result)  throws OuchException{
 		Transaction tx = tempGraphDatabaseService.beginTx();
@@ -90,12 +221,12 @@ public class FindCompositions {
 						composition(node, result);
 					}
 				}
-				
+
 
 			}
-//			tx.success();
+			//			tx.success();
 		}catch(Exception e){
-//			System.out.println("find composition - composition: "+ e);
+			//			System.out.println("find composition - composition: "+ e);
 		}finally{
 			tx.close();
 		}

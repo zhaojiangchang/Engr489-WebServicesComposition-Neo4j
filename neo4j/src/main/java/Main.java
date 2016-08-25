@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -268,11 +269,11 @@ public class Main implements Runnable{
 		findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
 		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
 		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
-		Set<Set<Node>> populations = findCompositions.run();
+		List<List<Node>> candidates = findCompositions.run();
 
 		Transaction transaction = subGraphDatabaseService.beginTx();
 		try{
-			for(Set<Node> pop: populations){
+			for(List<Node> pop: candidates){
 				System.out.println();
 				for(Node n: pop){
 					System.out.print(n.getProperty("name")+"  ");

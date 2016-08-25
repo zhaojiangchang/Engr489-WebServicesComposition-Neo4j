@@ -42,14 +42,45 @@ public class ReduceGraphDb {
 	private Set<Node> relatedNodes;
 	private final String Neo4j_subDBPath = "database/sub_graph";
 	
-	private final double minAvailability = 0.0;
-	private double maxAvailability = -1.0;
-	private final double minReliability = 0.0;
-	private double maxReliability = -1.0;
-	private double minTime = Double.MAX_VALUE;
-	private double maxTime = -1.0;
-	private double minCost = Double.MAX_VALUE;
-	private double maxCost = -1.0;
+	public final double minAvailability = 0.0;
+	public double getMinAvailability() {
+		return minAvailability;
+	}
+
+	public double getMaxAvailability() {
+		return maxAvailability;
+	}
+
+	public double getMinReliability() {
+		return minReliability;
+	}
+
+	public double getMaxReliability() {
+		return maxReliability;
+	}
+
+	public double getMinTime() {
+		return minTime;
+	}
+
+	public double getMaxTime() {
+		return maxTime;
+	}
+
+	public double getMinCost() {
+		return minCost;
+	}
+
+	public double getMaxCost() {
+		return maxCost;
+	}
+	public double maxAvailability = -1.0;
+	public final double minReliability = 0.0;
+	public double maxReliability = -1.0;
+	public double minTime = Double.MAX_VALUE;
+	public double maxTime = -1.0;
+	public double minCost = Double.MAX_VALUE;
+	public double maxCost = -1.0;
 	
 	private Set<Node>subGraphNodes = new HashSet<Node>();
 	private Relationship relation;
