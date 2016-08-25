@@ -57,11 +57,11 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private final boolean runTestFiles = false;
+	private final boolean runTestFiles = true;
 	private final String year = "2008";
 	private final String dataSet = "01";
-	private final int compositionSize = 12;
-	private final int totalCompositions = 50;
+	private final int compositionSize = 32;
+	private final int totalCompositions = 10;
 	private final boolean runQosDataset = true;
 
 
@@ -269,6 +269,15 @@ public class Main implements Runnable{
 		findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
 		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
 		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
+		findCompositions.setMaxAvailability(reduceGraphDb.maxAvailability);
+		findCompositions.setMinAvailability(reduceGraphDb.minAvailability);
+		findCompositions.setMaxCost(reduceGraphDb.maxCost);
+		findCompositions.setMinCost(reduceGraphDb.minCost);
+		findCompositions.setMaxTime(reduceGraphDb.maxTime);
+		findCompositions.setMinTime(reduceGraphDb.minTime);
+		findCompositions.setMaxReliability(reduceGraphDb.maxReliability);
+		findCompositions.setMinReliability(reduceGraphDb.minReliability);
+		findCompositions.setServiceMap(neo4jwsc.serviceMap);
 		List<List<Node>> candidates = findCompositions.run();
 
 		Transaction transaction = subGraphDatabaseService.beginTx();

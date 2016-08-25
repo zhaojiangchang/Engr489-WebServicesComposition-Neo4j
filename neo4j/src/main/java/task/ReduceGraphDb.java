@@ -39,10 +39,35 @@ public class ReduceGraphDb {
 
 	private Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
 	private Map<String,Node>subGraphNodesMap = new HashMap<String,Node>();
+	private Set<Node>subGraphNodes = new HashSet<Node>();
+
 	private Set<Node> relatedNodes;
 	private final String Neo4j_subDBPath = "database/sub_graph";
 	
 	public final double minAvailability = 0.0;
+	
+	public double maxAvailability = -1.0;
+	public final double minReliability = 0.0;
+	public double maxReliability = -1.0;
+	public double minTime = Double.MAX_VALUE;
+	public double maxTime = -1.0;
+	public double minCost = Double.MAX_VALUE;
+	public double maxCost = -1.0;
+	
+	private Relationship relation;
+	private static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
+	private static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
+	private static final int TIME = 0;
+	private static final int COST = 1;
+	private static final int AVAILABILITY = 2;
+	private static final int RELIABILITY = 3;
+	private IndexManager index = null;
+	private Index<Node> services = null;
+
+	public ReduceGraphDb(GraphDatabaseService graphDatabaseService){
+		relatedNodes = new HashSet<Node>();
+		this.graphDatabaseService = graphDatabaseService;
+	}
 	public double getMinAvailability() {
 		return minAvailability;
 	}
@@ -74,30 +99,6 @@ public class ReduceGraphDb {
 	public double getMaxCost() {
 		return maxCost;
 	}
-	public double maxAvailability = -1.0;
-	public final double minReliability = 0.0;
-	public double maxReliability = -1.0;
-	public double minTime = Double.MAX_VALUE;
-	public double maxTime = -1.0;
-	public double minCost = Double.MAX_VALUE;
-	public double maxCost = -1.0;
-	
-	private Set<Node>subGraphNodes = new HashSet<Node>();
-	private Relationship relation;
-	private static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
-	private static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
-	private static final int TIME = 0;
-	private static final int COST = 1;
-	private static final int AVAILABILITY = 2;
-	private static final int RELIABILITY = 3;
-	private IndexManager index = null;
-	private Index<Node> services = null;
-
-	public ReduceGraphDb(GraphDatabaseService graphDatabaseService){
-		relatedNodes = new HashSet<Node>();
-		this.graphDatabaseService = graphDatabaseService;
-	}
-
 	public void setStartNode(Node startNode) {
 		this.startNode = startNode;
 	}
@@ -459,8 +460,8 @@ public class ReduceGraphDb {
 			minCost = cost;
 	
 	// Adjust max. cost and max. time based on the number of services in shrunk repository
-	maxCost *= relatedNodes.size();
-	maxTime *= relatedNodes.size();
+//	maxCost *= relatedNodes.size();
+//	maxTime *= relatedNodes.size();
 	}
 
 	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
