@@ -36,6 +36,7 @@ public class FindCompositions {
 	private int compositionSize = 0;
 	private Map<String,Node>subGraphNodesMap = null;
 	private int totalCompositions = 0;
+	private boolean skipRecursive = false;
 
 	public FindCompositions(int totalCompositions, int compositionSize, GraphDatabaseService tempGraphDatabaseService ){
 		this.tempGraphDatabaseService = tempGraphDatabaseService;
@@ -44,19 +45,26 @@ public class FindCompositions {
 		population = new HashSet<Node>();
 	}
 	public Set<Set<Node>> run(){
-		Set<Set<Node>> populations = new HashSet<Set<Node>>();
-		while(populations.size()<totalCompositions){
+		Set<Set<Node>> candidates = new HashSet<Set<Node>>();
+		while(candidates.size()<totalCompositions){
+			skipRecursive = false;
 			Set<Node>result = new HashSet<Node>();
 			result.add(endNode);
-			composition(endNode, result);	
+			try {
+				composition(endNode, result);
+			} catch (OuchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 			result = checkDuplicateNodes(result);
 			if(result.size()<=compositionSize && result.size()>0){
-				populations.add(result);
+				System.out.println(candidates.size());
+				candidates.add(result);
 			}
 		}
-		return populations;
+		return candidates;
 	}
-	private void composition(Node subEndNode, Set<Node> result) {
+	private void composition(Node subEndNode, Set<Node> result)  throws OuchException{
 		Transaction tx = tempGraphDatabaseService.beginTx();
 
 		try{
@@ -76,7 +84,7 @@ public class FindCompositions {
 
 				result.addAll(fulfillSubEndNodes);
 				if(result.size()>compositionSize){
-					return;
+					throw new OuchException("result>compositionSize");
 				}else{
 					for (Node node: fulfillSubEndNodes){
 						composition(node, result);
