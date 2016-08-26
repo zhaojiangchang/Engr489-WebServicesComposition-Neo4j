@@ -176,10 +176,10 @@ public class FindCompositions {
 			String nodeName = (String) sNode.getProperty("name");
 			if(nodeName.equals("start")){
 				//				candidateStartNode = sNode;
-				addStartNodeRel(sNode, candidateGraphDatabaseService.getAllNodes(), candidateGraphDatabaseService);
+				addStartNodeRel(sNode, candidateGraphDatabaseService);
 			}
 			else {
-				addInputsServiceRelationship(sNode,candidateGraphDatabaseService.getAllNodes(),candidateGraphDatabaseService);
+				addInputsServiceRelationship(sNode,candidateGraphDatabaseService);
 //				Transaction t = candidateGraphDatabaseService.beginTx();
 				for(Relationship r: sNode.getRelationships()){
 					System.out.print("  3 "+r.getProperty("From")+"   3  ");
@@ -193,8 +193,9 @@ public class FindCompositions {
 		transaction.success();
 		transaction.close();
 	}
-	private Node getNodeByString(String name, Iterable<Node> nodeList, GraphDatabaseService candidateGraphDatabaseService){
+	private Node getNodeByString(String name, GraphDatabaseService candidateGraphDatabaseService){
 		Transaction transaction = candidateGraphDatabaseService.beginTx();
+		Iterable<Node> nodeList = candidateGraphDatabaseService.getAllNodes();
 		for( Node n:nodeList){
 			if(n.getProperty("name").equals(name)){
 				return n;
@@ -204,7 +205,7 @@ public class FindCompositions {
 		return null;
 	}
 
-	private void addInputsServiceRelationship(Node sNode,Iterable<Node> nodeList, GraphDatabaseService candidateGraphDatabaseService) {
+	private void addInputsServiceRelationship(Node sNode, GraphDatabaseService candidateGraphDatabaseService) {
 
 		Transaction transaction = candidateGraphDatabaseService.beginTx();
 		//		double sNodeWeight = (double) sNode.getProperty("weight");
@@ -216,7 +217,7 @@ public class FindCompositions {
 				for(String s: inputs){
 					ServiceNode serviceNode = serviceMap.get(s);
 					double[]qos = serviceNode.getQos();
-					Node inputsServicesNode = getNodeByString(s,nodeList,candidateGraphDatabaseService);
+					Node inputsServicesNode = getNodeByString(s,candidateGraphDatabaseService);
 					if(inputsServicesNode!=null){
 						System.out.print("  "+inputsServicesNode.getProperty("name")+"  ");
 						String[] tempToArray = getOutputs(inputsServicesNode, sNode, candidateGraphDatabaseService);
@@ -246,13 +247,13 @@ public class FindCompositions {
 	
 	}
 
-	private void addStartNodeRel(Node sNode,Iterable<Node> nodeList, GraphDatabaseService candidateGraphDatabaseService){
+	private void addStartNodeRel(Node sNode, GraphDatabaseService candidateGraphDatabaseService){
 		Transaction transaction = candidateGraphDatabaseService.beginTx();
 		try{
 			String[] outputs = getNodePropertyArray(sNode, "outputServices",candidateGraphDatabaseService);
 			if(outputs.length>0){
 				for(String s: outputs){
-					Node outputsServicesNode = getNodeByString(s,nodeList, candidateGraphDatabaseService);
+					Node outputsServicesNode = getNodeByString(s, candidateGraphDatabaseService);
 					if(outputsServicesNode!=null){
 						String[] tempToArray = getOutputs(sNode, outputsServicesNode, candidateGraphDatabaseService);
 						Relationship relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
