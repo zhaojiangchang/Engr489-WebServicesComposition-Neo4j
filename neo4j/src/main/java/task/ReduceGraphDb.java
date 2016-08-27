@@ -39,13 +39,10 @@ public class ReduceGraphDb {
 
 	private Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
 	private Map<String,Node>subGraphNodesMap = new HashMap<String,Node>();
-	private Set<Node>subGraphNodes = new HashSet<Node>();
-
 	private Set<Node> relatedNodes;
 	private final String Neo4j_subDBPath = "database/sub_graph";
 	
 	public final double minAvailability = 0.0;
-	
 	public double maxAvailability = -1.0;
 	public final double minReliability = 0.0;
 	public double maxReliability = -1.0;
@@ -54,6 +51,7 @@ public class ReduceGraphDb {
 	public double minCost = Double.MAX_VALUE;
 	public double maxCost = -1.0;
 	
+	private Set<Node>subGraphNodes = new HashSet<Node>();
 	private Relationship relation;
 	private static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private static Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
@@ -421,6 +419,8 @@ public class ReduceGraphDb {
 				service.setProperty("weightAvailibility", qos[AVAILABILITY]);
 				service.setProperty("weightReliability", qos[RELIABILITY]);
 				service.setProperty("visited", false);
+				service.setProperty("totalTime", 0.00);
+
 				subGraphNodes.add(service);
 				subGraphNodesMap.put((String) sNode.getProperty("name"), service);
 				tx.success();
@@ -458,6 +458,7 @@ public class ReduceGraphDb {
 			maxCost = cost;
 		if (cost < minCost)
 			minCost = cost;
+
 	
 	// Adjust max. cost and max. time based on the number of services in shrunk repository
 //	maxCost *= relatedNodes.size();

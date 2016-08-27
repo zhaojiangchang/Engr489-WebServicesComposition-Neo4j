@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -24,6 +23,7 @@ import generateDatabase.GenerateDatabase;
 import modellingServices.LoadFiles;
 import modellingServices.PopulateTaxonomyTree;
 import task.FindCompositions;
+import task.OuchException;
 import task.ReduceGraphDb;
 import task.RunTask;
 
@@ -57,7 +57,7 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private final boolean runTestFiles = true;
+	private final boolean runTestFiles = false;
 	private final String year = "2008";
 	private final String dataSet = "01";
 	private final int compositionSize = 32;
@@ -68,7 +68,7 @@ public class Main implements Runnable{
 	//******************************************************//
 
 
-	public static void main( String[] args ) throws IOException{
+	public static void main( String[] args ) throws IOException, OuchException{
 		Main neo4jwsc = new Main();
 		Thread t = new Thread(neo4jwsc,"Neo4jThread");  
 		t.start();
@@ -277,12 +277,11 @@ public class Main implements Runnable{
 		findCompositions.setMinTime(reduceGraphDb.minTime);
 		findCompositions.setMaxReliability(reduceGraphDb.maxReliability);
 		findCompositions.setMinReliability(reduceGraphDb.minReliability);
-		findCompositions.setServiceMap(neo4jwsc.serviceMap);
-		List<List<Node>> candidates = findCompositions.run();
+		Set<Set<Node>> populations = findCompositions.run();
 
 		Transaction transaction = subGraphDatabaseService.beginTx();
 		try{
-			for(List<Node> pop: candidates){
+			for(Set<Node> pop: populations){
 				System.out.println();
 				for(Node n: pop){
 					System.out.print(n.getProperty("name")+"  ");
