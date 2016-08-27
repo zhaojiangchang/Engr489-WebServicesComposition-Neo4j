@@ -33,7 +33,8 @@ public class LoadFiles {
 	public static final int COST = 1;
 	public static final int AVAILABILITY = 2;
 	public static final int RELIABILITY = 3;
-
+	
+	
 	public LoadFiles(String serviceFileName, String taxonomyFileName, String taskFileName) {
 		this.serviceFileName = serviceFileName;
 		this.taxonomyFileName = taxonomyFileName;
@@ -44,7 +45,7 @@ public class LoadFiles {
 		parseWSCServiceFile(serviceFileName);
 		parseWSCTaskFile(taskFileName);
 	}
-
+	
 	/**
 	 * Parses the WSC taxonomy file with the given name, building a
 	 * tree-like structure.
@@ -140,7 +141,7 @@ public class LoadFiles {
 					qos[RELIABILITY] = Double.valueOf(eElement.getAttribute("Rel"));
 
 				}
-			
+
 				// Get inputs
 				org.w3c.dom.Node inputNode = eElement.getElementsByTagName("inputs").item(0);
 				NodeList inputNodes = ((Element)inputNode).getElementsByTagName("instance");
@@ -242,6 +243,6 @@ public class LoadFiles {
 	public Set<String> getTaskOutputs() {
 		return taskOutputs;
 	}
-
+	
 
 }
