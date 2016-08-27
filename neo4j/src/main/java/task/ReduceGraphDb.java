@@ -462,7 +462,7 @@ public class ReduceGraphDb {
 	
 	// Adjust max. cost and max. time based on the number of services in shrunk repository
 //	maxCost *= relatedNodes.size();
-//	maxTime *= relatedNodes.size();
+//	maxTime *= subGraphNodes.size();
 	}
 
 	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
