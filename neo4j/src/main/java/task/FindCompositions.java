@@ -45,16 +45,20 @@ public class FindCompositions {
 	public double maxTime = -1.0;
 	public double minCost = Double.MAX_VALUE;
 	public double maxCost = -1.0;
-
+	private double m_a = 0;
+	private double m_r = 0;
+	private double m_c = 0;
+	private double m_t = 0;
+	
 	public FindCompositions(int totalCompositions, int compositionSize, GraphDatabaseService subGraphDatabaseService ){
 		this.subGraphDatabaseService = subGraphDatabaseService;
 		this.compositionSize = compositionSize;
 		this.totalCompositions = totalCompositions;
 		population = new HashSet<Node>();
 	}
-	public Set<Set<Node>> run() throws OuchException{
+	public Map<List<Node>, Map<String,Double>> run() throws OuchException{
 		Map<List<Node>, Double> timeForEachCandidate = new HashMap<List<Node>, Double>();
-		Set<Set<Node>> candidates = findCandidates(timeForEachCandidate);
+		Set<Set<Node>> candidates = findCandidates(timeForEachCandidate);		
 		Map<List<Node>, Map<String,Double>> candidatesWithQos = calculateQos(timeForEachCandidate);
 
 		for (Map.Entry<List<Node>, Map<String,Double>> entry : candidatesWithQos.entrySet()){
@@ -65,24 +69,50 @@ public class FindCompositions {
 			}
 			System.out.println();
 		}
-
-
+		
+		
 		//		List<Node> bestAvailability = getBest(candidatesWithQos, "A");
 		//		List<Node> bestReliability = getBest(candidatesWithQos, "R");
 		//		List<Node> bestCost = getBest(candidatesWithQos, "C");
 		//		findBestTime(candidates);
-		return candidates;
+		return candidatesWithQos;
 	}
-
+	public Map<List<Node>,Map<String,Double>> getResult(Map<List<Node>, Map<String,Double>> candidates) {
+		double best = 0;
+		List<Node>bestList = new ArrayList<Node>();
+		Map<List<Node>,Map<String,Double>>bestResultWithQos = new HashMap<List<Node>,Map<String,Double>>();
+		for (Map.Entry<List<Node>,  Map<String,Double>> entry : candidates.entrySet()){
+			Map<String, Double> qosValues = entry.getValue();
+			double temp = m_a*qosValues.get("A") + m_r*qosValues.get("R") + m_c*qosValues.get("C") + m_t*qosValues.get("T");
+			if(best<temp){
+				best = temp;
+				bestList = entry.getKey();
+				bestResultWithQos.clear();
+				bestResultWithQos.put(entry.getKey(), entry.getValue());
+				System.out.println(bestResultWithQos.size());
+			}
+		}
+		System.out.println(best);
+		return bestResultWithQos;
+	}
 	private Map<List<Node>, Map<String,Double>> calculateQos(Map<List<Node>, Double> timeForEachCandidate) {
 		Map<List<Node>, Map<String,Double>> candidatesWithQos = new HashMap<List<Node>, Map<String,Double>>();
+		List<Double> T = new ArrayList<Double>();
+		for (Map.Entry<List<Node>, Double> entry1 : timeForEachCandidate.entrySet())
+		{
+			if(entry1.getValue()>maxTime)
+				maxTime = entry1.getValue();
+			if(entry1.getValue()<minTime)
+				minTime = entry1.getValue();
+			T.add(entry1.getValue());
+
+		}
 		for (Map.Entry<List<Node>, Double> entry : timeForEachCandidate.entrySet())
 		{
 			List<Node> candidate = entry.getKey();
 			List<Double> A = new ArrayList<Double>();
 			List<Double> R = new ArrayList<Double>();
 			List<Double> C = new ArrayList<Double>();
-			//			List<Double> T = new ArrayList<Double>();
 			for(int j = 0; j<candidate.size(); j++){
 				Node node = candidate.get(j);
 				Transaction tx = subGraphDatabaseService.beginTx();
@@ -91,27 +121,22 @@ public class FindCompositions {
 				C.add((double)node.getProperty("weightCost"));
 				tx.close();
 			}
-			Map<String,Double> normalized = normalize(A,R,C);
-			normalized.put("T", entry.getValue());
+			Map<String,Double> normalized = new HashMap<String,Double>();
+			normalized.put("A", normalize(A, "A"));
+			normalized.put("R", normalize(R, "R"));
+			normalized.put("C", normalize(C, "C"));
+			normalized.put("T", normalize(entry.getValue(),"T"));
 			candidatesWithQos.put(candidate, normalized);
-
 		}
+		
 		return candidatesWithQos;
 	}
-	private Map<String,Double> normalize(List<Double> a, List<Double> r, List<Double> c) {
-		Map<String,Double> toReturn = new HashMap<String,Double>();
-		double meanA = mean(a);
-		double meanR = mean(r);
-		double meanC = mean(c);
-		double normalizedA = normalize(meanA, "A");
-		double normalizedR = normalize(meanR, "R");
-		double normalizedC = normalize(meanC, "C");
+	private double normalize(List<Double> a, String id) {
+		double mean = mean(a);
+		
+		double normalized = normalize(mean, id);
 
-		toReturn.put("A",normalizedA);
-		toReturn.put("R",normalizedR);
-		toReturn.put("C",normalizedC);
-
-		return toReturn;
+		return normalized;
 
 	}
 	private double normalize(double mean, String id) {
@@ -134,6 +159,13 @@ public class FindCompositions {
 				return 1;
 			else{
 				return (maxCost- mean)/(maxCost-minCost);
+			}
+		}	
+		else if(id.equals("T")){
+			if(maxTime-minTime == 0)
+				return 1;
+			else{
+				return (maxTime- mean)/(maxTime-minTime);
 			}
 		}	
 		else return -1;
@@ -583,6 +615,21 @@ public class FindCompositions {
 	public void setMaxCost(double maxCost) {
 		this.maxCost = maxCost;
 	}
+	public void setM_a(double m_a) {
+		this.m_a = m_a;
+	}
+	public void setM_r(double m_r) {
+		this.m_r = m_r;
+	}
+	public void setM_c(double m_c) {
+		this.m_c = m_c;
+	}
+	public void setM_t(double m_t) {
+		this.m_t = m_t;
+	}
+	
+	
+	
 //	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
 //	Transaction tx = subGraphDatabaseService.beginTx();
 //	String [] toReturn = null;

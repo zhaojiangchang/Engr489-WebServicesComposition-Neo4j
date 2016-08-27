@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -60,10 +61,14 @@ public class Main implements Runnable{
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
 	private final String dataSet = "01";
-	private final int compositionSize = 32;
-	private final int totalCompositions = 10;
+	private final int compositionSize = 12;
+	private final int totalCompositions = 50;
 	private final boolean runQosDataset = true;
 
+	private final double m_a = 0.1;
+	private final double m_r = 0.1;
+	private final double m_c = 0.1;
+	private final double m_t = 0.7;
 
 	//******************************************************//
 
@@ -277,18 +282,45 @@ public class Main implements Runnable{
 		findCompositions.setMinTime(reduceGraphDb.minTime);
 		findCompositions.setMaxReliability(reduceGraphDb.maxReliability);
 		findCompositions.setMinReliability(reduceGraphDb.minReliability);
-		Set<Set<Node>> populations = findCompositions.run();
+		findCompositions.setM_a(neo4jwsc.m_a);
+		findCompositions.setM_r(neo4jwsc.m_r);
+		findCompositions.setM_c(neo4jwsc.m_c);
+		findCompositions.setM_t(neo4jwsc.m_t);
+		Map<List<Node>, Map<String,Double>> candidates = findCompositions.run();
+		Map<List<Node>,Map<String,Double>> resultWithQos = findCompositions.getResult(candidates);
 
 		Transaction transaction = subGraphDatabaseService.beginTx();
-		try{
-			for(Set<Node> pop: populations){
+		try{			
+			System.out.println("candidates: ");
+
+			for (Map.Entry<List<Node>,  Map<String,Double>> entry : candidates.entrySet()){
 				System.out.println();
-				for(Node n: pop){
+				for(Node n: entry.getKey()){
 					System.out.print(n.getProperty("name")+"  ");
 				}
 				System.out.println();
-				System.out.println("composition size: "+pop.size());
+				System.out.println("composition size: "+entry.getKey().size());
 			}
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println("Best result: ");
+			for (Map.Entry<List<Node>,  Map<String,Double>> entry2 : resultWithQos.entrySet()){
+				for(Node n: entry2.getKey()){
+				System.out.print(n.getProperty("name")+"  ");
+				}
+				System.out.println();
+				System.out.print("QOS:  ");
+				for (Map.Entry<String,Double> entry3 : entry2.getValue().entrySet()){
+					System.out.print(entry3.getKey()+": "+entry3.getValue()+"     ");
+				}
+				System.out.println();
+				double fitnessOfBest = neo4jwsc.m_a*entry2.getValue().get("A") + neo4jwsc.m_r*entry2.getValue().get("R") + neo4jwsc.m_c*entry2.getValue().get("C") + neo4jwsc.m_t*entry2.getValue().get("T");
+				System.out.println("fitnessOfBest:" +fitnessOfBest);
+
+			}
+			System.out.println();
+			System.out.println();
 		} catch (Exception e) {
 			System.out.println(e);
 			System.out.println("print populations error.."); 
