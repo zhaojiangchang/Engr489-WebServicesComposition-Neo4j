@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -364,6 +365,21 @@ public class Main implements Runnable{
 			generateSubDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
 			generateSubDatabase.run();
 			generateSubDatabase.getNewGraphDatabaseService();
+			GraphDatabaseService newGraphDatabaseService = generateSubDatabase.getNewGraphDatabaseService();
+			Transaction tt = newGraphDatabaseService.beginTx();
+			try{
+				for(Node sNode: newGraphDatabaseService.getAllNodes()){
+					for(Relationship r: sNode.getRelationships()){
+						System.out.println(r.getProperty("From")+"  to   "+r.getProperty("To"));
+					}
+				}
+
+			}catch (Exception e) {
+				System.out.println(e);
+				System.out.println("GenerateSubDatabase add Relationship error.."); 
+			} finally {
+				tt.close();
+			}	
 			registerShutdownHook(subGraphDatabaseService);
 
 		}

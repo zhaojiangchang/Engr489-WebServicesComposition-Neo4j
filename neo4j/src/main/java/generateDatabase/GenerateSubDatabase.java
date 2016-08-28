@@ -34,23 +34,26 @@ public class GenerateSubDatabase {
 	private  Map<String, TaxonomyNode> taxonomyMap = null;
 	private Map<String, ServiceNode> serviceMap = null;;
 	private List<Node> nodes;
+	private List<Node> newNodes;
 	private enum RelTypes implements RelationshipType{
 		PARENT, CHILD, OUTPUT, INPUT, TO, IN, OUT
 	}
 	private IndexManager index = null;
 	private Index<Node> services = null;
 	private String newDBPath = "database/result/";
-
+	Relationship relation;
 	public GenerateSubDatabase(List<Node> nodes, GraphDatabaseService graphDatabaseService, String path) {
 		this.graphDatabaseService = graphDatabaseService;
 		this.nodes = nodes;
 		this.newDBPath = path;
+		this.newNodes = new ArrayList<Node>();
 	}
 
 	public void run() {
 		createNewDbService();
-		addNodesToNewDBService(nodes,newGraphDatabaseService, graphDatabaseService );
-		//		createRel(newGraphDatabaseService);			
+		newNodes = addNodesToNewDBService(nodes,newGraphDatabaseService, graphDatabaseService );
+		createRel(newNodes);	
+	
 	}
 
 	public void createNewDbService() {
@@ -98,29 +101,21 @@ public class GenerateSubDatabase {
 
 
 
-	public void createRel(GraphDatabaseService newGraphDatabaseService){
-		Transaction transaction = newGraphDatabaseService.beginTx();
-
-		for(Node sNode: newGraphDatabaseService.getAllNodes()){
-
-
+	public void createRel(List<Node>newNodes){
+		int ii = 0;
+		for(Node sNode: newNodes){
+			Transaction tx = newGraphDatabaseService.beginTx();
 			String nodeName = (String) sNode.getProperty("name");
+			tx.close();
+
 			if(nodeName.equals("start")){
-				//				candidateStartNode = sNode;
-				addStartNodeRel(sNode, newGraphDatabaseService);
+				addStartNodeRel(sNode);				
 			}
 			else {
-				addInputsServiceRelationship(sNode,newGraphDatabaseService);
-				//				Transaction t = candidateGraphDatabaseService.beginTx();
-				for(Relationship r: sNode.getRelationships()){
-				}
-				//				t.close();
-			}	
-
+				addInputsServiceRelationship(sNode);		
+			}
 
 		}
-		transaction.success();
-		transaction.close();
 	}
 	private Node getNodeByString(String name, GraphDatabaseService newGraphDatabaseService){
 		Transaction transaction = newGraphDatabaseService.beginTx();
@@ -134,21 +129,20 @@ public class GenerateSubDatabase {
 		return null;
 	}
 
-	private void addInputsServiceRelationship(Node sNode, GraphDatabaseService newGraphDatabaseService) {
-
-		Transaction transaction = newGraphDatabaseService.beginTx();
-		//		double sNodeWeight = (double) sNode.getProperty("weight");
-		try{
-			String[] inputs = getNodePropertyArray(sNode, "inputServices",newGraphDatabaseService );
-			//		List<Node>inputsServicesNodes = new ArrayList<Node>();、
-			if(inputs.length>0){
-				for(String s: inputs){
-					ServiceNode serviceNode = serviceMap.get(s);
-					double[]qos = serviceNode.getQos();
-					Node inputsServicesNode = getNodeByString(s,newGraphDatabaseService);
-					if(inputsServicesNode!=null){
+	private void addInputsServiceRelationship(Node sNode) {
+		String[] inputs = getNodePropertyArray(sNode, "inputServices",newGraphDatabaseService );
+		//		List<Node>inputsServicesNodes = new ArrayList<Node>();、
+		if(inputs.length>0){
+			for(String s: inputs){
+				ServiceNode serviceNode = serviceMap.get(s);
+				double[]qos = serviceNode.getQos();
+				Node inputsServicesNode = getNodeByString(s,newGraphDatabaseService);
+				if(inputsServicesNode!=null){
+					Transaction transaction = newGraphDatabaseService.beginTx();
+					//		double sNodeWeight = (double) sNode.getProperty("weight");
+					try{
 						String[] tempToArray = getOutputs(inputsServicesNode, sNode, newGraphDatabaseService);
-						Relationship relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
+						relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
 						relation.setProperty("From", s);
 						relation.setProperty("To", (String)sNode.getProperty("name"));
 						relation.setProperty("weightTime", qos[TIME]);
@@ -157,29 +151,29 @@ public class GenerateSubDatabase {
 						relation.setProperty("weightReliability", qos[RELIABILITY]);
 						relation.setProperty("outputs", tempToArray);
 						relation.setProperty("Direction", "incoming");    
-					}
+						transaction.success();			
+					} catch (Exception e) {
+						System.out.println(e);
+						System.out.println("GenerateDatabase add result nodes InputsServiceRelationship error.."); 
+					} finally {
+						transaction.close();
+					}	
 				}
 			}
-			transaction.success();			
-		} catch (Exception e) {
-			System.out.println(e);
-			System.out.println("GenerateDatabase add result nodes InputsServiceRelationship error.."); 
-		} finally {
-			transaction.close();
-		}	
-
+		}
 	}
 
-	private void addStartNodeRel(Node sNode, GraphDatabaseService newGraphDatabaseService){
-		Transaction transaction = newGraphDatabaseService.beginTx();
-		try{
-			String[] outputs = getNodePropertyArray(sNode, "outputServices",newGraphDatabaseService);
-			if(outputs.length>0){
-				for(String s: outputs){
-					Node outputsServicesNode = getNodeByString(s, newGraphDatabaseService);
-					if(outputsServicesNode!=null){
+	private void addStartNodeRel(Node sNode){
+
+		String[] outputs = getNodePropertyArray(sNode, "outputServices",newGraphDatabaseService);
+		if(outputs.length>0){
+			for(String s: outputs){
+				Node outputsServicesNode = getNodeByString(s, newGraphDatabaseService);
+				if(outputsServicesNode!=null){
+					Transaction transaction = newGraphDatabaseService.beginTx();
+					try{
 						String[] tempToArray = getOutputs(sNode, outputsServicesNode, newGraphDatabaseService);
-						Relationship relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
+						relation = sNode.createRelationshipTo(outputsServicesNode, RelTypes.IN);
 						relation.setProperty("From", (String)sNode.getProperty("name"));
 						relation.setProperty("To", s);
 						relation.setProperty("outputs", tempToArray);
@@ -188,21 +182,22 @@ public class GenerateSubDatabase {
 						relation.setProperty("weightCost", 0);
 						relation.setProperty("weightAvailibility", 0);
 						relation.setProperty("weightReliability", 0);
+
+						transaction.success();
+					}catch(Exception e){
+						e.printStackTrace();
+					}finally{
+						transaction.close();
 					}
-
 				}
-			}					
-
-			transaction.success();
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-			transaction.close();
+			}
 		}
 	}
 
-	private void addNodesToNewDBService(List<Node> list, GraphDatabaseService newGraphDatabaseService, GraphDatabaseService graphDatabaseService) {
+	private List<Node> addNodesToNewDBService(List<Node> list, GraphDatabaseService newGraphDatabaseService, GraphDatabaseService graphDatabaseService) {
 		Set<Node>nodes = new HashSet<Node>(list);
+		List<Node>nNodes = new ArrayList<Node>();
+
 		Transaction transaction = graphDatabaseService.beginTx();
 		for(Node sNode: nodes) {
 			String[] inputServices = getInputOutputServicesForSubGraph(sNode, nodes, "inputServices",graphDatabaseService);				
@@ -248,6 +243,7 @@ public class GenerateSubDatabase {
 				service.setProperty("visited", false);
 				service.setProperty("totalTime", sNode.getProperty("totalTime"));
 				//				candidateGraphNodesMap.put((String) sNode.getProperty("name"), service);
+				nNodes.add(service);
 				tx.success();
 			}catch(Exception e){
 				System.out.println("createNewGraphDatabase:  graphDatabaseService    "+ e);
@@ -257,6 +253,7 @@ public class GenerateSubDatabase {
 
 		}	
 		transaction.close();
+		return nNodes;
 	}
 
 
@@ -401,7 +398,7 @@ public class GenerateSubDatabase {
 	}
 
 
-	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap2) {
+	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap) {
 		// TODO Auto-generated method stub
 		this.taxonomyMap = taxonomyMap;
 
