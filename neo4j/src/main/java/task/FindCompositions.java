@@ -89,10 +89,8 @@ public class FindCompositions {
 				bestList = entry.getKey();
 				bestResultWithQos.clear();
 				bestResultWithQos.put(entry.getKey(), entry.getValue());
-				System.out.println(bestResultWithQos.size());
 			}
 		}
-		System.out.println(best);
 		return bestResultWithQos;
 	}
 	private Map<List<Node>, Map<String,Double>> calculateQos(Map<List<Node>, Double> timeForEachCandidate) {
