@@ -31,6 +31,7 @@ import org.neo4j.kernel.Traversal;
 import component.ServiceNode;
 import component.TaxonomyNode;
 
+@SuppressWarnings("deprecation")
 public class ReduceGraphDb {
 	private Node startNode;
 	private Node endNode;
@@ -109,9 +110,11 @@ public class ReduceGraphDb {
 	public Node getEndNode(){
 		return this.endNode;
 	}
+	@SuppressWarnings("static-access")
 	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap){
 		this.taxonomyMap = taxonomyMap;
 	}
+	@SuppressWarnings("static-access")
 	public void setServiceMap(Map<String, ServiceNode> serviceMap){
 		this.serviceMap = serviceMap;
 	}

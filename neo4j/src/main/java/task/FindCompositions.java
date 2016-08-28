@@ -23,6 +23,7 @@ import org.neo4j.kernel.Traversal;
 
 import component.TaxonomyNode;
 
+@SuppressWarnings("deprecation")
 public class FindCompositions {
 	private GraphDatabaseService subGraphDatabaseService;
 	private Node endNode = null;
@@ -36,6 +37,7 @@ public class FindCompositions {
 	private int compositionSize = 0;
 	private Map<String,Node>subGraphNodesMap = null;
 	private int totalCompositions = 0;
+	@SuppressWarnings("unused")
 	private boolean skipRecursive = false;
 	public  double minAvailability = 0.0;
 	public double maxAvailability = -1.0;
@@ -58,7 +60,7 @@ public class FindCompositions {
 	}
 	public Map<List<Node>, Map<String,Double>> run() throws OuchException{
 		Map<List<Node>, Double> timeForEachCandidate = new HashMap<List<Node>, Double>();
-		Set<Set<Node>> candidates = findCandidates(timeForEachCandidate);		
+		findCandidates(timeForEachCandidate);		
 		Map<List<Node>, Map<String,Double>> candidatesWithQos = calculateQos(timeForEachCandidate);
 
 		for (Map.Entry<List<Node>, Map<String,Double>> entry : candidatesWithQos.entrySet()){
@@ -79,6 +81,7 @@ public class FindCompositions {
 	}
 	public Map<List<Node>,Map<String,Double>> getResult(Map<List<Node>, Map<String,Double>> candidates) {
 		double best = 0;
+		@SuppressWarnings("unused")
 		List<Node>bestList = new ArrayList<Node>();
 		Map<List<Node>,Map<String,Double>>bestResultWithQos = new HashMap<List<Node>,Map<String,Double>>();
 		for (Map.Entry<List<Node>,  Map<String,Double>> entry : candidates.entrySet()){

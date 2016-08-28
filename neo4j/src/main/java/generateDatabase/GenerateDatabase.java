@@ -30,9 +30,13 @@ public class GenerateDatabase {
 	private IndexManager index = null;
 	public Index<Node> services = null;
 	private static Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
+	@SuppressWarnings("unused")
 	private long startTime = 0;
+	@SuppressWarnings("unused")
 	private long endTime = 0;
+	@SuppressWarnings("unused")
 	private Map<String,List<String>> servicesWithOutputs = new HashMap<String,List<String>>();
+	@SuppressWarnings("unused")
 	private Map<String,List<String>> servicesWithInputs = new HashMap<String,List<String>>();
 	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
@@ -54,6 +58,7 @@ public class GenerateDatabase {
 		this.serviceMap = serviceMap;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void createDbService() {
 		graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(databasePath);
 

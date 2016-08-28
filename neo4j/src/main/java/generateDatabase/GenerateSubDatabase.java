@@ -1,7 +1,5 @@
 package generateDatabase;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,7 +17,6 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
-import org.neo4j.io.fs.FileUtils;
 
 import component.ServiceNode;
 import component.TaxonomyNode;
@@ -56,6 +53,7 @@ public class GenerateSubDatabase {
 	
 	}
 
+	@SuppressWarnings("deprecation")
 	public void createNewDbService() {
 		newGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(newDBPath);
 		Transaction Transaction = newGraphDatabaseService.beginTx();
@@ -102,7 +100,6 @@ public class GenerateSubDatabase {
 
 
 	public void createRel(List<Node>newNodes){
-		int ii = 0;
 		for(Node sNode: newNodes){
 			Transaction tx = newGraphDatabaseService.beginTx();
 			String nodeName = (String) sNode.getProperty("name");
@@ -117,6 +114,7 @@ public class GenerateSubDatabase {
 
 		}
 	}
+	@SuppressWarnings("deprecation")
 	private Node getNodeByString(String name, GraphDatabaseService newGraphDatabaseService){
 		Transaction transaction = newGraphDatabaseService.beginTx();
 		Iterable<Node> nodeList = newGraphDatabaseService.getAllNodes();
@@ -393,13 +391,11 @@ public class GenerateSubDatabase {
 	}
 
 	public GraphDatabaseService getNewGraphDatabaseService() {
-		// TODO Auto-generated method stub
 		return newGraphDatabaseService;
 	}
 
 
 	public void setTaxonomyMap(Map<String, TaxonomyNode> taxonomyMap) {
-		// TODO Auto-generated method stub
 		this.taxonomyMap = taxonomyMap;
 
 	}
