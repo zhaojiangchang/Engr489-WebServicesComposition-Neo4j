@@ -63,8 +63,8 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "01";
-	private final int compositionSize = 12;
+	private final String dataSet = "08";
+	private final int compositionSize = 32;
 	private final int totalCompositions = 10;
 	private final boolean runQosDataset = true;
 
@@ -137,7 +137,7 @@ public class Main implements Runnable{
 
 				startTime = System.currentTimeMillis();
 				graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databaseName);
-				registerShutdownHook(graphDatabaseService, "exist original database");
+				registerShutdownHook(graphDatabaseService, "exist original");
 				Transaction transaction = graphDatabaseService.beginTx();
 				neo4jwsc.index = graphDatabaseService.index();
 				neo4jwsc.services = neo4jwsc.index.forNodes( "identifiers" );
@@ -154,7 +154,7 @@ public class Main implements Runnable{
 				GenerateDatabase generateDatabase = new GenerateDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databaseName);
 				generateDatabase.createDbService();
 				graphDatabaseService = generateDatabase.getGraphDatabaseService();
-				registerShutdownHook(graphDatabaseService, "original database");
+				registerShutdownHook(graphDatabaseService, "original");
 				generateDatabase.setServiceMap(neo4jwsc.serviceMap);
 				generateDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
 				generateDatabase.createServicesDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databaseName);
@@ -190,7 +190,7 @@ public class Main implements Runnable{
 			GenerateDatabase generateDatabase = new GenerateDatabase(neo4jwsc.Neo4j_testServicesDBPath);
 			generateDatabase.createDbService();
 			graphDatabaseService = generateDatabase.getGraphDatabaseService();
-			registerShutdownHook(graphDatabaseService,"original test database");
+			registerShutdownHook(graphDatabaseService,"original test");
 			generateDatabase.setServiceMap(neo4jwsc.serviceMap);
 			generateDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
 			generateDatabase.createServicesDatabase(neo4jwsc.Neo4j_testServicesDBPath);
@@ -232,7 +232,7 @@ public class Main implements Runnable{
 		runtask.copyDb();
 		runtask.createTempDb();
 		graphDatabaseService = runtask.getTempGraphDatabaseService();
-		registerShutdownHook(graphDatabaseService, "Temp database");
+		registerShutdownHook(graphDatabaseService, "Temp");
 		neo4jwsc.neo4jServNodes.clear();
 		neo4jwsc.neo4jServNodes = runtask.getNeo4jServNodes();
 		neo4jwsc.tempServices = runtask.getTempServices();
@@ -382,8 +382,8 @@ public class Main implements Runnable{
 			} finally {
 				tt.close();
 			}	
-			registerShutdownHook(subGraphDatabaseService,"Reduced database");
-			registerShutdownHook(newGraphDatabaseService, "Result database");
+			registerShutdownHook(subGraphDatabaseService,"Reduced");
+			registerShutdownHook(newGraphDatabaseService, "Result");
 
 		}
 		endTime = System.currentTimeMillis();
@@ -438,7 +438,7 @@ public class Main implements Runnable{
 			@Override  
 			public void run()  
 			{  
-				System.out.println("neo4j shutdown hook "+database+"... ");  
+				System.out.println("neo4j graph database shutdown hook ("+database+")... ");  
 				graphDatabaseService.shutdown();
 			}  
 		} );  
