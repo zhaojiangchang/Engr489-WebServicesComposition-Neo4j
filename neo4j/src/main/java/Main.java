@@ -22,7 +22,6 @@ import org.neo4j.io.fs.FileUtils;
 import component.ServiceNode;
 import component.TaxonomyNode;
 import generateDatabase.GenerateDatabase;
-import generateDatabase.GenerateSubDatabase;
 import modellingServices.LoadFiles;
 import modellingServices.PopulateTaxonomyTree;
 import task.FindCompositions;
@@ -63,8 +62,8 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "08";
-	private final int compositionSize = 32;
+	private final String dataSet = "01";
+	private final int compositionSize = 12;
 	private final int totalCompositions = 10;
 	private final boolean runQosDataset = true;
 
@@ -151,13 +150,13 @@ public class Main implements Runnable{
 			}else{
 
 				startTime = System.currentTimeMillis();
-				GenerateDatabase generateDatabase = new GenerateDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databaseName);
+				GenerateDatabase generateDatabase = new GenerateDatabase(null, null,neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databaseName);
 				generateDatabase.createDbService();
 				graphDatabaseService = generateDatabase.getGraphDatabaseService();
 				registerShutdownHook(graphDatabaseService, "original");
 				generateDatabase.setServiceMap(neo4jwsc.serviceMap);
 				generateDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
-				generateDatabase.createServicesDatabase(neo4jwsc.Neo4j_ServicesDBPath+""+neo4jwsc.databaseName);
+				generateDatabase.createServicesDatabase();
 				generateDatabase.addServiceNodeRelationShip();
 				neo4jwsc.neo4jServNodes.clear();
 				neo4jwsc.neo4jServNodes = generateDatabase.getNeo4jServNodes();
@@ -187,13 +186,13 @@ public class Main implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			GenerateDatabase generateDatabase = new GenerateDatabase(neo4jwsc.Neo4j_testServicesDBPath);
+			GenerateDatabase generateDatabase = new GenerateDatabase(null, null,neo4jwsc.Neo4j_testServicesDBPath);
 			generateDatabase.createDbService();
 			graphDatabaseService = generateDatabase.getGraphDatabaseService();
 			registerShutdownHook(graphDatabaseService,"original test");
 			generateDatabase.setServiceMap(neo4jwsc.serviceMap);
 			generateDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
-			generateDatabase.createServicesDatabase(neo4jwsc.Neo4j_testServicesDBPath);
+			generateDatabase.createServicesDatabase();
 			generateDatabase.addServiceNodeRelationShip();
 			neo4jwsc.neo4jServNodes.clear();
 			neo4jwsc.neo4jServNodes = generateDatabase.getNeo4jServNodes();
@@ -355,37 +354,45 @@ public class Main implements Runnable{
 		System.out.println();
 
 		startTime = System.currentTimeMillis();
-
 		for (Map.Entry<List<Node>,  Map<String,Double>> entry : resultWithQos.entrySet()){
-			try {
-				FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			GenerateSubDatabase generateSubDatabase = new GenerateSubDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
-			generateSubDatabase.setServiceMap(neo4jwsc.serviceMap);
-			generateSubDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
-			generateSubDatabase.run();
-			generateSubDatabase.getNewGraphDatabaseService();
-			GraphDatabaseService newGraphDatabaseService = generateSubDatabase.getNewGraphDatabaseService();
-			Transaction tt = newGraphDatabaseService.beginTx();
-			try{
-				for(Node sNode: newGraphDatabaseService.getAllNodes()){
-					for(Relationship r: sNode.getRelationships()){
-						System.out.println(r.getProperty("From")+"  to   "+r.getProperty("To"));
-					}
-				}
-
-			}catch (Exception e) {
-				System.out.println(e);
-				System.out.println("GenerateSubDatabase add Relationship error.."); 
-			} finally {
-				tt.close();
-			}	
-			registerShutdownHook(subGraphDatabaseService,"Reduced");
-			registerShutdownHook(newGraphDatabaseService, "Result");
-
+		try {
+			FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
+		generateDatabase2.createDbService();
+		GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
+		registerShutdownHook(graphDatabaseService,"original test");
+		generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
+		generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
+		generateDatabase2.createServicesDatabase();
+		generateDatabase2.addServiceNodeRelationShip();
+//		GenerateSubDatabase generateSubDatabase = new GenerateSubDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
+//		generateSubDatabase.setServiceMap(neo4jwsc.serviceMap);
+//		generateSubDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
+//		generateSubDatabase.run();
+//		generateSubDatabase.getNewGraphDatabaseService();
+//		GraphDatabaseService newGraphDatabaseService = generateSubDatabase.getNewGraphDatabaseService();
+		Transaction tt = newGraphDatabaseService.beginTx();
+		try{
+			for(Node sNode: newGraphDatabaseService.getAllNodes()){
+				for(Relationship r: sNode.getRelationships()){
+					System.out.println(r.getProperty("From")+"  to   "+r.getProperty("To"));
+				}
+			}
+
+		}catch (Exception e) {
+			System.out.println(e);
+			System.out.println("GenerateSubDatabase add Relationship error.."); 
+		} finally {
+			tt.close();
+		}	
+		registerShutdownHook(subGraphDatabaseService,"Reduced");
+		registerShutdownHook(newGraphDatabaseService, "Result");
+
+	}
+
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("create new result graph db ", endTime - startTime);
 		System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
