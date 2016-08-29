@@ -111,6 +111,7 @@ public class RunTask {
 		transaction.close();
 
 	}
+	@SuppressWarnings("deprecation")
 	public void createTempDb() {
 		tempGraphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4j_tempDBPath);
 		Transaction transaction = tempGraphDatabaseService.beginTx();
@@ -136,13 +137,11 @@ public class RunTask {
 		try {
 			FileUtils.deleteRecursively(new File(Neo4j_tempDBPath));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			copyFolder(srcDir, destDir);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("copying of file from Java program is completed");	

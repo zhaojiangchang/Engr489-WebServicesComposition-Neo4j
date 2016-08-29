@@ -147,21 +147,17 @@ public class ServiceNode implements Cloneable {
 	}
 
 	public void setInputs(Set<String> copy) {
-		// TODO Auto-generated method stub
 		this.inputs = copy;
 	}
 
 	public void setOutputs(Set<String> copy) {
-		// TODO Auto-generated method stub
 		this.outputs = copy;
 	}
 	public void addInputs(String service) {
-		// TODO Auto-generated method stub
 		this.inputs.add(service);
 	}
 
 	public void addOutputs(String service) {
-		// TODO Auto-generated method stub
 		this.outputs.add(service);
 	}
 }
