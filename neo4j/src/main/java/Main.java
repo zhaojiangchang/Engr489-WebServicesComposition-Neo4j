@@ -62,10 +62,10 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "01";
-	private final int compositionSize = 12;
-	private final int totalCompositions = 10;
-	private final boolean runQosDataset = true;
+	private final String dataSet = "02";
+	private final int compositionSize = 7;
+	private final int totalCompositions = 1;
+	private final boolean runQosDataset = false;
 
 	private final double m_a = 0.1;
 	private final double m_r = 0.1;
