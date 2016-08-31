@@ -62,10 +62,10 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "02";
-	private final int compositionSize = 7;
-	private final int totalCompositions = 1;
-	private final boolean runQosDataset = false;
+	private final String dataSet = "01";
+	private final int compositionSize = 32;
+	private final int totalCompositions = 30;
+	private final boolean runQosDataset = true;
 
 	private final double m_a = 0.1;
 	private final double m_r = 0.1;
@@ -78,8 +78,8 @@ public class Main implements Runnable{
 	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws IOException, OuchException{
 		Main neo4jwsc = new Main();
-		Thread t = new Thread(neo4jwsc,"Neo4jThread");  
-		t.start();
+//		Thread t = new Thread(neo4jwsc,"Neo4jThread");  
+//		t.start();
 		neo4jwsc.databaseName = "wsc"+neo4jwsc.year+"dataset"+neo4jwsc.dataSet;
 		String path;
 		if(!neo4jwsc.runTestFiles){
@@ -368,26 +368,7 @@ public class Main implements Runnable{
 		generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
 		generateDatabase2.createServicesDatabase();
 		generateDatabase2.addServiceNodeRelationShip();
-//		GenerateSubDatabase generateSubDatabase = new GenerateSubDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
-//		generateSubDatabase.setServiceMap(neo4jwsc.serviceMap);
-//		generateSubDatabase.setTaxonomyMap(neo4jwsc.taxonomyMap);
-//		generateSubDatabase.run();
-//		generateSubDatabase.getNewGraphDatabaseService();
-//		GraphDatabaseService newGraphDatabaseService = generateSubDatabase.getNewGraphDatabaseService();
-		Transaction tt = newGraphDatabaseService.beginTx();
-		try{
-			for(Node sNode: newGraphDatabaseService.getAllNodes()){
-				for(Relationship r: sNode.getRelationships()){
-					System.out.println(r.getProperty("From")+"  to   "+r.getProperty("To"));
-				}
-			}
 
-		}catch (Exception e) {
-			System.out.println(e);
-			System.out.println("GenerateSubDatabase add Relationship error.."); 
-		} finally {
-			tt.close();
-		}	
 		registerShutdownHook(subGraphDatabaseService,"Reduced");
 		registerShutdownHook(newGraphDatabaseService, "Result");
 
