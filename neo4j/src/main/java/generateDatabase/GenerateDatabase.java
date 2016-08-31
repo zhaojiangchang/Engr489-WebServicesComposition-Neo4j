@@ -110,16 +110,18 @@ public class GenerateDatabase {
 						relation.setProperty("weightReliability", 0);
 					}
 					else{
-						String[] tempToArray = getOutputs(inputsServicesNode, sNode, newGraphDatabaseService);
-						relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
-						relation.setProperty("From", s);
-						relation.setProperty("To", (String)sNode.getProperty("name"));
-						relation.setProperty("outputs", tempToArray);
-						relation.setProperty("Direction", "incoming");    
-						relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
-						relation.setProperty("weightCost", serviceNode.getQos()[COST]);
-						relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
-						relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+						if(!inputsServicesNode.getProperty("name").equals(sNode.getProperty("name"))){
+							String[] tempToArray = getOutputs(inputsServicesNode, sNode, newGraphDatabaseService);
+							relation = inputsServicesNode.createRelationshipTo(sNode, RelTypes.IN);
+							relation.setProperty("From", s);
+							relation.setProperty("To", (String)sNode.getProperty("name"));
+							relation.setProperty("outputs", tempToArray);
+							relation.setProperty("Direction", "incoming");    
+							relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
+							relation.setProperty("weightCost", serviceNode.getQos()[COST]);
+							relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
+							relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+						}
 					}
 				}
 			}
