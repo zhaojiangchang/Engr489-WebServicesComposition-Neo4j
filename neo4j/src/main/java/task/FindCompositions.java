@@ -38,14 +38,14 @@ public class FindCompositions {
 	private int totalCompositions = 0;
 	@SuppressWarnings("unused")
 	private boolean skipRecursive = false;
-	public  double minAvailability = 0.0;
-	public double maxAvailability = -1.0;
-	public  double minReliability = 0.0;
-	public double maxReliability = -1.0;
+	public  double minAvailability = Double.MAX_VALUE;
+	public double maxAvailability = Double.MIN_VALUE;
+	public  double minReliability =Double.MAX_VALUE;
+	public double maxReliability = Double.MIN_VALUE;
 	public double minTime = Double.MAX_VALUE;
-	public double maxTime = -1.0;
+	public double maxTime = Double.MIN_VALUE;
 	public double minCost = Double.MAX_VALUE;
-	public double maxCost = -1.0;
+	public double maxCost = Double.MIN_VALUE;
 	private double m_a = 0;
 	private double m_r = 0;
 	private double m_c = 0;
@@ -99,6 +99,34 @@ public class FindCompositions {
 			if(entry1.getValue()<minTime)
 				minTime = entry1.getValue();
 			T.add(entry1.getValue());
+			double totalA = 0;
+			double totalR = 0;
+			double totalC = 0;
+			List<Node> candidate = entry1.getKey();
+			for(int j = 0; j<candidate.size(); j++){
+				Node node = candidate.get(j);
+				Transaction tx = subGraphDatabaseService.beginTx();
+				totalA+=(double)node.getProperty("weightAvailibility");
+				totalR+=(double)node.getProperty("weightReliability");
+				totalC+=(double)node.getProperty("weightCost");
+			
+				tx.close();
+			}
+			if (totalA > maxAvailability)
+				maxAvailability = totalA;
+			if(totalA < minAvailability)
+				minAvailability = totalA;
+
+			// Reliability
+			if (totalR > maxReliability)
+				maxReliability = totalR;
+			if(totalR < minReliability)
+				minReliability = totalR;
+			// Cost
+			if (totalC > maxCost)
+				maxCost = totalC;
+			if (totalC < minCost)
+				minCost = totalC;
 
 		}
 		for (Map.Entry<List<Node>, Double> entry : timeForEachCandidate.entrySet())
@@ -107,71 +135,64 @@ public class FindCompositions {
 			List<Double> A = new ArrayList<Double>();
 			List<Double> R = new ArrayList<Double>();
 			List<Double> C = new ArrayList<Double>();
+			double totalA = 0;
+			double totalR = 0;
+			double totalC = 0;
 			for(int j = 0; j<candidate.size(); j++){
 				Node node = candidate.get(j);
 				Transaction tx = subGraphDatabaseService.beginTx();
 				A.add((double)node.getProperty("weightAvailibility"));
 				R.add((double)node.getProperty("weightReliability"));
 				C.add((double)node.getProperty("weightCost"));
+				totalA+=(double)node.getProperty("weightAvailibility");
+				totalR+=(double)node.getProperty("weightReliability");
+				totalC+=(double)node.getProperty("weightCost");
 				tx.close();
 			}
+			System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
+
 			Map<String,Double> normalized = new HashMap<String,Double>();
-			normalized.put("A", normalize(A, "A"));
-			normalized.put("R", normalize(R, "R"));
-			normalized.put("C", normalize(C, "C"));
+			normalized.put("A", normalize(totalA, "A"));
+			normalized.put("R", normalize(totalR, "R"));
+			normalized.put("C", normalize(totalC, "C"));
 			normalized.put("T", normalize(entry.getValue(),"T"));
+		
 			candidatesWithQos.put(candidate, normalized);
 		}
 		
 		return candidatesWithQos;
 	}
-	private double normalize(List<Double> a, String id) {
-		double mean = mean(a);
-		
-		double normalized = normalize(mean, id);
 
-		return normalized;
-
-	}
-	private double normalize(double mean, String id) {
+	private double normalize(double total, String id) {
 		if(id.equals("A")){
 			if(maxAvailability-minAvailability == 0)
 				return 1;
 			else{
-				return (mean - minAvailability)/(maxAvailability-minAvailability);
+				return (total - minAvailability)/(maxAvailability-minAvailability);
 			}
 		}
 		else if(id.equals("R")){
 			if(maxReliability-minReliability == 0)
 				return 1;
 			else{
-				return (mean - minReliability)/(maxReliability-minReliability);
+				return (total - minReliability)/(maxReliability-minReliability);
 			}
 		}
 		else if(id.equals("C")){
 			if(maxCost-minCost == 0)
 				return 1;
 			else{
-				return (maxCost- mean)/(maxCost-minCost);
+				return (maxCost- total)/(maxCost-minCost);
 			}
 		}	
 		else if(id.equals("T")){
 			if(maxTime-minTime == 0)
 				return 1;
 			else{
-				return (maxTime- mean)/(maxTime-minTime);
+				return (maxTime- total)/(maxTime-minTime);
 			}
 		}	
 		else return -1;
-	}
-
-	private double mean(List<Double>list){
-		double total = 0;
-		for(Double d: list){
-			total += d;
-		}
-		double toReturn = total/(double)list.size();
-		return toReturn;
 	}
 
 	private Set<Set<Node>> findCandidates(Map<List<Node>, Double> timeForEachCandidate) throws OuchException {
@@ -200,7 +221,6 @@ public class FindCompositions {
 			if(!findNonRelNode){
 				result = checkDuplicateNodes(result);
 				if(result.size()<=compositionSize && result.size()>0){
-					System.out.println("total composition: "+candidates.size());
 					for(Node n: result){
 						Transaction transaction = subGraphDatabaseService.beginTx();
 						if(n.getProperty("name").equals("start")){
@@ -513,43 +533,43 @@ public class FindCompositions {
 
 		return newArray;
 	}
-	public void setMinAvailability(double minAvailability) {
-		this.minAvailability = minAvailability;
-	}
-
-
-	public void setMaxAvailability(double maxAvailability) {
-		this.maxAvailability = maxAvailability;
-	}
-
-
-	public void setMinReliability(double minReliability) {
-		this.minReliability = minReliability;
-	}
-
-
-	public void setMaxReliability(double maxReliability) {
-		this.maxReliability = maxReliability;
-	}
-
-
-	public void setMinTime(double minTime) {
-		this.minTime = minTime;
-	}
-
-
-	public void setMaxTime(double maxTime) {
-		this.maxTime = maxTime;
-	}
-
-
-	public void setMinCost(double minCost) {
-		this.minCost = minCost;
-	}
-
-	public void setMaxCost(double maxCost) {
-		this.maxCost = maxCost;
-	}
+//	public void setMinAvailability(double minAvailability) {
+//		this.minAvailability = minAvailability;
+//	}
+//
+//
+//	public void setMaxAvailability(double maxAvailability) {
+//		this.maxAvailability = maxAvailability;
+//	}
+//
+//
+//	public void setMinReliability(double minReliability) {
+//		this.minReliability = minReliability;
+//	}
+//
+//
+//	public void setMaxReliability(double maxReliability) {
+//		this.maxReliability = maxReliability;
+//	}
+//
+//
+//	public void setMinTime(double minTime) {
+//		this.minTime = minTime;
+//	}
+//
+//
+//	public void setMaxTime(double maxTime) {
+//		this.maxTime = maxTime;
+//	}
+//
+//
+//	public void setMinCost(double minCost) {
+//		this.minCost = minCost;
+//	}
+//
+//	public void setMaxCost(double maxCost) {
+//		this.maxCost = maxCost;
+//	}
 	public void setM_a(double m_a) {
 		this.m_a = m_a;
 	}
