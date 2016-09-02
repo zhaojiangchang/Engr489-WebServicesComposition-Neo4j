@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
@@ -18,9 +20,13 @@ import task.OuchException;
 public class LoadGraphEvalFiles {
 	
 	private File[] files = null;
+	Map<List<String>, List<Double>> graphEvalResults = new HashMap<List<String>, List<Double>>();
+	String datasetDirName = "";
+	public LoadGraphEvalFiles(){
+		run();
+	}
 	public static void main( String[] args ) {
 		LoadGraphEvalFiles LoadGraphEvalFiles = new LoadGraphEvalFiles();
-		LoadGraphEvalFiles.run();
 	}
 
 	public void run(){
@@ -32,27 +38,42 @@ public class LoadGraphEvalFiles {
 			e.printStackTrace();
 		}
 	}
+	public Map<List<String>, List<Double>> getEvalResults(){
+		return graphEvalResults;
+	}
 	private void readFiles() throws IOException {
         List<BufferedReader>bufferedReaders = getBufferedReaders();
         PrintWriter datasetWriter = null;
-        File dataset = new File("evaluationGraphEvalResults/resultDataset.stat");
+        File file = new File("evaluationGraphEvalResults/");
+        if(!file.exists()){
+        	file.mkdirs();
+        }
+
+        File dataset = new File("evaluationGraphEvalResults/"+datasetDirName+".stat");
         datasetWriter = new PrintWriter(dataset);
 		 for(int j = 0; j<bufferedReaders.size(); j++){
+
 			 int i = 0;
-			 String text = "";
+			 String textQos = "";
 			 while(i<50){
-	             text = bufferedReaders.get(j).readLine();
+				 textQos = bufferedReaders.get(j).readLine();
 	             i++;
 			 }
-             text = bufferedReaders.get(j).readLine();
-             String [] arr = text.split(" ");
-             String[] outputArray = new String[4];
+			 textQos = bufferedReaders.get(j).readLine();
+			 List<Double> qos = new ArrayList<Double>();
+             String[] arrQos = textQos.split(" ");
              int index = 0;
-             for (int l = arr.length-4; l < arr.length; l++) {
-            	    if(l!=arr.length-1)
-            	    	datasetWriter.append(arr[l]+",");
-            	    else
-            	    	datasetWriter.append(arr[l]);
+             for (int l = arrQos.length-4; l < arrQos.length; l++) {
+            	    if(l!=arrQos.length-1){
+            	    	datasetWriter.append(arrQos[l]+",");
+            	    	qos.add(Double.parseDouble(arrQos[l]));
+
+            	    }
+            	    	
+            	    else{
+            	    	datasetWriter.append(arrQos[l]);
+            	    	qos.add(Double.parseDouble(arrQos[l]));
+            	    }
 
 
             	    index++;
@@ -60,15 +81,14 @@ public class LoadGraphEvalFiles {
 
              datasetWriter.append("\n");             
 
-             text = bufferedReaders.get(j).readLine();
-             text = text.substring(11, text.length()-1);
-             text = text.replace("->", " ");
-             text = text.replace(";", "");
-             Set<String>string = new HashSet<String>(Arrays.asList(text.split("\\s+")));
-             System.out.println(string.size());
+             String textNodes = bufferedReaders.get(j).readLine();
+             textNodes = textNodes.substring(11, textNodes.length()-1);
+             textNodes = textNodes.replace("->", " ");
+             textNodes = textNodes.replace(";", "");
+             Set<String>stringNodes = new HashSet<String>(Arrays.asList(textNodes.split("\\s+")));
              index = 0;
-             for (String s: string) {
-         	    if(index!=string.size()-1)
+             for (String s: stringNodes) {
+         	    if(index!=stringNodes.size()-1)
          	    	datasetWriter.append(s +",");
          	    else
          	    	datasetWriter.append(s);
@@ -76,9 +96,11 @@ public class LoadGraphEvalFiles {
 
          	    index++;
          	}
-             System.out.println(text);
              datasetWriter.append("\n");      
-          
+             List<String>nodes = new ArrayList<String>(stringNodes);
+             if(!containsKey(nodes)){
+            	 graphEvalResults.put(nodes, qos);
+             }
          }
 		   for(int rd = 0; rd<bufferedReaders.size();rd++){
                bufferedReaders.get(rd).close();
@@ -86,14 +108,24 @@ public class LoadGraphEvalFiles {
 		   datasetWriter.close();
 		
 	}
+	private boolean containsKey(List<String> nodes) {
+		for(List<String> nodeList: graphEvalResults.keySet()){
+			List<String>temp = new ArrayList<String>(nodes);
+			if(temp.retainAll(nodeList) && temp.size() == nodeList.size()){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void loadFiles(){
 		JFileChooser chooser2 = new JFileChooser("Files Chooser");
 		chooser2.setMultiSelectionEnabled(true);
 		int f2 = chooser2.showOpenDialog(null);
 		if (JFileChooser.APPROVE_OPTION == f2) {
 			files = chooser2.getSelectedFiles();
-			System.out.println(files.length);
-
+			String[]path = files[0].getParent().split("/");
+			datasetDirName = path[path.length-1];
 		} else {
 			System.exit(0);
 		}
@@ -102,7 +134,6 @@ public class LoadGraphEvalFiles {
 		List<BufferedReader> bufferedReaders = new ArrayList<BufferedReader>();
 		for(File file: files){
 			try{
-				System.out.println(file.getName());
 				bufferedReaders.add(new BufferedReader(new FileReader(file)));
 			}catch(Exception e){
 				e.printStackTrace();

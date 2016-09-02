@@ -63,9 +63,9 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "01";
-	private final int compositionSize = 12;
-	private final int totalCompositions = 1;
+	private final String dataSet = "02";
+	private final int individuleNodeSize = 7;
+	private final int candidateSize = 30;
 	private final boolean runQosDataset = true;
 
 	private final double m_a = 0.1;
@@ -79,8 +79,8 @@ public class Main implements Runnable{
 	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws IOException, OuchException{
 		Main neo4jwsc = new Main();
-//		Thread t = new Thread(neo4jwsc,"Neo4jThread");  
-//		t.start();
+		//		Thread t = new Thread(neo4jwsc,"Neo4jThread");  
+		//		t.start();
 		neo4jwsc.databaseName = "wsc"+neo4jwsc.year+"dataset"+neo4jwsc.dataSet;
 		String path;
 		if(!neo4jwsc.runTestFiles){
@@ -272,7 +272,7 @@ public class Main implements Runnable{
 		//find compositions
 
 		startTime = System.currentTimeMillis();
-		FindCompositions findCompositions = new FindCompositions(neo4jwsc.totalCompositions, neo4jwsc.compositionSize, subGraphDatabaseService);
+		FindCompositions findCompositions = new FindCompositions(neo4jwsc.candidateSize, neo4jwsc.individuleNodeSize, subGraphDatabaseService);
 		findCompositions.setStartNode(neo4jwsc.startNode);
 		findCompositions.setEndNode(neo4jwsc.endNode);
 		findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
@@ -348,35 +348,35 @@ public class Main implements Runnable{
 
 		startTime = System.currentTimeMillis();
 		for (Map.Entry<List<Node>,  Map<String,Double>> entry : resultWithQos.entrySet()){
-		try {
-			FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
-		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
+			generateDatabase2.createDbService();
+			GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
+			registerShutdownHook(graphDatabaseService,"original test");
+			generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
+			generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
+			generateDatabase2.createServicesDatabase();
+			generateDatabase2.addServiceNodeRelationShip();
+
+			registerShutdownHook(subGraphDatabaseService,"Reduced");
+			registerShutdownHook(newGraphDatabaseService, "Result");
+
 		}
-		GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
-		generateDatabase2.createDbService();
-		GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
-		registerShutdownHook(graphDatabaseService,"original test");
-		generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
-		generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
-		generateDatabase2.createServicesDatabase();
-		generateDatabase2.addServiceNodeRelationShip();
-
-		registerShutdownHook(subGraphDatabaseService,"Reduced");
-		registerShutdownHook(newGraphDatabaseService, "Result");
-
-	}
 
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("create new result graph db ", endTime - startTime);
 		System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
 		//		
-		
+
 		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
-		loadGraphEvalFiles.run();
-		
-		
-		
+		loadGraphEvalFiles.getEvalResults();
+
+
+
 		FileWriter fw = new FileWriter("timeRecord.txt");
 		for(Entry<String, Long> entry : neo4jwsc.records.entrySet()){
 			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");

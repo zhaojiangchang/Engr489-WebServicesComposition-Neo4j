@@ -33,9 +33,9 @@ public class FindCompositions {
 		PARENT, CHILD, OUTPUT, INPUT, TO, IN, OUT
 	}
 	Set<Node> population = null;
-	private int compositionSize = 0;
+	private int individuleNodeSize = 0;
 	private Map<String,Node>subGraphNodesMap = null;
-	private int totalCompositions = 0;
+	private int candidateSize = 0;
 	@SuppressWarnings("unused")
 	private boolean skipRecursive = false;
 	public  double minAvailability = Double.MAX_VALUE;
@@ -51,10 +51,10 @@ public class FindCompositions {
 	private double m_c = 0;
 	private double m_t = 0;
 	
-	public FindCompositions(int totalCompositions, int compositionSize, GraphDatabaseService subGraphDatabaseService ){
+	public FindCompositions(int candidateSize, int individuleNodeSize, GraphDatabaseService subGraphDatabaseService ){
 		this.subGraphDatabaseService = subGraphDatabaseService;
-		this.compositionSize = compositionSize;
-		this.totalCompositions = totalCompositions;
+		this.individuleNodeSize = individuleNodeSize;
+		this.candidateSize = candidateSize;
 		population = new HashSet<Node>();
 	}
 	public Map<List<Node>, Map<String,Double>> run() throws OuchException{
@@ -198,7 +198,7 @@ public class FindCompositions {
 	private Set<Set<Node>> findCandidates(Map<List<Node>, Double> timeForEachCandidate) throws OuchException {
 		Set<Set<Node>> candidates = new HashSet<Set<Node>>();
 
-		while(candidates.size()<totalCompositions){
+		while(candidates.size()<candidateSize){
 			skipRecursive  = false;			
 			Set<Node>result = new HashSet<Node>();
 
@@ -220,7 +220,7 @@ public class FindCompositions {
 			}
 			if(!findNonRelNode){
 				result = checkDuplicateNodes(result);
-				if(result.size()<=compositionSize && result.size()>0){
+				if(result.size()<=individuleNodeSize && result.size()>0){
 					for(Node n: result){
 						Transaction transaction = subGraphDatabaseService.beginTx();
 						if(n.getProperty("name").equals("start")){
@@ -230,7 +230,7 @@ public class FindCompositions {
 						transaction.close();
 					}
 				}
-				if(result.size()<=compositionSize && result.size()>0){
+				if(result.size()<=individuleNodeSize && result.size()>0){
 					candidates.add(result);
 				}
 			}
@@ -279,7 +279,7 @@ public class FindCompositions {
 
 		if(fulfillSubEndNodes!=null){
 			result.addAll(fulfillSubEndNodes);
-			if(result.size()>compositionSize){
+			if(result.size()>individuleNodeSize){
 				return;
 			}else{
 				for (Node node: fulfillSubEndNodes){
