@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -63,8 +62,8 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "02";
-	private final int individuleNodeSize = 7;
+	private final String dataSet = "01";
+	private final int individuleNodeSize = 12;
 	private final int candidateSize = 30;
 	private final boolean runQosDataset = true;
 
@@ -282,13 +281,13 @@ public class Main implements Runnable{
 		findCompositions.setM_r(neo4jwsc.m_r);
 		findCompositions.setM_c(neo4jwsc.m_c);
 		findCompositions.setM_t(neo4jwsc.m_t);
-		Map<List<Node>, Map<String,Double>> candidates = findCompositions.run();
+		Map<List<Node>, Map<String,Map<String, Double>>> candidates = findCompositions.run();
 
 		Transaction transaction = subGraphDatabaseService.beginTx();
 		try{			
 			System.out.println("candidates: ");
 
-			for (Map.Entry<List<Node>,  Map<String,Double>> entry : candidates.entrySet()){
+			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidates.entrySet()){
 				System.out.println();
 				for(Node n: entry.getKey()){
 					System.out.print(n.getProperty("name")+"  ");
@@ -314,25 +313,40 @@ public class Main implements Runnable{
 
 		startTime = System.currentTimeMillis();
 
-		Map<List<Node>,Map<String,Double>> resultWithQos = findCompositions.getResult(candidates);
+		Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos = findCompositions.getResult(candidates);
 
 		System.out.println("Best result: ");
 		Transaction tx = subGraphDatabaseService.beginTx();
 		try{
-			for (Map.Entry<List<Node>,  Map<String,Double>> entry2 : resultWithQos.entrySet()){
+			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry2 : resultWithQos.entrySet()){
 				for(Node n: entry2.getKey()){
 					System.out.print(n.getProperty("name")+"  ");
 				}
 				System.out.println();
 				System.out.print("QOS:  ");
-				for (Map.Entry<String,Double> entry3 : entry2.getValue().entrySet()){
-					System.out.print(entry3.getKey()+": "+entry3.getValue()+"     ");
-				}
-				System.out.println();
-				double fitnessOfBest = neo4jwsc.m_a*entry2.getValue().get("A") + neo4jwsc.m_r*entry2.getValue().get("R") + neo4jwsc.m_c*entry2.getValue().get("C") + neo4jwsc.m_t*entry2.getValue().get("T");
-				System.out.println("fitnessOfBest:" +fitnessOfBest);
+				for (Map.Entry<String,Map<String, Double>> entry3 : entry2.getValue().entrySet()){
+					if(entry3.getKey().equals("normalized")){
+						System.out.println("normalized: ");
+						for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
+							System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
 
+						}
+						System.out.println();
+						double fitnessOfBest = neo4jwsc.m_a*entry3.getValue().get("A") + neo4jwsc.m_r*entry3.getValue().get("R") + neo4jwsc.m_c*entry3.getValue().get("C") + neo4jwsc.m_t*entry3.getValue().get("T");
+						System.out.println("fitnessOfBest:" +fitnessOfBest);
+					}
+					else if(entry3.getKey().equals("non_normalized")){
+						System.out.println("non_normalized: ");
+						for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
+							System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
+
+						}
+					}
+
+
+				}
 			}
+			System.out.println();
 		} catch (Exception e) {
 			System.out.println(e);
 			System.out.println("print populations error.."); 
@@ -347,7 +361,7 @@ public class Main implements Runnable{
 		System.out.println();
 
 		startTime = System.currentTimeMillis();
-		for (Map.Entry<List<Node>,  Map<String,Double>> entry : resultWithQos.entrySet()){
+		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
 			try {
 				FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
 			} catch (IOException e) {
@@ -373,7 +387,8 @@ public class Main implements Runnable{
 		//		
 
 		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
-		loadGraphEvalFiles.getEvalResults();
+		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();
+		System.out.println("Graph Eval Result:  "+graphEvalResult.size());
 
 
 

@@ -399,6 +399,10 @@ public class ReduceGraphDb {
 				double[] qos = new double[4];
 				if(sNode.getProperty("name").equals("start")||sNode.getProperty("name").equals("end")){
 					qos = new double[4];
+					qos[AVAILABILITY] = 1.0;
+					qos[RELIABILITY] = 1.0;
+					qos[TIME] = 0.0;
+					qos[COST] = 0.0;
 				}else{
 					ServiceNode serviceNode = serviceMap.get((String) sNode.getProperty("name"));
 					qos = serviceNode.getQos();
