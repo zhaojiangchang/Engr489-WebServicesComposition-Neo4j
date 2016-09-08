@@ -12,10 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.JFileChooser;
-
-import task.OuchException;
 
 public class LoadGraphEvalFiles {
 	
@@ -25,6 +22,7 @@ public class LoadGraphEvalFiles {
 	public LoadGraphEvalFiles(){
 		run();
 	}
+	@SuppressWarnings("unused")
 	public static void main( String[] args ) {
 		LoadGraphEvalFiles LoadGraphEvalFiles = new LoadGraphEvalFiles();
 	}

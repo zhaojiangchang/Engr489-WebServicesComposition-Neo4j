@@ -50,47 +50,56 @@ public class FindCompositions {
 	private double m_r = 0;
 	private double m_c = 0;
 	private double m_t = 0;
-	
+
 	public FindCompositions(int candidateSize, int individuleNodeSize, GraphDatabaseService subGraphDatabaseService ){
 		this.subGraphDatabaseService = subGraphDatabaseService;
 		this.individuleNodeSize = individuleNodeSize;
 		this.candidateSize = candidateSize;
 		population = new HashSet<Node>();
 	}
-	public Map<List<Node>, Map<String,Double>> run() throws OuchException{
+	public Map<List<Node>, Map<String,Map<String, Double>>> run() throws OuchException{
 		Map<List<Node>, Double> timeForEachCandidate = new HashMap<List<Node>, Double>();
 		findCandidates(timeForEachCandidate);		
-		Map<List<Node>, Map<String,Double>> candidatesWithQos = calculateQos(timeForEachCandidate);
+		Map<List<Node>, Map<String,Map<String, Double>>> candidatesWithQos = calculateQos(timeForEachCandidate);
 
-		for (Map.Entry<List<Node>, Map<String,Double>> entry : candidatesWithQos.entrySet()){
-			Map<String,Double> a = entry.getValue();
+		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidatesWithQos.entrySet()){
 			System.out.println();
-			for (Map.Entry<String,Double> entry2 : a.entrySet()){
-				System.out.print(entry2.getKey()+": "+entry2.getValue()+";   ");
+			for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
+				System.out.println();
+				System.out.println(entry2.getKey());
+				for (Map.Entry<String, Double> entry3 : entry2.getValue().entrySet()){
+					System.out.print("    "+entry3.getKey()+": "+entry3.getValue()+";   ");
+				}
 			}
 			System.out.println();
 		}
 		return candidatesWithQos;
 	}
-	public Map<List<Node>,Map<String,Double>> getResult(Map<List<Node>, Map<String,Double>> candidates) {
+	public Map<List<Node>, Map<String,Map<String, Double>>> getResult(Map<List<Node>, Map<String,Map<String, Double>>> candidates) {
 		double best = 0;
 		@SuppressWarnings("unused")
 		List<Node>bestList = new ArrayList<Node>();
-		Map<List<Node>,Map<String,Double>>bestResultWithQos = new HashMap<List<Node>,Map<String,Double>>();
-		for (Map.Entry<List<Node>,  Map<String,Double>> entry : candidates.entrySet()){
-			Map<String, Double> qosValues = entry.getValue();
-			double temp = m_a*qosValues.get("A") + m_r*qosValues.get("R") + m_c*qosValues.get("C") + m_t*qosValues.get("T");
-			if(best<temp){
-				best = temp;
-				bestList = entry.getKey();
-				bestResultWithQos.clear();
-				bestResultWithQos.put(entry.getKey(), entry.getValue());
+		Map<List<Node>, Map<String,Map<String, Double>>>bestResultWithQos = new HashMap<List<Node>, Map<String,Map<String, Double>>>();
+		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidates.entrySet()){
+			for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
+				if(entry2.getKey().equals("normalized")){
+					Map<String, Double> qosValues = entry2.getValue();
+					double temp = m_a*qosValues.get("A") + m_r*qosValues.get("R") + m_c*qosValues.get("C") + m_t*qosValues.get("T");
+					if(best<temp){
+						best = temp;
+						bestList = entry.getKey();
+						bestResultWithQos.clear();
+						bestResultWithQos.put(entry.getKey(), entry.getValue());
+					}
+				}
 			}
+
+			
 		}
 		return bestResultWithQos;
 	}
-	private Map<List<Node>, Map<String,Double>> calculateQos(Map<List<Node>, Double> timeForEachCandidate) {
-		Map<List<Node>, Map<String,Double>> candidatesWithQos = new HashMap<List<Node>, Map<String,Double>>();
+	private Map<List<Node>, Map<String,Map<String, Double>>> calculateQos(Map<List<Node>, Double> timeForEachCandidate) {
+		Map<List<Node>, Map<String,Map<String, Double>>> candidatesWithQos = new HashMap<List<Node>, Map<String,Map<String, Double>>>();
 		List<Double> T = new ArrayList<Double>();
 		for (Map.Entry<List<Node>, Double> entry1 : timeForEachCandidate.entrySet())
 		{
@@ -99,17 +108,17 @@ public class FindCompositions {
 			if(entry1.getValue()<minTime)
 				minTime = entry1.getValue();
 			T.add(entry1.getValue());
-			double totalA = 0;
-			double totalR = 0;
+			double totalA = 1;
+			double totalR = 1;
 			double totalC = 0;
 			List<Node> candidate = entry1.getKey();
 			for(int j = 0; j<candidate.size(); j++){
 				Node node = candidate.get(j);
 				Transaction tx = subGraphDatabaseService.beginTx();
-				totalA+=(double)node.getProperty("weightAvailibility");
-				totalR+=(double)node.getProperty("weightReliability");
+				totalA*=(double)node.getProperty("weightAvailibility");
+				totalR*=(double)node.getProperty("weightReliability");
 				totalC+=(double)node.getProperty("weightCost");
-			
+
 				tx.close();
 			}
 			if (totalA > maxAvailability)
@@ -135,8 +144,8 @@ public class FindCompositions {
 			List<Double> A = new ArrayList<Double>();
 			List<Double> R = new ArrayList<Double>();
 			List<Double> C = new ArrayList<Double>();
-			double totalA = 0;
-			double totalR = 0;
+			double totalA = 1;
+			double totalR = 1;
 			double totalC = 0;
 			for(int j = 0; j<candidate.size(); j++){
 				Node node = candidate.get(j);
@@ -144,22 +153,29 @@ public class FindCompositions {
 				A.add((double)node.getProperty("weightAvailibility"));
 				R.add((double)node.getProperty("weightReliability"));
 				C.add((double)node.getProperty("weightCost"));
-				totalA+=(double)node.getProperty("weightAvailibility");
-				totalR+=(double)node.getProperty("weightReliability");
+				totalA*=(double)node.getProperty("weightAvailibility");
+				totalR*=(double)node.getProperty("weightReliability");
 				totalC+=(double)node.getProperty("weightCost");
 				tx.close();
 			}
 			System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
+			Map<String,Double> non_normalized = new HashMap<String,Double>();
+			non_normalized.put("A", totalA);
+			non_normalized.put("R", totalR);
+			non_normalized.put("C", totalC);
+			non_normalized.put("T", entry.getValue());
 
 			Map<String,Double> normalized = new HashMap<String,Double>();
 			normalized.put("A", normalize(totalA, "A"));
 			normalized.put("R", normalize(totalR, "R"));
 			normalized.put("C", normalize(totalC, "C"));
 			normalized.put("T", normalize(entry.getValue(),"T"));
-		
-			candidatesWithQos.put(candidate, normalized);
+			Map<String,Map<String, Double>> qosData = new HashMap<String,Map<String, Double>>();
+			qosData.put("normalized", normalized);
+			qosData.put("non_normalized", non_normalized);
+			candidatesWithQos.put(candidate, qosData);
 		}
-		
+
 		return candidatesWithQos;
 	}
 
@@ -533,43 +549,43 @@ public class FindCompositions {
 
 		return newArray;
 	}
-//	public void setMinAvailability(double minAvailability) {
-//		this.minAvailability = minAvailability;
-//	}
-//
-//
-//	public void setMaxAvailability(double maxAvailability) {
-//		this.maxAvailability = maxAvailability;
-//	}
-//
-//
-//	public void setMinReliability(double minReliability) {
-//		this.minReliability = minReliability;
-//	}
-//
-//
-//	public void setMaxReliability(double maxReliability) {
-//		this.maxReliability = maxReliability;
-//	}
-//
-//
-//	public void setMinTime(double minTime) {
-//		this.minTime = minTime;
-//	}
-//
-//
-//	public void setMaxTime(double maxTime) {
-//		this.maxTime = maxTime;
-//	}
-//
-//
-//	public void setMinCost(double minCost) {
-//		this.minCost = minCost;
-//	}
-//
-//	public void setMaxCost(double maxCost) {
-//		this.maxCost = maxCost;
-//	}
+	//	public void setMinAvailability(double minAvailability) {
+	//		this.minAvailability = minAvailability;
+	//	}
+	//
+	//
+	//	public void setMaxAvailability(double maxAvailability) {
+	//		this.maxAvailability = maxAvailability;
+	//	}
+	//
+	//
+	//	public void setMinReliability(double minReliability) {
+	//		this.minReliability = minReliability;
+	//	}
+	//
+	//
+	//	public void setMaxReliability(double maxReliability) {
+	//		this.maxReliability = maxReliability;
+	//	}
+	//
+	//
+	//	public void setMinTime(double minTime) {
+	//		this.minTime = minTime;
+	//	}
+	//
+	//
+	//	public void setMaxTime(double maxTime) {
+	//		this.maxTime = maxTime;
+	//	}
+	//
+	//
+	//	public void setMinCost(double minCost) {
+	//		this.minCost = minCost;
+	//	}
+	//
+	//	public void setMaxCost(double maxCost) {
+	//		this.maxCost = maxCost;
+	//	}
 	public void setM_a(double m_a) {
 		this.m_a = m_a;
 	}
