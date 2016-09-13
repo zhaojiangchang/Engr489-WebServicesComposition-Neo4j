@@ -62,15 +62,15 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "01";
-	private final int individuleNodeSize = 12;
+	private final String dataSet = "02";
+	private final int individuleNodeSize = 40;
 	private final int candidateSize = 30;
 	private final boolean runQosDataset = true;
 
 	private final double m_a = 0.1;
-	private final double m_r = 0.5;
-	private final double m_c = 0.1;
-	private final double m_t = 0.3;
+	private final double m_r = 0.05;
+	private final double m_c = 0.05;
+	private final double m_t = 0.8;
 
 	//******************************************************//
 
@@ -386,9 +386,9 @@ public class Main implements Runnable{
 		System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
 		//		
 
-		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
-		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();
-		System.out.println("Graph Eval Result:  "+graphEvalResult.size());
+//		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
+//		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();
+//		System.out.println("Graph Eval Result:  "+graphEvalResult.size());
 
 
 
