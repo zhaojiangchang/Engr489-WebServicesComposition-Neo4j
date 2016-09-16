@@ -50,6 +50,12 @@ public class FindCompositions {
 	private double m_r = 0;
 	private double m_c = 0;
 	private double m_t = 0;
+	Set<Relationship> relationships = new HashSet<Relationship>();
+	public Map<List<Node>,Set<Relationship>> candidatesWithRels = new HashMap<List<Node>,Set<Relationship>>();
+	List<Node>bestList = new ArrayList<Node>();
+	private Map<String,Node>bestNodesMap = new HashMap<String,Node>();
+
+
 
 	public FindCompositions(int candidateSize, int individuleNodeSize, GraphDatabaseService subGraphDatabaseService ){
 		this.subGraphDatabaseService = subGraphDatabaseService;
@@ -77,8 +83,6 @@ public class FindCompositions {
 	}
 	public Map<List<Node>, Map<String,Map<String, Double>>> getResult(Map<List<Node>, Map<String,Map<String, Double>>> candidates) {
 		double best = 0;
-		@SuppressWarnings("unused")
-		List<Node>bestList = new ArrayList<Node>();
 		Map<List<Node>, Map<String,Map<String, Double>>>bestResultWithQos = new HashMap<List<Node>, Map<String,Map<String, Double>>>();
 		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidates.entrySet()){
 			for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
@@ -94,7 +98,16 @@ public class FindCompositions {
 				}
 			}
 
-			
+
+		}
+		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry3 : candidates.entrySet()){
+			Set<Node>bestResult = new HashSet<Node>(entry3.getKey());
+			for(Node n: bestResult){
+				Transaction tx = subGraphDatabaseService.beginTx();
+				bestNodesMap.put((String)n.getProperty("name"), n);
+				tx.close();
+			}
+			//			composition(endNode,bestResult);
 		}
 		return bestResultWithQos;
 	}
@@ -140,40 +153,43 @@ public class FindCompositions {
 		}
 		for (Map.Entry<List<Node>, Double> entry : timeForEachCandidate.entrySet())
 		{
-			List<Node> candidate = entry.getKey();
-			List<Double> A = new ArrayList<Double>();
-			List<Double> R = new ArrayList<Double>();
-			List<Double> C = new ArrayList<Double>();
-			double totalA = 1;
-			double totalR = 1;
-			double totalC = 0;
-			for(int j = 0; j<candidate.size(); j++){
-				Node node = candidate.get(j);
-				Transaction tx = subGraphDatabaseService.beginTx();
-				A.add((double)node.getProperty("weightAvailibility"));
-				R.add((double)node.getProperty("weightReliability"));
-				C.add((double)node.getProperty("weightCost"));
-				totalA*=(double)node.getProperty("weightAvailibility");
-				totalR*=(double)node.getProperty("weightReliability");
-				totalC+=(double)node.getProperty("weightCost");
-				tx.close();
-			}
-			System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
-			Map<String,Double> non_normalized = new HashMap<String,Double>();
-			non_normalized.put("A", totalA);
-			non_normalized.put("R", totalR);
-			non_normalized.put("C", totalC);
-			non_normalized.put("T", entry.getValue());
+			if(entry.getValue() != 0.00){
+				List<Node> candidate = entry.getKey();
+				List<Double> A = new ArrayList<Double>();
+				List<Double> R = new ArrayList<Double>();
+				List<Double> C = new ArrayList<Double>();
+				double totalA = 1;
+				double totalR = 1;
+				double totalC = 0;
+				for(int j = 0; j<candidate.size(); j++){
+					Node node = candidate.get(j);
+					Transaction tx = subGraphDatabaseService.beginTx();
+					A.add((double)node.getProperty("weightAvailibility"));
+					R.add((double)node.getProperty("weightReliability"));
+					C.add((double)node.getProperty("weightCost"));
+					totalA*=(double)node.getProperty("weightAvailibility");
+					totalR*=(double)node.getProperty("weightReliability");
+					totalC+=(double)node.getProperty("weightCost");
+					tx.close();
+				}
+				System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
+				Map<String,Double> non_normalized = new HashMap<String,Double>();
+				non_normalized.put("A", totalA);
+				non_normalized.put("R", totalR);
+				non_normalized.put("C", totalC);
+				non_normalized.put("T", entry.getValue());
 
-			Map<String,Double> normalized = new HashMap<String,Double>();
-			normalized.put("A", normalize(totalA, "A"));
-			normalized.put("R", normalize(totalR, "R"));
-			normalized.put("C", normalize(totalC, "C"));
-			normalized.put("T", normalize(entry.getValue(),"T"));
-			Map<String,Map<String, Double>> qosData = new HashMap<String,Map<String, Double>>();
-			qosData.put("normalized", normalized);
-			qosData.put("non_normalized", non_normalized);
-			candidatesWithQos.put(candidate, qosData);
+				Map<String,Double> normalized = new HashMap<String,Double>();
+				normalized.put("A", normalize(totalA, "A"));
+				normalized.put("R", normalize(totalR, "R"));
+				normalized.put("C", normalize(totalC, "C"));
+				normalized.put("T", normalize(entry.getValue(),"T"));
+				Map<String,Map<String, Double>> qosData = new HashMap<String,Map<String, Double>>();
+				qosData.put("normalized", normalized);
+				qosData.put("non_normalized", non_normalized);
+				candidatesWithQos.put(candidate, qosData);
+			}
+
 		}
 
 		return candidatesWithQos;
@@ -211,10 +227,10 @@ public class FindCompositions {
 		else return -1;
 	}
 
-	private Set<Set<Node>> findCandidates(Map<List<Node>, Double> timeForEachCandidate) throws OuchException {
-		Set<Set<Node>> candidates = new HashSet<Set<Node>>();
+	private void findCandidates(Map<List<Node>, Double> timeForEachCandidate) throws OuchException {
 
-		while(candidates.size()<candidateSize){
+		while(timeForEachCandidate.size()<candidateSize){
+
 			skipRecursive  = false;			
 			Set<Node>result = new HashSet<Node>();
 
@@ -231,6 +247,7 @@ public class FindCompositions {
 			for(Node sNode: result){
 				if(!hasRel(startNode, sNode, result) || !hasRel(sNode, endNode, result)){
 					findNonRelNode =true;
+					relationships.clear();
 					break;
 				}
 			}
@@ -242,17 +259,19 @@ public class FindCompositions {
 						if(n.getProperty("name").equals("start")){
 							List<Node> list = new ArrayList<Node>(result);
 							timeForEachCandidate.put(list,(double)n.getProperty("totalTime"));
+							List<Node> list2 = new ArrayList<Node>(result);
+							candidatesWithRels.put(list2,relationships);
 						}
 						transaction.close();
 					}
+
 				}
-				if(result.size()<=individuleNodeSize && result.size()>0){
-					candidates.add(result);
+				else{
+					relationships.clear();
 				}
+
 			}
 		}
-		return candidates;
-
 	}
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
 		Transaction transaction = subGraphDatabaseService.beginTx();
@@ -280,22 +299,35 @@ public class FindCompositions {
 	private void composition(Node subEndNode, Set<Node> result) {
 
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
-		List<Relationship>rels = new ArrayList<Relationship>();
-		Transaction tx = subGraphDatabaseService.beginTx();
+		//		List<Relationship>rels = new ArrayList<Relationship>();
+		//		Transaction tx = subGraphDatabaseService.beginTx();
+		//
+		//		try{
+		//			for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
+		//				rels.add(r);
+		//			}
+		//		}catch(Exception e){
+		//		}finally{
+		//			tx.close();
+		//		}
+		//		
 
-		try{
-			for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
-				rels.add(r);
-			}
-		}catch(Exception e){
-		}finally{
-			tx.close();
+		List<Relationship> rels = new ArrayList<Relationship>();
+
+		Transaction tt = subGraphDatabaseService.beginTx();
+		for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
+			rels.add(r);
 		}
+		tt.close();
+
+
+
 		Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels);
 
 		if(fulfillSubEndNodes!=null){
 			result.addAll(fulfillSubEndNodes);
 			if(result.size()>individuleNodeSize){
+				relationships.clear();
 				return;
 			}else{
 				for (Node node: fulfillSubEndNodes){
@@ -325,13 +357,14 @@ public class FindCompositions {
 		//			tx.success();
 
 	}
-	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> relationships) {
+	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> rels) {
 		int i = 100;
 		while(i!=0){
-			Collections.shuffle(relationships);
+			Collections.shuffle(rels);
 			Set<Node>toReturn = new HashSet<Node>();
-			List<String>relOutputs = new ArrayList<String>();
-			for(Relationship r: relationships){
+
+			List<String>relOutputs = new ArrayList<String>();			
+			for(Relationship r: rels){
 				Transaction tx = subGraphDatabaseService.beginTx();
 				Node node = null;
 				List<String> commonValue  = new ArrayList<String>();
@@ -347,15 +380,35 @@ public class FindCompositions {
 				temp.retainAll(relOutputs);
 				if(temp.size()==0){
 					relOutputs.addAll(commonValue);
+
+					relationships.add(r);
 					toReturn.add(node);
 				}
-				if(relOutputs.size()==nodeInputs.size()){
-					return toReturn;
+				Set<String>set1 = new HashSet<String>(relOutputs);
+				Set<String>set2 = new HashSet<String>(nodeInputs);
+				if(set1.size()==set2.size()){					
+					if(equalLists(set1,set2)){
+						return toReturn;
+					}				
 				}
 			}
 			i--;
 		}
 		return null;
+	}
+	public  boolean equalLists(Set<String> one, Set<String> two){     
+
+		List<String>one1 = new ArrayList<String>(one); 
+		List<String>two2 = new ArrayList<String>(two);  
+		List<String>one11 = new ArrayList<String>(one); 
+		List<String>two22 = new ArrayList<String>(two);
+		one1.retainAll(two2);
+		two22.retainAll(one11);
+
+		if (one1.size()>0 && two22.size()>0 && two22.size()==two.size() && one1.size()==one.size() && one11.size()>0 && two2.size()>0){
+			return true;
+		}
+		else return false;
 	}
 	private Set<Node> checkDuplicateNodes(Set<Node> result) {
 		Transaction tx = subGraphDatabaseService.beginTx();
@@ -501,6 +554,9 @@ public class FindCompositions {
 			transaction.close();
 		}
 		return array;
+	}
+	public GraphDatabaseService getSubGraphDatabaseService() {
+		return subGraphDatabaseService;
 	}
 	private Set<String> getTNodeParentsString(TaxonomyNode tNode) {
 		Set<String>tNodeParents = new HashSet<String>();
