@@ -107,7 +107,7 @@ public class FindCompositions {
 				bestNodesMap.put((String)n.getProperty("name"), n);
 				tx.close();
 			}
-			composition(endNode,bestResult,true);
+			//			composition(endNode,bestResult);
 		}
 		return bestResultWithQos;
 	}
@@ -131,7 +131,7 @@ public class FindCompositions {
 				totalA*=(double)node.getProperty("weightAvailibility");
 				totalR*=(double)node.getProperty("weightReliability");
 				totalC+=(double)node.getProperty("weightCost");
-				
+
 				tx.close();
 			}
 			if (totalA > maxAvailability)
@@ -190,8 +190,8 @@ public class FindCompositions {
 				candidatesWithQos.put(candidate, qosData);
 			}
 
-			}
-			
+		}
+
 		return candidatesWithQos;
 	}
 
@@ -242,7 +242,7 @@ public class FindCompositions {
 			tt.success();
 			tt.close();
 			result.add(endNode);
-			composition(endNode, result, false);	
+			composition(endNode, result);	
 			boolean findNonRelNode = false;
 			for(Node sNode: result){
 				if(!hasRel(startNode, sNode, result) || !hasRel(sNode, endNode, result)){
@@ -296,7 +296,7 @@ public class FindCompositions {
 			return false;
 		}
 	}
-	private void composition(Node subEndNode, Set<Node> result, boolean finalResult) {
+	private void composition(Node subEndNode, Set<Node> result) {
 
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
 		//		List<Relationship>rels = new ArrayList<Relationship>();
@@ -313,43 +313,20 @@ public class FindCompositions {
 		//		
 
 		List<Relationship> rels = new ArrayList<Relationship>();
-		if(finalResult){
-			Transaction tt = subGraphDatabaseService.beginTx();
-			for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
-				if(bestNodesMap.containsKey(r.getProperty("From"))){
-					rels.add(r);
-				}
 
-			}
-			tt.close();
-		}else{
-			Transaction tt = subGraphDatabaseService.beginTx();
-			for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
-				rels.add(r);
-			}
-			tt.close();
-
+		Transaction tt = subGraphDatabaseService.beginTx();
+		for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
+			rels.add(r);
 		}
+		tt.close();
 
-		Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels,finalResult);
+
+
+		Set<Node> fulfillSubEndNodes = findNodesFulfillSubEndNode(nodeInputs,rels);
 
 		if(fulfillSubEndNodes!=null){
 			result.addAll(fulfillSubEndNodes);
 			if(result.size()>individuleNodeSize){
-				if(finalResult){
-					System.out.println(result.size()+" not fulfill");
-					for(Relationship r: relationships){
-						Transaction tt = subGraphDatabaseService.beginTx();
-						try{
-							r.setProperty("isRedundant", true);
-							tt.success();
-						}
-						catch(Exception e){
-						}finally{
-							tt.close();
-						}					
-					}
-				}
 				relationships.clear();
 				return;
 			}else{
@@ -371,7 +348,7 @@ public class FindCompositions {
 					}finally{
 						t.close();
 					}
-					composition(node, result,finalResult);
+					composition(node, result);
 				}
 			}
 
@@ -380,27 +357,14 @@ public class FindCompositions {
 		//			tx.success();
 
 	}
-	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> rels, boolean finalResult) {
+	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> rels) {
 		int i = 100;
 		while(i!=0){
 			Collections.shuffle(rels);
 			Set<Node>toReturn = new HashSet<Node>();
 
-			List<String>relOutputs = new ArrayList<String>();
-			List<Relationship> newRels = new ArrayList<Relationship>();
-			if(finalResult){
-				for(Relationship rel: rels){
-					Transaction tx = subGraphDatabaseService.beginTx();
-					if(bestNodesMap.containsKey(rel.getProperty("From"))){
-						newRels.add(rel);
-					}
-					tx.close();
-
-				}
-			}else{
-				newRels = rels;
-			}
-			for(Relationship r: newRels){
+			List<String>relOutputs = new ArrayList<String>();			
+			for(Relationship r: rels){
 				Transaction tx = subGraphDatabaseService.beginTx();
 				Node node = null;
 				List<String> commonValue  = new ArrayList<String>();
@@ -416,27 +380,35 @@ public class FindCompositions {
 				temp.retainAll(relOutputs);
 				if(temp.size()==0){
 					relOutputs.addAll(commonValue);
-					if(finalResult){
-						Transaction tt = subGraphDatabaseService.beginTx();
-						try{
-							r.setProperty("isRedundant", false);
-							tt.success();
-						}
-						catch(Exception e){
-						}finally{
-							tt.close();
-						}
-					}
+
 					relationships.add(r);
 					toReturn.add(node);
 				}
-				if(relOutputs.size()==nodeInputs.size()){
-					return toReturn;
+				Set<String>set1 = new HashSet<String>(relOutputs);
+				Set<String>set2 = new HashSet<String>(nodeInputs);
+				if(set1.size()==set2.size()){					
+					if(equalLists(set1,set2)){
+						return toReturn;
+					}				
 				}
 			}
 			i--;
 		}
 		return null;
+	}
+	public  boolean equalLists(Set<String> one, Set<String> two){     
+
+		List<String>one1 = new ArrayList<String>(one); 
+		List<String>two2 = new ArrayList<String>(two);  
+		List<String>one11 = new ArrayList<String>(one); 
+		List<String>two22 = new ArrayList<String>(two);
+		one1.retainAll(two2);
+		two22.retainAll(one11);
+
+		if (one1.size()>0 && two22.size()>0 && two22.size()==two.size() && one1.size()==one.size() && one11.size()>0 && two2.size()>0){
+			return true;
+		}
+		else return false;
 	}
 	private Set<Node> checkDuplicateNodes(Set<Node> result) {
 		Transaction tx = subGraphDatabaseService.beginTx();

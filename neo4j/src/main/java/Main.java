@@ -62,9 +62,9 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "02";
-	private final int individuleNodeSize = 40;
-	private final int candidateSize = 30;
+	private final String dataSet = "03";
+	private final int individuleNodeSize = 42;
+	private final int candidateSize = 100;
 	private final boolean runQosDataset = true;
 
 	private final double m_a = 0.1;
@@ -389,7 +389,8 @@ public class Main implements Runnable{
 //		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
 //		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();
 //		System.out.println("Graph Eval Result:  "+graphEvalResult.size());
-
+		
+		
 
 
 		FileWriter fw = new FileWriter("timeRecord.txt");
