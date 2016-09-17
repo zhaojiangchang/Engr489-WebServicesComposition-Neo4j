@@ -47,6 +47,7 @@ public class Main implements Runnable{
 
 	private static GraphDatabaseService graphDatabaseService = null;
 	private static GraphDatabaseService subGraphDatabaseService = null;
+	private static List<Map<String, String>> bestRels;
 	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private IndexManager index = null;
@@ -61,11 +62,11 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private final boolean runTestFiles = true;
+	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "03";
-	private final int individuleNodeSize = 42;
-	private final int candidateSize = 10;
+	private final String dataSet = "08";
+	private final int individuleNodeSize = 32;
+	private final int candidateSize = 30;
 	private final boolean runQosDataset = true;
 
 	private final double m_a = 0.1;
@@ -287,14 +288,26 @@ public class Main implements Runnable{
 		Transaction transaction = subGraphDatabaseService.beginTx();
 		try{			
 			System.out.println("candidates: ");
-
+			int i = 0;
 			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidates.entrySet()){
+				
 				System.out.println();
+				System.out.println();
+				System.out.print("candidate "+ ++i+": ");
+
 				for(Node n: entry.getKey()){
 					System.out.print(n.getProperty("name")+"  ");
 				}
 				System.out.println();
-				System.out.println("composition size: "+entry.getKey().size());
+				System.out.println("Total service nodes:"+entry.getKey().size());
+				for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
+					System.out.println(entry2.getKey()+": ");
+					for (Map.Entry<String, Double> entry3 : entry2.getValue().entrySet()){
+						System.out.print("    "+entry3.getKey()+": "+entry3.getValue()+";   ");
+					}
+					System.out.println();
+				}
+				System.out.println();
 			}
 
 		} catch (Exception e) {
@@ -305,6 +318,7 @@ public class Main implements Runnable{
 		}	
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("generate candidates", endTime - startTime);
+		System.out.println();
 		System.out.println("generate candidates Total execution time: " + (endTime - startTime) );
 
 
@@ -315,13 +329,16 @@ public class Main implements Runnable{
 		startTime = System.currentTimeMillis();
 
 		Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos = findCompositions.getResult(candidates);
+//		bestRels = findCompositions.getBestRels();
 
 		System.out.println("Best result: ");
 		Transaction tx = subGraphDatabaseService.beginTx();
+		
+		
 		try{
 			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry2 : resultWithQos.entrySet()){
 				for(Node n: entry2.getKey()){
-					System.out.print(n.getProperty("name")+"  ");
+					System.out.print(n.getProperty("name")+"--"+n.getId()+"   ");
 				}
 				System.out.println();
 				System.out.print("QOS:  ");
@@ -356,6 +373,7 @@ public class Main implements Runnable{
 		}	
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("generate best result", endTime - startTime);
+		System.out.println();
 		System.out.println("generate best result Total execution time: " + (endTime - startTime) );
 		System.out.println();
 		System.out.println();
@@ -375,8 +393,10 @@ public class Main implements Runnable{
 			generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
 			generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
 			generateDatabase2.createServicesDatabase();
+			System.out.println("findCompositions.getBestRels()"+bestRels);
+			generateDatabase2.set(bestRels);
 			generateDatabase2.addServiceNodeRelationShip();
-
+			
 			registerShutdownHook(subGraphDatabaseService,"Reduced");
 			registerShutdownHook(newGraphDatabaseService, "Result");
 
