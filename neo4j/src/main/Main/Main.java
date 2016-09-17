@@ -1,3 +1,4 @@
+package Main;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -60,11 +61,11 @@ public class Main implements Runnable{
 
 	//For setup == file location, composition size, and run test file or not
 	//******************************************************//
-	private final boolean runTestFiles = false;
+	private final boolean runTestFiles = true;
 	private final String year = "2008";
 	private final String dataSet = "03";
 	private final int individuleNodeSize = 42;
-	private final int candidateSize = 100;
+	private final int candidateSize = 10;
 	private final boolean runQosDataset = true;
 
 	private final double m_a = 0.1;
