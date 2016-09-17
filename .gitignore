@@ -1,3 +1,5 @@
 /database/
 /evaluationGraphEvalResults/
 /timeRecord.txt
+
+neo4j/src/main/task/FindCompositions.java

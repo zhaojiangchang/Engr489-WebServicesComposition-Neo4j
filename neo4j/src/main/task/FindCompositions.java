@@ -51,9 +51,10 @@ public class FindCompositions {
 	private double m_c = 0;
 	private double m_t = 0;
 	Set<Relationship> relationships = new HashSet<Relationship>();
-	public Map<List<Node>,Set<Relationship>> candidatesWithRels = new HashMap<List<Node>,Set<Relationship>>();
+	public Map<List<Node>,List<Map<String,String>>> candidatesWithRels = new HashMap<List<Node>,List<Map<String,String>>>();
 	List<Node>bestList = new ArrayList<Node>();
 	private Map<String,Node>bestNodesMap = new HashMap<String,Node>();
+	List<Map<String,String>>bestRels = new ArrayList<Map<String,String>>();
 
 
 
@@ -100,7 +101,7 @@ public class FindCompositions {
 
 
 		}
-		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry3 : candidates.entrySet()){
+		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry3 : bestResultWithQos.entrySet()){
 			Set<Node>bestResult = new HashSet<Node>(entry3.getKey());
 			for(Node n: bestResult){
 				Transaction tx = subGraphDatabaseService.beginTx();
@@ -108,6 +109,22 @@ public class FindCompositions {
 				tx.close();
 			}
 			//			composition(endNode,bestResult);
+		}
+		
+		for(Map.Entry<List<Node>,List<Map<String,String>>> entry4: candidatesWithRels.entrySet()){
+			boolean contains = true;
+			for(Node node: entry4.getKey()){
+				Transaction tx = subGraphDatabaseService.beginTx();
+				if(!bestNodesMap.containsKey(node.getProperty("name"))){
+					contains = false;
+				}
+				tx.close();
+			}
+			if(contains){
+				bestRels = entry4.getValue();
+				break;
+
+			}
 		}
 		return bestResultWithQos;
 	}
@@ -260,7 +277,23 @@ public class FindCompositions {
 							List<Node> list = new ArrayList<Node>(result);
 							timeForEachCandidate.put(list,(double)n.getProperty("totalTime"));
 							List<Node> list2 = new ArrayList<Node>(result);
-							candidatesWithRels.put(list2,relationships);
+							Transaction tr = subGraphDatabaseService.beginTx();
+							Set<Relationship> rs = new HashSet<Relationship>(relationships);
+							List<Map<String,String>>rels = new ArrayList<Map<String,String>>();
+							for (Relationship r: rs){
+								Map<String,String>relsString = new HashMap<String, String>();
+								String from = (String)r.getProperty("From");
+								String to = (String)r.getProperty("To");
+								if(compositionContains(from,result)&& compositionContains(to,result) && !from.equals(to)){
+									relsString.put(from, to);
+									rels.add(relsString);
+									//System.out.println((String)r.getProperty("From")+"  =>  "+ (String)r.getProperty("To"));
+								}
+							}
+
+							tr.close();
+
+							candidatesWithRels.put(list2, rels);
 						}
 						transaction.close();
 					}
@@ -273,6 +306,19 @@ public class FindCompositions {
 			}
 		}
 	}
+	
+	private boolean compositionContains(String property, Set<Node> result) {
+		Transaction transaction = subGraphDatabaseService.beginTx();
+		for(Node n: result){
+			if(n.getProperty("name").equals(property)){
+				transaction.close();
+				return true;
+			}
+		}
+		transaction.close();
+		return false;
+	}
+	
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
 		Transaction transaction = subGraphDatabaseService.beginTx();
 		if(releatedNodes==null){
@@ -299,18 +345,6 @@ public class FindCompositions {
 	private void composition(Node subEndNode, Set<Node> result) {
 
 		List<String>nodeInputs = Arrays.asList(getNodePropertyArray(subEndNode, "inputs"));
-		//		List<Relationship>rels = new ArrayList<Relationship>();
-		//		Transaction tx = subGraphDatabaseService.beginTx();
-		//
-		//		try{
-		//			for(Relationship r: subEndNode.getRelationships(Direction.INCOMING)){
-		//				rels.add(r);
-		//			}
-		//		}catch(Exception e){
-		//		}finally{
-		//			tx.close();
-		//		}
-		//		
 
 		List<Relationship> rels = new ArrayList<Relationship>();
 
@@ -358,6 +392,7 @@ public class FindCompositions {
 
 	}
 	private Set<Node> findNodesFulfillSubEndNode(List<String> nodeInputs, List<Relationship> rels) {
+		Set<Relationship> tempRelationships = new HashSet<Relationship>();
 		int i = 100;
 		while(i!=0){
 			Collections.shuffle(rels);
@@ -380,14 +415,15 @@ public class FindCompositions {
 				temp.retainAll(relOutputs);
 				if(temp.size()==0){
 					relOutputs.addAll(commonValue);
+					tempRelationships.add(r);
 
-					relationships.add(r);
 					toReturn.add(node);
 				}
 				Set<String>set1 = new HashSet<String>(relOutputs);
 				Set<String>set2 = new HashSet<String>(nodeInputs);
 				if(set1.size()==set2.size()){					
 					if(equalLists(set1,set2)){
+						relationships.addAll(tempRelationships);
 						return toReturn;
 					}				
 				}

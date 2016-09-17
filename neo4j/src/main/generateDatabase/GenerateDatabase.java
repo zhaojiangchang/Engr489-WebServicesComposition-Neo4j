@@ -44,6 +44,7 @@ public class GenerateDatabase {
 	private Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
 	private Map<String, ServiceNode> serviceMap = new HashMap<String, ServiceNode>();
 	Relationship relation;
+	private List<Map<String, String>> bestRels = new ArrayList<Map<String,String>>();
 	private static final int TIME = 0;
 	private static final int COST = 1;
 	private static final int AVAILABILITY = 2;
@@ -68,16 +69,72 @@ public class GenerateDatabase {
 
 	}
 	public void addServiceNodeRelationShip() {
-		Map<String, Object> maps = new HashMap<String, Object>();
-		Map<String,List<String>> inputServices = new HashMap<String,List<String>>();
-		//		Map<String,List<String>> serviceOutputs = new HashMap<String,List<String>>();
-		for(Node sNode: neo4jServiceNodes){
-			Transaction transaction = newGraphDatabaseService.beginTx();
-			transaction.close();
-			addInputsServiceRelationship(sNode, maps, inputServices);
-		}
-		servicesWithInputs = inputServices;
-		//		servicesWithOutputs = serviceOutputs;
+//		System.out.println(bestRels.size());
+//		if(bestRels.size()==0){
+			Map<String, Object> maps = new HashMap<String, Object>();
+			Map<String,List<String>> inputServices = new HashMap<String,List<String>>();
+			//		Map<String,List<String>> serviceOutputs = new HashMap<String,List<String>>();
+			for(Node sNode: neo4jServiceNodes){
+				Transaction transaction = newGraphDatabaseService.beginTx();
+				transaction.close();
+				addInputsServiceRelationship(sNode, maps, inputServices);
+			}
+			servicesWithInputs = inputServices;
+
+			//		servicesWithOutputs = serviceOutputs;
+//		}
+//		else{
+//			System.out.println(neo4jServNodes.size());
+//			for(String node: neo4jServNodes.keySet()){
+//				System.out.println(node);
+//			}
+//			System.out.println();
+//			for(Map<String,String> rels: bestRels){
+//				for(Map.Entry<String, String> rel: rels.entrySet()){
+//					String from = rel.getKey();
+//					String to = rel.getValue();
+//					System.out.println(from+"     "+to);
+//				}
+//				for(Map.Entry<String, String> rel: rels.entrySet()){
+//					Transaction transaction = newGraphDatabaseService.beginTx();
+//					try{
+//						String from = rel.getKey();
+//						String to = rel.getValue();
+//						System.out.println(from+"     "+to);
+//						Node fromNode = neo4jServNodes.get(from);
+//						Node toNode = neo4jServNodes.get(to);
+//						System.out.println(fromNode.getId()+"     "+toNode.getId());
+//						ServiceNode serviceNode = serviceMap.get(from);
+//						String[] tempToArray = getOutputs(fromNode, toNode, newGraphDatabaseService);
+//						relation = fromNode.createRelationshipTo(toNode, RelTypes.IN);
+//						relation.setProperty("From", from);
+//						relation.setProperty("To", to);
+//						relation.setProperty("outputs", tempToArray);
+//						relation.setProperty("Direction", "incoming");    
+//						if(from.equals("start")){
+//							relation.setProperty("weightTime", 0);
+//							relation.setProperty("weightCost", 0);
+//							relation.setProperty("weightAvailibility", 0);
+//							relation.setProperty("weightReliability", 0);
+//						}
+//						else{
+//							relation.setProperty("weightTime", serviceNode.getQos()[TIME]);
+//							relation.setProperty("weightCost", serviceNode.getQos()[COST]);
+//							relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
+//							relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+//						}
+//						transaction.success();
+//					}catch(Exception e){
+//						System.out.println(e);
+//						System.out.println("GenerateDatabase addServiceNodeRelationShip error.."); 
+//					}
+//					finally{
+//						transaction.close();
+//					}
+//				}
+//
+//			}
+//		}
 	}
 
 
@@ -107,7 +164,6 @@ public class GenerateDatabase {
 						relation.setProperty("weightCost", 0);
 						relation.setProperty("weightAvailibility", 0);
 						relation.setProperty("weightReliability", 0);
-						relation.setProperty("isRedundant", false);
 
 					}
 					else{
@@ -122,8 +178,6 @@ public class GenerateDatabase {
 							relation.setProperty("weightCost", serviceNode.getQos()[COST]);
 							relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
 							relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
-							relation.setProperty("isRedundant", true);
-
 						}
 					}
 				}
@@ -416,5 +470,9 @@ public class GenerateDatabase {
 			tx.close();
 		}
 		return toReturn;
+	}
+
+	public void set(List<Map<String, String>> bestRels) {
+		this.bestRels  = bestRels;
 	}
 }
