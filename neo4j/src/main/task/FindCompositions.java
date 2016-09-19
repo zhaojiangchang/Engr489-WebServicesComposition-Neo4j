@@ -68,18 +68,6 @@ public class FindCompositions {
 		Map<List<Node>, Double> timeForEachCandidate = new HashMap<List<Node>, Double>();
 		findCandidates(timeForEachCandidate);		
 		Map<List<Node>, Map<String,Map<String, Double>>> candidatesWithQos = calculateQos(timeForEachCandidate);
-
-		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidatesWithQos.entrySet()){
-			System.out.println();
-			for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
-				System.out.println();
-				System.out.println(entry2.getKey());
-				for (Map.Entry<String, Double> entry3 : entry2.getValue().entrySet()){
-					System.out.print("    "+entry3.getKey()+": "+entry3.getValue()+";   ");
-				}
-			}
-			System.out.println();
-		}
 		return candidatesWithQos;
 	}
 	public Map<List<Node>, Map<String,Map<String, Double>>> getResult(Map<List<Node>, Map<String,Map<String, Double>>> candidates) {
@@ -111,21 +99,21 @@ public class FindCompositions {
 			//			composition(endNode,bestResult);
 		}
 		
-		for(Map.Entry<List<Node>,List<Map<String,String>>> entry4: candidatesWithRels.entrySet()){
-			boolean contains = true;
-			for(Node node: entry4.getKey()){
-				Transaction tx = subGraphDatabaseService.beginTx();
-				if(!bestNodesMap.containsKey(node.getProperty("name"))){
-					contains = false;
-				}
-				tx.close();
-			}
-			if(contains){
-				bestRels = entry4.getValue();
-				break;
-
-			}
-		}
+//		for(Map.Entry<List<Node>,List<Map<String,String>>> entry4: candidatesWithRels.entrySet()){
+//			boolean contains = true;
+//			for(Node node: entry4.getKey()){
+//				Transaction tx = subGraphDatabaseService.beginTx();
+//				if(!bestNodesMap.containsKey(node.getProperty("name"))){
+//					contains = false;
+//				}
+//				tx.close();
+//			}
+//			if(contains){
+//				bestRels = entry4.getValue();
+//				break;
+//
+//			}
+//		}
 		return bestResultWithQos;
 	}
 	private Map<List<Node>, Map<String,Map<String, Double>>> calculateQos(Map<List<Node>, Double> timeForEachCandidate) {
@@ -189,7 +177,7 @@ public class FindCompositions {
 					totalC+=(double)node.getProperty("weightCost");
 					tx.close();
 				}
-				System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
+//				System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
 				Map<String,Double> non_normalized = new HashMap<String,Double>();
 				non_normalized.put("A", totalA);
 				non_normalized.put("R", totalR);
@@ -278,18 +266,18 @@ public class FindCompositions {
 							timeForEachCandidate.put(list,(double)n.getProperty("totalTime"));
 							List<Node> list2 = new ArrayList<Node>(result);
 							Transaction tr = subGraphDatabaseService.beginTx();
-							Set<Relationship> rs = new HashSet<Relationship>(relationships);
+//							Set<Relationship> rs = new HashSet<Relationship>(relationships);
 							List<Map<String,String>>rels = new ArrayList<Map<String,String>>();
-							for (Relationship r: rs){
-								Map<String,String>relsString = new HashMap<String, String>();
-								String from = (String)r.getProperty("From");
-								String to = (String)r.getProperty("To");
-								if(compositionContains(from,result)&& compositionContains(to,result) && !from.equals(to)){
-									relsString.put(from, to);
-									rels.add(relsString);
-									//System.out.println((String)r.getProperty("From")+"  =>  "+ (String)r.getProperty("To"));
-								}
-							}
+//							for (Relationship r: rs){
+//								Map<String,String>relsString = new HashMap<String, String>();
+//								String from = (String)r.getProperty("From");
+//								String to = (String)r.getProperty("To");
+//								if(compositionContains(from,result)&& compositionContains(to,result) && !from.equals(to)){
+//									relsString.put(from, to);
+//									rels.add(relsString);
+//									//System.out.println((String)r.getProperty("From")+"  =>  "+ (String)r.getProperty("To"));
+//								}
+//							}
 
 							tr.close();
 
@@ -307,17 +295,17 @@ public class FindCompositions {
 		}
 	}
 	
-	private boolean compositionContains(String property, Set<Node> result) {
-		Transaction transaction = subGraphDatabaseService.beginTx();
-		for(Node n: result){
-			if(n.getProperty("name").equals(property)){
-				transaction.close();
-				return true;
-			}
-		}
-		transaction.close();
-		return false;
-	}
+//	private boolean compositionContains(String property, Set<Node> result) {
+//		Transaction transaction = subGraphDatabaseService.beginTx();
+//		for(Node n: result){
+//			if(n.getProperty("name").equals(property)){
+//				transaction.close();
+//				return true;
+//			}
+//		}
+//		transaction.close();
+//		return false;
+//	}
 	
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
 		Transaction transaction = subGraphDatabaseService.beginTx();

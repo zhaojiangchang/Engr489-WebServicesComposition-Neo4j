@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public class ServiceNode implements Cloneable {
-	private List<Edge> incomingEdgeList = new ArrayList<Edge>();
-	private List<Edge> outgoingEdgeList = new ArrayList<Edge>();
 	private List<TaxonomyNode> taxonomyOutputs = new ArrayList<TaxonomyNode>();
 	private List<TaxonomyNode> taxonomyInputs = new ArrayList<TaxonomyNode>();
 	private String name;
@@ -28,14 +26,6 @@ public class ServiceNode implements Cloneable {
 		inputsServicesToThisService = new HashSet<String>();
 		outputsServicesToThisService = new HashSet<String>();
 
-	}
-
-	public List<Edge> getIncomingEdgeList() {
-		return incomingEdgeList;
-	}
-
-	public List<Edge> getOutgoingEdgeList() {
-		return outgoingEdgeList;
 	}
 
 	public double[] getQos() {
