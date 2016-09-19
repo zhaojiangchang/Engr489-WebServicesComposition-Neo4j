@@ -64,8 +64,8 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "08";
-	private final int individuleNodeSize = 32;
+	private final String dataSet = "07";
+	private final int individuleNodeSize = 22;
 	private final int candidateSize = 30;
 	private final boolean runQosDataset = true;
 

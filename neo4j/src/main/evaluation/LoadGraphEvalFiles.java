@@ -63,7 +63,7 @@ public class LoadGraphEvalFiles {
              int index = 0;
              for (int l = arrQos.length-4; l < arrQos.length; l++) {
             	    if(l!=arrQos.length-1){
-            	    	datasetWriter.append(arrQos[l]+",");
+            	    	datasetWriter.append(arrQos[l]+"   ");
             	    	qos.add(Double.parseDouble(arrQos[l]));
 
             	    }
@@ -87,7 +87,7 @@ public class LoadGraphEvalFiles {
              index = 0;
              for (String s: stringNodes) {
          	    if(index!=stringNodes.size()-1)
-         	    	datasetWriter.append(s +",");
+         	    	datasetWriter.append(s +"   ");
          	    else
          	    	datasetWriter.append(s);
 
