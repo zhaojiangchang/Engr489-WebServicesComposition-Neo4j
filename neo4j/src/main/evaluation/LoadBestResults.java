@@ -44,6 +44,7 @@ public class LoadBestResults {
 		Map<String, BufferedReader>bufferedReadersNeo4j = loadFiles("evaluationNeo4jResults");
 
 		graphEvalResultsByDataset = readFiles(bufferedReadersGraphEval);
+		
 		neo4jResultsByDataset = readFiles(bufferedReadersNeo4j);
 
 	}
@@ -69,17 +70,22 @@ public class LoadBestResults {
 				String[] qosValues = qosString.trim().split("\\s+");
 //				List<Double> qos = new ArrayList<Double>();
 				Map<String, Double>qos = new HashMap<String,Double>();
-				qos.put("A", Double.parseDouble(qosValues[0]));
-				qos.put("R", Double.parseDouble(qosValues[1]));
-				qos.put("T", Double.parseDouble(qosValues[2]));
-				qos.put("C", Double.parseDouble(qosValues[3]));
+				if(qosValues.length==4){
+					qos.put("A", Double.parseDouble(qosValues[0]));
+					qos.put("R", Double.parseDouble(qosValues[1]));
+					qos.put("T", Double.parseDouble(qosValues[2]));
+					qos.put("C", Double.parseDouble(qosValues[3]));
+					
+				}
+				
 
 				String serviceString = fb.readLine();
 				if(serviceString == null){
 					break;
 				}
 				List<String> services = Arrays.asList(serviceString.trim().split("\\s+"));
-				results.add(new Individule(qos, services));        		
+				results.add(new Individule(qos, services));      
+				
 			}
 			resultByDataset.put(fileName, results);
 
@@ -105,7 +111,9 @@ public class LoadBestResults {
 
 		for(File file: filesInFolder){
 			try{
-				bufferedReaders.put(file.getName().substring(0, 13),new BufferedReader(new FileReader(file)));
+				if(file.getName().substring(0, 3).equals("200")){
+					bufferedReaders.put(file.getName(),new BufferedReader(new FileReader(file)));
+				}
 			}catch(Exception e){
 				e.printStackTrace();
 			}

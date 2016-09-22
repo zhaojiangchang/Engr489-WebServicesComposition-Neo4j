@@ -17,7 +17,7 @@ import javax.swing.JFileChooser;
 public class LoadGraphEvalFiles {
 	
 	private File[] files = null;
-	Map<List<String>, List<Double>> graphEvalResults = new HashMap<List<String>, List<Double>>();
+	Map<Integer,Map<List<String>, List<Double>>> graphEvalResults = new HashMap<Integer,Map<List<String>, List<Double>>>();
 	String datasetDirName = "";
 	public LoadGraphEvalFiles(){
 		run();
@@ -36,7 +36,7 @@ public class LoadGraphEvalFiles {
 			e.printStackTrace();
 		}
 	}
-	public Map<List<String>, List<Double>> getEvalResults(){
+	public Map<Integer,Map<List<String>, List<Double>>> getEvalResults(){
 		return graphEvalResults;
 	}
 	private void readFiles() throws IOException {
@@ -58,6 +58,7 @@ public class LoadGraphEvalFiles {
 	             i++;
 			 }
 			 textQos = bufferedReaders.get(j).readLine();
+             System.out.println(j+"  "+textQos);
 			 List<Double> qos = new ArrayList<Double>();
              String[] arrQos = textQos.split(" ");
              int index = 0;
@@ -83,6 +84,7 @@ public class LoadGraphEvalFiles {
              textNodes = textNodes.substring(11, textNodes.length()-1);
              textNodes = textNodes.replace("->", " ");
              textNodes = textNodes.replace(";", "");
+             System.out.println(textNodes);
              Set<String>stringNodes = new HashSet<String>(Arrays.asList(textNodes.split("\\s+")));
              index = 0;
              for (String s: stringNodes) {
@@ -96,9 +98,10 @@ public class LoadGraphEvalFiles {
          	}
              datasetWriter.append("\n");      
              List<String>nodes = new ArrayList<String>(stringNodes);
-             if(!containsKey(nodes)){
-            	 graphEvalResults.put(nodes, qos);
-             }
+//             if(!containsKey(nodes)){
+             Map<List<String>, List<Double>> result = new HashMap<List<String>, List<Double>>();
+             graphEvalResults.put(j, result);
+//             }
          }
 		   for(int rd = 0; rd<bufferedReaders.size();rd++){
                bufferedReaders.get(rd).close();
@@ -106,15 +109,15 @@ public class LoadGraphEvalFiles {
 		   datasetWriter.close();
 		
 	}
-	private boolean containsKey(List<String> nodes) {
-		for(List<String> nodeList: graphEvalResults.keySet()){
-			List<String>temp = new ArrayList<String>(nodes);
-			if(temp.retainAll(nodeList) && temp.size() == nodeList.size()){
-				return true;
-			}
-		}
-		return false;
-	}
+//	private boolean containsKey(List<String> nodes) {
+//		for(List<String> nodeList: graphEvalResults.keySet()){
+//			List<String>temp = new ArrayList<String>(nodes);
+//			if(temp.retainAll(nodeList) && temp.size() == nodeList.size()){
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 
 	public void loadFiles(){
 		JFileChooser chooser2 = new JFileChooser("Files Chooser");

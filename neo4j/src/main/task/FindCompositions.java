@@ -233,9 +233,14 @@ public class FindCompositions {
 	}
 
 	private void findCandidates(Map<List<Node>, Double> timeForEachCandidate) throws OuchException {
-
+		int size = 0;
 		while(timeForEachCandidate.size()<candidateSize){
-
+//			System.out.println();
+//			if(timeForEachCandidate.size()>size){
+//				size = timeForEachCandidate.size();
+//				System.out.print("candidate "+size);
+//			}
+//			System.out.println();
 			skipRecursive  = false;			
 			Set<Node>result = new HashSet<Node>();
 

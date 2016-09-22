@@ -43,6 +43,7 @@ public class Main implements Runnable{
 
 	private boolean running = true;
 	private Map<String,Long>records = new HashMap<String,Long>();
+	private Map<Integer, Map<String,String>> bestResults = new HashMap<Integer, Map<String, String>>();
 	private Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
 
 	private static GraphDatabaseService graphDatabaseService = null;
@@ -64,10 +65,12 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "07";
-	private final int individuleNodeSize = 22;
-	private final int candidateSize = 30;
+	private final String dataSet = "01";
+	private final int individuleNodeSize = 12;
+	private final int candidateSize = 50;
 	private final boolean runQosDataset = true;
+	private final boolean runMultipileTime = true;
+	private final int timesToRun = 30;
 
 	private final double m_a = 0.1;
 	private final double m_r = 0.05;
@@ -270,148 +273,240 @@ public class Main implements Runnable{
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("reduce graph db ", endTime - startTime);
 		System.out.println("reduce graph db Total execution time: " + (endTime - startTime) );
-		//find compositions
+		
+		if(!neo4jwsc.runMultipileTime){
 
-		startTime = System.currentTimeMillis();
-		FindCompositions findCompositions = new FindCompositions(neo4jwsc.candidateSize, neo4jwsc.individuleNodeSize, subGraphDatabaseService);
-		findCompositions.setStartNode(neo4jwsc.startNode);
-		findCompositions.setEndNode(neo4jwsc.endNode);
-		findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
-		findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
-		findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
-		findCompositions.setM_a(neo4jwsc.m_a);
-		findCompositions.setM_r(neo4jwsc.m_r);
-		findCompositions.setM_c(neo4jwsc.m_c);
-		findCompositions.setM_t(neo4jwsc.m_t);
-		Map<List<Node>, Map<String,Map<String, Double>>> candidates = findCompositions.run();
+			//find compositions
 
-		Transaction transaction = subGraphDatabaseService.beginTx();
-		try{			
-			System.out.println("candidates: ");
-			int i = 0;
-			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidates.entrySet()){
-				
-				System.out.println();
-				System.out.println();
-				System.out.print("candidate "+ ++i+": ");
+			startTime = System.currentTimeMillis();
+			FindCompositions findCompositions = new FindCompositions(neo4jwsc.candidateSize, neo4jwsc.individuleNodeSize, subGraphDatabaseService);
+			findCompositions.setStartNode(neo4jwsc.startNode);
+			findCompositions.setEndNode(neo4jwsc.endNode);
+			findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
+			findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
+			findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
+			findCompositions.setM_a(neo4jwsc.m_a);
+			findCompositions.setM_r(neo4jwsc.m_r);
+			findCompositions.setM_c(neo4jwsc.m_c);
+			findCompositions.setM_t(neo4jwsc.m_t);
+			Map<List<Node>, Map<String,Map<String, Double>>> candidates = findCompositions.run();
 
-				for(Node n: entry.getKey()){
-					System.out.print(n.getProperty("name")+"  ");
-				}
-				System.out.println();
-				System.out.println("Total service nodes:"+entry.getKey().size());
-				for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
-					System.out.println(entry2.getKey()+": ");
-					for (Map.Entry<String, Double> entry3 : entry2.getValue().entrySet()){
-						System.out.print("    "+entry3.getKey()+": "+entry3.getValue()+";   ");
+			Transaction transaction = subGraphDatabaseService.beginTx();
+			try{			
+				System.out.println("candidates: ");
+				int i = 0;
+				for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : candidates.entrySet()){
+
+					System.out.println();
+					System.out.println();
+					System.out.print("candidate "+ ++i+": ");
+
+					for(Node n: entry.getKey()){
+						System.out.print(n.getProperty("name")+"  ");
+					}
+					System.out.println();
+					System.out.println("Total service nodes:"+entry.getKey().size());
+					for (Map.Entry<String,Map<String, Double>> entry2 : entry.getValue().entrySet()){
+						System.out.println(entry2.getKey()+": ");
+						for (Map.Entry<String, Double> entry3 : entry2.getValue().entrySet()){
+							System.out.print("    "+entry3.getKey()+": "+entry3.getValue()+";   ");
+						}
+						System.out.println();
 					}
 					System.out.println();
 				}
-				System.out.println();
-			}
 
-		} catch (Exception e) {
-			System.out.println(e);
-			System.out.println("print populations error.."); 
-		} finally {
-			transaction.close();
-		}	
-		endTime = System.currentTimeMillis();
-		neo4jwsc.records.put("generate candidates", endTime - startTime);
-		System.out.println();
-		System.out.println("generate candidates Total execution time: " + (endTime - startTime) );
-
-
-		System.out.println();
-		System.out.println();
-		System.out.println();
-
-		startTime = System.currentTimeMillis();
-
-		Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos = findCompositions.getResult(candidates);
-//		bestRels = findCompositions.getBestRels();
-
-		System.out.println("Best result: ");
-		Transaction tx = subGraphDatabaseService.beginTx();
-		
-		
-		try{
-			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry2 : resultWithQos.entrySet()){
-				for(Node n: entry2.getKey()){
-					System.out.print(n.getProperty("name")+"--"+n.getId()+"   ");
-				}
-				System.out.println();
-				System.out.print("QOS:  ");
-				for (Map.Entry<String,Map<String, Double>> entry3 : entry2.getValue().entrySet()){
-					if(entry3.getKey().equals("normalized")){
-						System.out.println("normalized: ");
-						for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
-							System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
-
-						}
-						System.out.println();
-						double fitnessOfBest = neo4jwsc.m_a*entry3.getValue().get("A") + neo4jwsc.m_r*entry3.getValue().get("R") + neo4jwsc.m_c*entry3.getValue().get("C") + neo4jwsc.m_t*entry3.getValue().get("T");
-						System.out.println("fitnessOfBest:" +fitnessOfBest);
-					}
-					else if(entry3.getKey().equals("non_normalized")){
-						System.out.println("non_normalized: ");
-						for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
-							System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
-
-						}
-					}
-
-
-				}
-			}
+			} catch (Exception e) {
+				System.out.println(e);
+				System.out.println("print populations error.."); 
+			} finally {
+				transaction.close();
+			}	
+			endTime = System.currentTimeMillis();
+			neo4jwsc.records.put("generate candidates", endTime - startTime);
 			System.out.println();
-		} catch (Exception e) {
-			System.out.println(e);
-			System.out.println("print populations error.."); 
-		} finally {
-			tx.close();
-		}	
-		endTime = System.currentTimeMillis();
-		neo4jwsc.records.put("generate best result", endTime - startTime);
-		System.out.println();
-		System.out.println("generate best result Total execution time: " + (endTime - startTime) );
-		System.out.println();
-		System.out.println();
-		System.out.println();
+			System.out.println("generate candidates Total execution time: " + (endTime - startTime) );
 
-		startTime = System.currentTimeMillis();
-		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
-			try {
-				FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
-			generateDatabase2.createDbService();
-			GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
-			registerShutdownHook(graphDatabaseService,"original test");
-			generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
-			generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
-			generateDatabase2.createServicesDatabase();
-			System.out.println("findCompositions.getBestRels()"+bestRels);
-			generateDatabase2.set(bestRels);
-			generateDatabase2.addServiceNodeRelationShip();
-			
-			registerShutdownHook(subGraphDatabaseService,"Reduced");
-			registerShutdownHook(newGraphDatabaseService, "Result");
+
+			System.out.println();
+			System.out.println();
+			System.out.println();
+
+			startTime = System.currentTimeMillis();
+
+			Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos = findCompositions.getResult(candidates);
+			//		bestRels = findCompositions.getBestRels();
+
+			System.out.println("Best result: ");
+			Transaction tx = subGraphDatabaseService.beginTx();
+
+
+			try{
+				for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry2 : resultWithQos.entrySet()){
+					for(Node n: entry2.getKey()){
+						System.out.print(n.getProperty("name")+"--"+n.getId()+"   ");
+					}
+					System.out.println();
+					System.out.print("QOS:  ");
+					for (Map.Entry<String,Map<String, Double>> entry3 : entry2.getValue().entrySet()){
+						if(entry3.getKey().equals("normalized")){
+							System.out.println("normalized: ");
+							for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
+								System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
+
+							}
+							System.out.println();
+							double fitnessOfBest = neo4jwsc.m_a*entry3.getValue().get("A") + neo4jwsc.m_r*entry3.getValue().get("R") + neo4jwsc.m_c*entry3.getValue().get("C") + neo4jwsc.m_t*entry3.getValue().get("T");
+							System.out.println("fitnessOfBest:" +fitnessOfBest);
+						}
+						else if(entry3.getKey().equals("non_normalized")){
+							System.out.println("non_normalized: ");
+							for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
+								System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
+
+							}
+						}
+
+
+					}
+				}
+				System.out.println();
+			} catch (Exception e) {
+				System.out.println(e);
+				System.out.println("print populations error.."); 
+			} finally {
+				tx.close();
+			}	
+			endTime = System.currentTimeMillis();
+			neo4jwsc.records.put("generate best result", endTime - startTime);
+			System.out.println();
+			System.out.println("generate best result Total execution time: " + (endTime - startTime) );
+			System.out.println();
+			System.out.println();
+			System.out.println();
 
 		}
+		else{
+			int count  = 0;
+			while(count <neo4jwsc.timesToRun){
 
-		endTime = System.currentTimeMillis();
-		neo4jwsc.records.put("create new result graph db ", endTime - startTime);
-		System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
+				//find compositions
+
+				startTime = System.currentTimeMillis();
+				FindCompositions findCompositions = new FindCompositions(neo4jwsc.candidateSize, neo4jwsc.individuleNodeSize, subGraphDatabaseService);
+				findCompositions.setStartNode(neo4jwsc.startNode);
+				findCompositions.setEndNode(neo4jwsc.endNode);
+				findCompositions.setNeo4jServNodes(neo4jwsc.neo4jServNodes);
+				findCompositions.setTaxonomyMap(neo4jwsc.taxonomyMap);
+				findCompositions.setSubGraphNodesMap(reduceGraphDb.getSubGraphNodesMap());
+				findCompositions.setM_a(neo4jwsc.m_a);
+				findCompositions.setM_r(neo4jwsc.m_r);
+				findCompositions.setM_c(neo4jwsc.m_c);
+				findCompositions.setM_t(neo4jwsc.m_t);
+				Map<List<Node>, Map<String,Map<String, Double>>> candidates = findCompositions.run();
+
+				Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos = findCompositions.getResult(candidates);
+				//		bestRels = findCompositions.getBestRels();
+
+				System.out.println("Best result"+ count+": ");
+				Transaction tx = subGraphDatabaseService.beginTx();
+
+
+				try{
+					for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry2 : resultWithQos.entrySet()){
+						String services = "";
+						for(Node n: entry2.getKey()){
+							System.out.print(n.getProperty("name")+"--"+n.getId()+"   ");
+							services += n.getProperty("name")+"  ";
+						}
+						String qos = "";
+						System.out.println();
+						System.out.print("QOS:  ");
+						for (Map.Entry<String,Map<String, Double>> entry3 : entry2.getValue().entrySet()){
+							if(entry3.getKey().equals("normalized")){
+								System.out.println("normalized: ");
+								for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
+									System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
+
+								}
+								System.out.println();
+								double fitnessOfBest = neo4jwsc.m_a*entry3.getValue().get("A") + neo4jwsc.m_r*entry3.getValue().get("R") + neo4jwsc.m_c*entry3.getValue().get("C") + neo4jwsc.m_t*entry3.getValue().get("T");
+								System.out.println("fitnessOfBest:" +fitnessOfBest);
+							}
+							else if(entry3.getKey().equals("non_normalized")){
+								System.out.println("non_normalized: ");
+								for (Map.Entry<String, Double> entry4 : entry3.getValue().entrySet()){
+									System.out.print(entry4.getKey()+": "+entry4.getValue()+"     ");
+								}
+								qos = entry3.getValue().get("A")+" "+entry3.getValue().get("R")+" "+entry3.getValue().get("T")+" "+entry3.getValue().get("C");
+							}
+
+
+						}
+						Map<String, String> result = new HashMap<String,String>();
+						result.put(qos, services);
+						neo4jwsc.bestResults.put(count, result);
+					}
+					System.out.println();
+				} catch (Exception e) {
+					System.out.println(e);
+					System.out.println("print populations error.."); 
+				} finally {
+					tx.close();
+				}	
+				endTime = System.currentTimeMillis();
+				neo4jwsc.records.put("generate best result", endTime - startTime);
+				System.out.println();
+				System.out.println("generate best result Total execution time: " + (endTime - startTime) );
+				System.out.println();
+				System.out.println();
+				System.out.println();
+				count++;
+			}
+			FileWriter fw = new FileWriter("evaluationNeo4jResults/"+neo4jwsc.year+"-dataset"+neo4jwsc.dataSet+".stat");
+			for(Entry<Integer,Map<String, String>> entry : neo4jwsc.bestResults.entrySet()){
+				for(Entry<String,String> entry2: entry.getValue().entrySet()){
+					fw.write(entry2.getKey()+ "\n");
+					fw.write(entry2.getValue()+ "\n");
+				}
+				
+			}
+			fw.close();
+		}
+		//
+		//		startTime = System.currentTimeMillis();
+		//		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
+		//			try {
+		//				FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
+		//			} catch (IOException e) {
+		//				e.printStackTrace();
+		//			}
+		//			GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
+		//			generateDatabase2.createDbService();
+		//			GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
+		//			registerShutdownHook(graphDatabaseService,"original test");
+		//			generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
+		//			generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
+		//			generateDatabase2.createServicesDatabase();
+		//			System.out.println("findCompositions.getBestRels()"+bestRels);
+		//			generateDatabase2.set(bestRels);
+		//			generateDatabase2.addServiceNodeRelationShip();
+		//			
+		//			registerShutdownHook(subGraphDatabaseService,"Reduced");
+		//			registerShutdownHook(newGraphDatabaseService, "Result");
+		//
+		//		}
+		//
+		//		endTime = System.currentTimeMillis();
+		//		neo4jwsc.records.put("create new result graph db ", endTime - startTime);
+		//		System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
 		//		
 
-//		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
-//		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();
-//		System.out.println("Graph Eval Result:  "+graphEvalResult.size());
-		
-		
+		//		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
+		//		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();
+		//		System.out.println("Graph Eval Result:  "+graphEvalResult.size());
+
+
 
 
 		FileWriter fw = new FileWriter("timeRecord.txt");
