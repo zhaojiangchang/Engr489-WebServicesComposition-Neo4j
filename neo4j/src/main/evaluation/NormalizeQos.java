@@ -8,10 +8,10 @@ import java.util.Map;
 public class NormalizeQos {
 	private Map<String,List<Individule>> graphEvalResultsByDataset = new HashMap<String, List<Individule>>();
 	private Map<String,List<Individule>> neo4jResultsByDataset = new HashMap<String, List<Individule>>();
-	
+
 	//fitness values for each dataset
-	private Map<String, List<Double>>graphEvalFitnessValues = new HashMap<String, List<Double>>();
-	private Map<String, List<Double>>neo4jFitnessValues = new HashMap<String, List<Double>>();
+	public Map<String, List<Double>>graphEvalFitnessValues = new HashMap<String, List<Double>>();
+	public Map<String, List<Double>>neo4jFitnessValues = new HashMap<String, List<Double>>();
 
 
 	//Map<dataset1, Map<minA, A value>
@@ -22,19 +22,18 @@ public class NormalizeQos {
 		this.graphEvalResultsByDataset = graphEvalResultsByDataset;
 		this.neo4jResultsByDataset = neo4jResultsByDataset;
 		init();
-		
+
 	}
 	private void init(){
-		getMinMaxValues(graphEvalResultsByDataset);
-		getMinMaxValues(neo4jResultsByDataset);
+		getMinMaxValues();
 		normalizeAllDataset(graphEvalResultsByDataset);
 		normalizeAllDataset(neo4jResultsByDataset);
 		graphEvalFitnessValues = fitnessByFile(graphEvalResultsByDataset);
 		neo4jFitnessValues = fitnessByFile(neo4jResultsByDataset);
 
 	}
-	
-	
+
+
 	private Map<String, List<Double>> fitnessByFile(Map<String, List<Individule>> resultsByDataset) {
 		Map<String, List<Double>>fitnessValues = new HashMap<String, List<Double>>();
 		for(Map.Entry<String, List<Individule>> results: resultsByDataset.entrySet()){	
@@ -46,8 +45,8 @@ public class NormalizeQos {
 		}	
 		return fitnessValues;
 	}
-	
-	
+
+
 	private void normalizeAllDataset(Map<String, List<Individule>> resultsByDataset) {
 		for(Map.Entry<String, List<Individule>> results: resultsByDataset.entrySet()){	
 			Map<String, Double> minMax = minMaxQosWithFileNames.get(results.getKey());
@@ -58,7 +57,7 @@ public class NormalizeQos {
 				}
 				individule.fitnessValue = individule.fitness();
 			}
-			
+
 		}
 	}
 	private void normalize(String qosAttr, double value, Map<String, Double> minMax, Individule individule) {
@@ -91,8 +90,8 @@ public class NormalizeQos {
 			}
 		}	
 	}
-	
-	private void getMinMaxValues(Map<String, List<Individule>> resultsByDataset){
+
+	private void getMinMaxValues(){
 		for(Map.Entry<String, List<Individule>>bestResultWithFileName: graphEvalResultsByDataset.entrySet()){
 			Map<String,Double> minMax = new HashMap<String,Double>();
 			double minA = Double.MAX_VALUE;
@@ -103,7 +102,7 @@ public class NormalizeQos {
 			double maxC = Double.MIN_VALUE;
 			double minT = Double.MAX_VALUE;
 			double maxT = Double.MIN_VALUE;
-			System.out.println(bestResultWithFileName.getKey());
+
 			for(Individule i: bestResultWithFileName.getValue()){
 				Map<String, Double>qos = i.qos;
 				for(Map.Entry<String, Double> qosValue: qos.entrySet()){
@@ -142,6 +141,45 @@ public class NormalizeQos {
 				}
 
 			}
+
+			
+			for(Individule i: neo4jResultsByDataset.get(bestResultWithFileName.getKey())){
+				Map<String, Double>qos = i.qos;
+				for(Map.Entry<String, Double> qosValue: qos.entrySet()){
+					if(qosValue.getKey().equals("A")){
+						if(qosValue.getValue()>maxA){
+							maxA = qosValue.getValue();
+						}
+						if(qosValue.getValue()<minA){
+							minA = qosValue.getValue();
+						}
+					}
+					else if(qosValue.getKey().equals("R")){
+						if(qosValue.getValue()>maxR){
+							maxR = qosValue.getValue();
+						}
+						if(qosValue.getValue()<minR){
+							minR = qosValue.getValue();
+						}
+					}
+					else if(qosValue.getKey().equals("C")){
+						if(qosValue.getValue()>maxC){
+							maxC = qosValue.getValue();
+						}
+						if(qosValue.getValue()<minC){
+							minC = qosValue.getValue();
+						}
+					}
+					else if(qosValue.getKey().equals("T")){
+						if(qosValue.getValue()>maxT){
+							maxT = qosValue.getValue();
+						}
+						if(qosValue.getValue()<minT){
+							minT = qosValue.getValue();
+						}
+					}
+				}
+			}
 			minMax.put("minA", minA);
 			minMax.put("maxA", maxA);
 			minMax.put("minR", minR);
@@ -150,9 +188,7 @@ public class NormalizeQos {
 			minMax.put("maxC", maxC);
 			minMax.put("minT", minT);
 			minMax.put("maxT", maxT);
-			
 			minMaxQosWithFileNames.put(bestResultWithFileName.getKey(),minMax);
-			System.out.println("minA: "+minA+" maxA: "+maxA+" minR: "+minR+" maxR: "+maxR+" minC: "+minC+" maxC: "+maxC+" minT:  "+minT+" maxT: "+maxT);
 		}
 	}
 }
