@@ -63,6 +63,13 @@ public class LoadBestResults {
 			BufferedReader fb = bfWithFileName.getValue();
 			List<Individule> results = new ArrayList<Individule>();
 			while(true){
+				double runningTime = 0.0;
+				String time = fb.readLine();
+				if(time == null){
+					break;
+				}   
+				String[] timeAsArray = time.trim().split("\\s+");
+				runningTime = Double.parseDouble(timeAsArray[0]);
 				String qosString = fb.readLine();
 				if(qosString == null){
 					break;
@@ -84,11 +91,9 @@ public class LoadBestResults {
 					break;
 				}
 				List<String> services = Arrays.asList(serviceString.trim().split("\\s+"));
-				results.add(new Individule(qos, services));      
-				
+				results.add(new Individule(qos, services, runningTime));      
 			}
 			resultByDataset.put(fileName, results);
-
 		}
 		return resultByDataset;
 	}
