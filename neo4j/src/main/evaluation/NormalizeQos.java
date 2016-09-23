@@ -191,4 +191,11 @@ public class NormalizeQos {
 			minMaxQosWithFileNames.put(bestResultWithFileName.getKey(),minMax);
 		}
 	}
+	public Map<String, List<Double>> getGraphEvalFitnessValues() {
+		return graphEvalFitnessValues;
+	}
+	public Map<String, List<Double>> getNeo4jFitnessValues() {
+		return neo4jFitnessValues;
+	}
+	
 }

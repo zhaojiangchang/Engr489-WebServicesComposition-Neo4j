@@ -1,16 +1,18 @@
 package evaluation;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Statistics 
 {
-    double[] data;
+    List<Double> data;
     int size;   
 
-    public Statistics(double[] data) 
+    public Statistics(List<Double> data) 
     {
         this.data = data;
-        size = data.length;
+        size = data.size();
     }   
 
     double getMean()
@@ -37,15 +39,15 @@ public class Statistics
 
     public double median() 
     {
-       Arrays.sort(data);
+       Collections.sort(data);
 
-       if (data.length % 2 == 0) 
+       if (data.size() % 2 == 0) 
        {
-          return (data[(data.length / 2) - 1] + data[data.length / 2]) / 2.0;
+          return (data.get(data.size()/2 -1) + data.get(data.size()/2)) /2.0;
        } 
        else 
        {
-          return data[data.length / 2];
+          return data.get(data.size()/2);
        }
     }
 }
