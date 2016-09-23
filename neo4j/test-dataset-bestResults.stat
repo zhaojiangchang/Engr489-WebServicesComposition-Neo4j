@@ -1,0 +1,90 @@
+647.0
+0.019200000000000005 0.17639999999999997 1200.0 10.0
+serv8a  start  serv6b  end  serv7a  serv9a  
+238.0
+0.0504 0.11520000000000002 2500.0 9.0
+serv5a  start  end  serv4a  serv1b  serv3a  serv2a  
+429.0
+0.0432 0.09216000000000003 2500.0 10.0
+serv5a  start  end  serv1b  serv3a  serv4b  serv2a  
+241.0
+0.0576 0.052488 4100.0 14.0
+serv6a  serv7b  serv1a  serv2a  serv9a  serv8a  start  end  
+145.0
+0.0882 0.14400000000000004 6800.0 8.0
+serv5a  start  end  serv4a  serv1b  serv2a  serv3b  
+475.0
+0.0432 0.09216000000000003 3500.0 10.0
+serv5a  start  end  serv1b  serv3a  serv4b  serv2a  
+277.0
+0.0882 0.16200000000000003 5900.0 9.0
+serv4a  serv5b  serv1b  serv2a  serv3b  start  end  
+231.0
+0.0882 0.16200000000000003 5400.0 9.0
+serv4a  serv5b  serv1b  serv2a  serv3b  start  end  
+229.0
+0.028800000000000003 0.0756 1800.0 11.0
+serv8a  start  end  serv7a  serv6a  serv9a  
+387.0
+0.0882 0.14400000000000004 2500.0 8.0
+serv5a  start  end  serv4a  serv1b  serv2a  serv3b  
+53.0
+0.0882 0.14400000000000004 2100.0 8.0
+serv5a  start  end  serv4a  serv1b  serv2a  serv3b  
+192.0
+0.0504 0.11520000000000002 2500.0 9.0
+serv5a  start  end  serv4a  serv1b  serv3a  serv2a  
+558.0
+0.0756 0.12960000000000002 2300.0 10.0
+start  end  serv5b  serv1b  serv4b  serv2a  serv3b  
+158.0
+0.03024 0.09072000000000001 2800.0 12.0
+serv6b  serv5b  serv1b  serv4b  serv2a  serv3b  start  end  
+505.0
+0.09600000000000002 0.2268 1200.0 7.0
+serv8a  start  serv6b  end  serv7b  serv9a  
+47.0
+0.09600000000000002 0.2268 1200.0 7.0
+serv8a  start  serv6b  end  serv7b  serv9a  
+102.0
+0.09 0.1458 2700.0 11.0
+start  end  serv8b  serv6a  serv7b  serv9a  
+824.0
+0.06 0.3402 1500.0 10.0
+start  serv6b  end  serv8b  serv7b  serv9a  
+207.0
+0.0882 0.16200000000000003 6200.0 9.0
+serv4a  serv5b  serv1b  serv2a  serv3b  start  end  
+209.0
+0.144 0.0972 2400.0 8.0
+serv8a  start  end  serv6a  serv7b  serv9a  
+515.0
+0.0756 0.12960000000000002 6300.0 10.0
+serv5b  serv1b  serv4b  serv2a  serv3b  start  end  
+46.0
+0.1512 0.0864 2500.0 12.0
+serv5a  start  end  serv1a  serv4b  serv2a  serv3b  
+169.0
+0.019200000000000005 0.17639999999999997 1200.0 10.0
+serv8a  start  serv6b  end  serv7a  serv9a  
+67.0
+0.0882 0.14400000000000004 2900.0 8.0
+serv5a  serv4a  serv1b  serv2a  serv3b  start  end  
+423.0
+0.03528 0.1134 2500.0 11.0
+serv6b  serv4a  serv5b  serv1b  serv2a  serv3b  start  end  
+175.0
+0.0882 0.16200000000000003 4000.0 9.0
+start  end  serv4a  serv5b  serv1b  serv2a  serv3b  
+349.0
+0.1764 0.108 3400.0 11.0
+serv5a  start  end  serv4a  serv1a  serv2a  serv3b  
+306.0
+0.0882 0.14400000000000004 4200.0 8.0
+serv5a  start  end  serv4a  serv1b  serv2a  serv3b  
+119.0
+0.09 0.1458 2700.0 11.0
+start  end  serv8b  serv6a  serv7b  serv9a  
+131.0
+0.0756 0.12960000000000002 2600.0 10.0
+start  end  serv5b  serv1b  serv4b  serv2a  serv3b  

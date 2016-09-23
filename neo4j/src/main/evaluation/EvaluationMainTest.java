@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import gov.sandia.cognition.statistics.method.WilcoxonSignedRankConfidence;
 import jsc.datastructures.PairedData;
+import jsc.independentsamples.TwoSampleTtest;
+import jsc.onesample.WilcoxonMedianCI;
 import jsc.onesample.WilcoxonTest;
 import jsc.tests.H1;
 public class EvaluationMainTest {
@@ -36,21 +38,30 @@ public class EvaluationMainTest {
 
 			}
 			System.out.println();
-			PairedData pData = new PairedData(evalQos, neo4jQos);  
-			double pValue = 0.0;
-			if(evalQos.length>=500){  
-//				if (less) {   
-//					pValue = new WilcoxonTest(pData, H1.LESS_THAN).approxSP();  
-//				}else {  
-					pValue = new WilcoxonTest(pData).approxSP();  
-//				}  
-			}else {   
-//				if (less) {
-//					pValue = new WilcoxonTest(pData, H1.LESS_THAN).exactSP();  
-//				}else {  
-					pValue = new WilcoxonTest(pData).exactSP();  
-//				}  
-			}  
+//			PairedData pData = new PairedData(evalQos, neo4jQos);  
+//			double pValue = 0.0;
+//			if(evalQos.length>=500){  
+////				if (less) {   
+////					pValue = new WilcoxonTest(pData, H1.LESS_THAN).approxSP();  
+////				}else {  
+//					pValue = new WilcoxonTest(pData).approxSP();  
+////				}  
+//			}else {   
+////				if (less) {
+////					pValue = new WilcoxonTest(pData, H1.LESS_THAN).exactSP();  
+////				}else {  
+//					pValue = new WilcoxonTest(pData).exactSP();  
+////				}  
+//					WilcoxonTest WilcoxonTest = new WilcoxonTest(pData);
+////					TwoSampleTtest(double[] xA,
+////		                      double[] xB,
+////		                      H1 alternative,
+////		                      boolean sameVar,
+////		                      double confidenceCoeff)
+//					
+//			}  
+			TwoSampleTtest TwoSampleTtest = new TwoSampleTtest(evalQos, neo4jQos, H1.GREATER_THAN, false, 0.95);
+			double pValue = TwoSampleTtest.getSP();
 			System.out.println();
 			System.out.println("File name: "+results.getKey()+"  P value: "+pValue);
 			System.out.println();

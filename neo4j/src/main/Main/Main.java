@@ -44,6 +44,7 @@ public class Main implements Runnable{
 	private boolean running = true;
 	private Map<String,Long>records = new HashMap<String,Long>();
 	private Map<Integer, Map<String,String>> bestResults = new HashMap<Integer, Map<String, String>>();
+	private Map<Integer, Double> bestResultsTimes = new HashMap<Integer,Double>();
 	private Map<String, Node> neo4jServNodes = new HashMap<String, Node>();;
 
 	private static GraphDatabaseService graphDatabaseService = null;
@@ -65,8 +66,8 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final String year = "2008";
-	private final String dataSet = "01";
-	private final int individuleNodeSize = 12;
+	private final String dataSet = "07";
+	private final int individuleNodeSize = 22;
 	private final int candidateSize = 50;
 	private final boolean runQosDataset = true;
 	private final boolean runMultipileTime = true;
@@ -384,9 +385,36 @@ public class Main implements Runnable{
 			System.out.println();
 			System.out.println();
 			System.out.println();
+			startTime = System.currentTimeMillis();
+			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
+				try {
+					FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
+				generateDatabase2.createDbService();
+				GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
+				registerShutdownHook(graphDatabaseService,"original test");
+				generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
+				generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
+				generateDatabase2.createServicesDatabase();
+				System.out.println("findCompositions.getBestRels()"+bestRels);
+				generateDatabase2.set(bestRels);
+				generateDatabase2.addServiceNodeRelationShip();
+
+				registerShutdownHook(subGraphDatabaseService,"Reduced");
+				registerShutdownHook(newGraphDatabaseService, "Result");
+
+			}
+
+			endTime = System.currentTimeMillis();
+			neo4jwsc.records.put("create new result graph db ", endTime - startTime);
+			System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
+
 
 		}
-		else{
+		else {
 			int count  = 0;
 			while(count <neo4jwsc.timesToRun){
 
@@ -455,6 +483,7 @@ public class Main implements Runnable{
 					tx.close();
 				}	
 				endTime = System.currentTimeMillis();
+				neo4jwsc.bestResultsTimes.put(count, (double) (endTime - startTime));
 				neo4jwsc.records.put("generate best result", endTime - startTime);
 				System.out.println();
 				System.out.println("generate best result Total execution time: " + (endTime - startTime) );
@@ -463,44 +492,33 @@ public class Main implements Runnable{
 				System.out.println();
 				count++;
 			}
-			FileWriter fw = new FileWriter("evaluationNeo4jResults/"+neo4jwsc.year+"-dataset"+neo4jwsc.dataSet+".stat");
-			for(Entry<Integer,Map<String, String>> entry : neo4jwsc.bestResults.entrySet()){
-				for(Entry<String,String> entry2: entry.getValue().entrySet()){
-					fw.write(entry2.getKey()+ "\n");
-					fw.write(entry2.getValue()+ "\n");
+			if(neo4jwsc.runTestFiles){
+				FileWriter fw = new FileWriter("test-dataset-bestResults.stat");
+				for(Entry<Integer,Map<String, String>> entry : neo4jwsc.bestResults.entrySet()){
+					for(Entry<String,String> entry2: entry.getValue().entrySet()){
+						fw.write(neo4jwsc.bestResultsTimes.get(entry.getKey())+"\n");
+						fw.write(entry2.getKey()+ "\n");
+						fw.write(entry2.getValue()+ "\n");
+					}
+					
 				}
-				
+				fw.close();
 			}
-			fw.close();
+			else{
+				FileWriter fw = new FileWriter("evaluationNeo4jResults/"+neo4jwsc.year+"-dataset"+neo4jwsc.dataSet+".stat");
+				for(Entry<Integer,Map<String, String>> entry : neo4jwsc.bestResults.entrySet()){
+					for(Entry<String,String> entry2: entry.getValue().entrySet()){
+						fw.write(neo4jwsc.bestResultsTimes.get(entry.getKey())+"\n");
+						fw.write(entry2.getKey()+ "\n");
+						fw.write(entry2.getValue()+ "\n");
+					}
+					
+				}
+				fw.close();
+			}
 		}
 		//
-		//		startTime = System.currentTimeMillis();
-		//		for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
-		//			try {
-		//				FileUtils.deleteRecursively(new File(neo4jwsc.newResultDBPath));
-		//			} catch (IOException e) {
-		//				e.printStackTrace();
-		//			}
-		//			GenerateDatabase generateDatabase2 = new GenerateDatabase(entry.getKey(), subGraphDatabaseService, neo4jwsc.newResultDBPath);
-		//			generateDatabase2.createDbService();
-		//			GraphDatabaseService newGraphDatabaseService = generateDatabase2.getGraphDatabaseService();
-		//			registerShutdownHook(graphDatabaseService,"original test");
-		//			generateDatabase2.setServiceMap(neo4jwsc.serviceMap);
-		//			generateDatabase2.setTaxonomyMap(neo4jwsc.taxonomyMap);
-		//			generateDatabase2.createServicesDatabase();
-		//			System.out.println("findCompositions.getBestRels()"+bestRels);
-		//			generateDatabase2.set(bestRels);
-		//			generateDatabase2.addServiceNodeRelationShip();
-		//			
-		//			registerShutdownHook(subGraphDatabaseService,"Reduced");
-		//			registerShutdownHook(newGraphDatabaseService, "Result");
-		//
-		//		}
-		//
-		//		endTime = System.currentTimeMillis();
-		//		neo4jwsc.records.put("create new result graph db ", endTime - startTime);
-		//		System.out.println("create new result graph db Total execution time: " + (endTime - startTime) );
-		//		
+
 
 		//		LoadGraphEvalFiles loadGraphEvalFiles = new LoadGraphEvalFiles();
 		//		Map<List<String>, List<Double>>graphEvalResult = loadGraphEvalFiles.getEvalResults();

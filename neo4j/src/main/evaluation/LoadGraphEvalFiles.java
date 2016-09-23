@@ -50,18 +50,28 @@ public class LoadGraphEvalFiles {
         File dataset = new File("evaluationGraphEvalResults/"+datasetDirName+".stat");
         datasetWriter = new PrintWriter(dataset);
 		 for(int j = 0; j<bufferedReaders.size(); j++){
-
+			 double totalTimeCostForEachBestResult = 0.0;
 			 int i = 0;
 			 String textQos = "";
 			 while(i<50){
-				 textQos = bufferedReaders.get(j).readLine();
+				 String candidateInfo = bufferedReaders.get(j).readLine();
+				 String[] candidateInfoAsArray = candidateInfo.split(" ");
+				 totalTimeCostForEachBestResult += Double.parseDouble(candidateInfoAsArray[1]);
+				 totalTimeCostForEachBestResult += Double.parseDouble(candidateInfoAsArray[2]);
+
 	             i++;
 			 }
 			 textQos = bufferedReaders.get(j).readLine();
+			 
              System.out.println(j+"  "+textQos);
 			 List<Double> qos = new ArrayList<Double>();
              String[] arrQos = textQos.split(" ");
+             if(i==50){
+				 totalTimeCostForEachBestResult += Double.parseDouble(arrQos[1]);
+				 totalTimeCostForEachBestResult += Double.parseDouble(arrQos[2]);
+			 }
              int index = 0;
+             datasetWriter.append(totalTimeCostForEachBestResult+"\n");
              for (int l = arrQos.length-4; l < arrQos.length; l++) {
             	    if(l!=arrQos.length-1){
             	    	datasetWriter.append(arrQos[l]+"   ");
