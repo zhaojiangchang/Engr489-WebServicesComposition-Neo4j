@@ -186,6 +186,7 @@ public class FindCompositions {
 
 				Map<String,Double> normalized = new HashMap<String,Double>();
 				normalized.put("A", normalize(totalA, "A"));
+				
 				normalized.put("R", normalize(totalR, "R"));
 				normalized.put("C", normalize(totalC, "C"));
 				normalized.put("T", normalize(entry.getValue(),"T"));
