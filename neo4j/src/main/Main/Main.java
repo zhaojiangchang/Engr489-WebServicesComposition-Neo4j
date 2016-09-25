@@ -107,7 +107,8 @@ public class Main implements Runnable{
 		neo4jwsc.records.put("Load files", endTime - startTime);
 		System.out.println("Load files Total execution time: " + (endTime - startTime) );
 
-
+		
+		//populateTaxonomytree
 		startTime = System.currentTimeMillis();
 		populateTaxonomytree();		
 		endTime = System.currentTimeMillis();
@@ -158,30 +159,32 @@ public class Main implements Runnable{
 
 			path = Neo4j_testServicesDBPath;
 		}
+		
+		
 
 		//run task
 		//1: copy database and call->tempServiceDatabase
 		//2: connect to tempServiceDatabase
 		//3: use task inputs outputs create start and end nodes and link to tempservicedatabase
-
 		startTime = System.currentTimeMillis();
 		runTask(path);
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("run task: copied db, create temp db, add start and end nodes", endTime - startTime);
 		System.out.println("run task: copied db, create temp db, add start and end nodes Total execution time: " + (endTime - startTime) );
 
+		
+		
 		//reduce database use copied database
-
 		startTime = System.currentTimeMillis();
 		reduceDB();
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("reduce graph db ", endTime - startTime);
 		System.out.println("reduce graph db Total execution time: " + (endTime - startTime) );
 
+		
+		
 		if(!neo4jwsc.runMultipileTime){
-
 			//find compositions
-
 			startTime = System.currentTimeMillis();
 			Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos =findCompositions();			
 			endTime = System.currentTimeMillis();
@@ -201,8 +204,10 @@ public class Main implements Runnable{
 			System.out.println();
 			System.out.println();
 			System.out.println();
+			
+			
+			
 			startTime = System.currentTimeMillis();
-
 			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
 				try {
 					FileUtils.deleteRecursively(new File(newResultDBPath));
@@ -234,9 +239,7 @@ public class Main implements Runnable{
 		else {
 			int count  = 0;
 			while(count <neo4jwsc.timesToRun){
-
 				//find compositions
-
 				startTime = System.currentTimeMillis();
 				FindCompositions findCompositions = new FindCompositions(candidateSize, individuleNodeSize, subGraphDatabaseService);
 				findCompositions.setStartNode(startNode);

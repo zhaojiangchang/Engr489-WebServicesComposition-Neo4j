@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problemStructure>
+	<task>
+		<provided>
+			<instance name="C_inst" />
+			
+		</provided>
+		<wanted>
+			<instance name="O_inst" />
+						<instance name="Q_inst" />
+		
+		</wanted>
+	</task>
+	<solutions />
+</problemStructure>
