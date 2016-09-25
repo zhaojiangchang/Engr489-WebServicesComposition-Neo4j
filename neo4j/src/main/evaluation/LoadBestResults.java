@@ -43,9 +43,9 @@ public class LoadBestResults {
 		Map<String, BufferedReader>bufferedReadersGraphEval = loadFiles("evaluationGraphEvalResults");
 		Map<String, BufferedReader>bufferedReadersNeo4j = loadFiles("evaluationNeo4jResults");
 
-		graphEvalResultsByDataset = readFiles(bufferedReadersGraphEval);
+		graphEvalResultsByDataset = readFiles("graphEval",bufferedReadersGraphEval);
 		
-		neo4jResultsByDataset = readFiles(bufferedReadersNeo4j);
+		neo4jResultsByDataset = readFiles("neo4j",bufferedReadersNeo4j);
 
 	}
 	public Map<String,List<Individule>> getEvalResults(){
@@ -54,11 +54,41 @@ public class LoadBestResults {
 	public Map<String,List<Individule>> getNeo4jResults(){
 		return neo4jResultsByDataset;
 	}
-	private Map<String,List<Individule>> readFiles(Map<String, BufferedReader> bufferedReaders ) throws IOException {
+	private Map<String,List<Individule>> readFiles(String id, Map<String, BufferedReader> bufferedReaders ) throws IOException {
 		Map<String,List<Individule>> resultByDataset = new HashMap<String, List<Individule>>();
 
 		//		for(int j = 0; j<bufferedReaders.size(); j++){
 		for(Map.Entry<String, BufferedReader> bfWithFileName:bufferedReaders.entrySet()){
+			long averagePreprocessTimeRunForEachDatabase = 0;
+			long total = 0;
+			if(id.equals("neo4j")){
+				File file = new File("preprocessTimeRunForEachDataset/"+bfWithFileName.getKey());
+		        BufferedReader reader = null;
+		        try {
+
+		            reader = new BufferedReader(new FileReader(file));
+		            String tempString = null;
+		            int line = 1;
+
+		            while ((tempString = reader.readLine()) != null) {
+		                String[] timeAsArray = tempString.trim().split("\\s+");
+		                total += Double.parseDouble(timeAsArray[1]);
+		                line++;
+		            }
+		            averagePreprocessTimeRunForEachDatabase = total/line;
+		            System.out.println("preprocess time for "+ bfWithFileName.getKey()+":  "+averagePreprocessTimeRunForEachDatabase);
+		            reader.close();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        } finally {
+		            if (reader != null) {
+		                try {
+		                    reader.close();
+		                } catch (IOException e1) {
+		                }
+		            }
+		        }
+			}
 			String fileName = bfWithFileName.getKey();
 			BufferedReader fb = bfWithFileName.getValue();
 			List<Individule> results = new ArrayList<Individule>();
@@ -70,6 +100,9 @@ public class LoadBestResults {
 				}   
 				String[] timeAsArray = time.trim().split("\\s+");
 				runningTime = Double.parseDouble(timeAsArray[0]);
+				if(id.equals("neo4j")){
+					runningTime = runningTime +averagePreprocessTimeRunForEachDatabase;
+				}
 				String qosString = fb.readLine();
 				if(qosString == null){
 					break;
