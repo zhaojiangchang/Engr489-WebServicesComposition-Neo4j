@@ -161,7 +161,7 @@ public class CalculatePreprocessingTime implements Runnable{
 					e1.printStackTrace();
 				} // do nothing for 1000 miliseconds (1 second)
 			}
-			FileWriter fw = new FileWriter("preprocessTimeRunForEachDataset/"+year+"-dataset"+dataSet+".stat");
+			FileWriter fw = new FileWriter("preprocessNeo4jTimeRunForEachDataset/"+year+"-dataset"+dataSet+".stat");
 			for(Entry<Integer, Long> entry : preprocessTimes.entrySet()){
 				fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
 

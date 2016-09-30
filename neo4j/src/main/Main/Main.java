@@ -64,17 +64,17 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "01";
-	private final static int individuleNodeSize = 12;
+	private final static String dataSet = "08";
+	private final static int individuleNodeSize = 32;
 	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = false;
+	private final boolean runMultipileTime = true;
 	private final int timesToRun = 30;
 
-	private final static double m_a = 0.1;
-	private final static double m_r = 0.05;
-	private final static double m_c = 0.05;
-	private final static double m_t = 0.8;
+	private final static double m_a = 0.25;
+	private final static double m_r = 0.25;
+	private final static double m_c = 0.25;
+	private final static double m_t = 0.25;
 
 	//******************************************************//
 

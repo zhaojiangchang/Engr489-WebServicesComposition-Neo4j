@@ -8,7 +8,6 @@ import jsc.tests.H1;
 public class EvaluationMain {
 
 	public EvaluationMain(){
-		new LoadBestResults();
 		LoadBestResults lb = new LoadBestResults();
 		Map<String,List<Individule>> graphEvalResultsByDataset = lb.getEvalResults();
 		Map<String,List<Individule>> neo4jResultsByDataset = lb.getNeo4jResults();
@@ -62,6 +61,7 @@ public class EvaluationMain {
 	private static void calculatePValues(NormalizeQos normalizeQos) {
 		System.out.println("calculate pValue: ");
 		for(Map.Entry<String, List<Double>> results: normalizeQos.graphEvalFitnessValues.entrySet()){	
+			System.out.println( "\t File name: "+results.getKey());
 
 			double[]evalQos = new double[results.getValue().size()];
 			System.out.println();
@@ -81,10 +81,19 @@ public class EvaluationMain {
 
 			}
 			System.out.println();
-			TwoSampleTtest TwoSampleTtest = new TwoSampleTtest(evalQos, neo4jQos, H1.GREATER_THAN, false, 0.95);
-			double pValue = TwoSampleTtest.getSP();
+			TwoSampleTtest TwoSampleTtest = new TwoSampleTtest(evalQos, neo4jQos, H1.NOT_EQUAL, false, 0.95);
 			System.out.println();
-			System.out.println( "\t File name: "+results.getKey()+"  P value: "+pValue);
+			System.out.println( "\t P value (Not Equal): "+TwoSampleTtest.getSP());
+			System.out.println( "\t T value (Not Equal): "+TwoSampleTtest.getTestStatistic());
+			System.out.println( "\t Mean Eval: "+TwoSampleTtest.getMeanA());
+			System.out.println( "\t Mean Neo4j: "+TwoSampleTtest.getMeanB());
+			System.out.println( "\t SD Eval: "+TwoSampleTtest.getSdA());
+			System.out.println( "\t SD Neo4j: "+TwoSampleTtest.getSdB());
+			System.out.println( "\t MeanDiff: "+TwoSampleTtest.getMeanDiff());
+			
+
+			System.out.println();
+			System.out.println();
 			System.out.println();
 			System.out.println();		
 		}

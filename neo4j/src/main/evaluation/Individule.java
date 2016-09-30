@@ -11,10 +11,10 @@ public class Individule {
 	double fitnessValue = 0.00;
 	double runningTime = 0.0;
 	List<String>services = new ArrayList<String>();
-	private final double m_a = 0.1;
-	private final double m_r = 0.05;
-	private final double m_c = 0.05;
-	private final double m_t = 0.8;
+	private final double m_a = 0.25;
+	private final double m_r = 0.25;
+	private final double m_c = 0.25;
+	private final double m_t = 0.25;
 	public Individule(Map<String, Double> qos, List<String>services, double runningTime){
 		this.qos = qos;
 		this.services = services;

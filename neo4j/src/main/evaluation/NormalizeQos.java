@@ -188,7 +188,11 @@ public class NormalizeQos {
 			minMax.put("maxC", maxC);
 			minMax.put("minT", minT);
 			minMax.put("maxT", maxT);
+			
+			System.out.println("Dataset: "+bestResultWithFileName.getKey());
+			System.out.println("minA: "+minA+" maxA: "+maxA+" minR: "+minR+" maxR: "+maxR+" minC:  "+minC+" maxC:  "+maxC+" minT:  "+minT+" maxT:  "+maxT);
 			minMaxQosWithFileNames.put(bestResultWithFileName.getKey(),minMax);
+			System.out.println();
 		}
 	}
 	public Map<String, List<Double>> getGraphEvalFitnessValues() {

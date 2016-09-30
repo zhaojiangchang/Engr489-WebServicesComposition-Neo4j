@@ -62,7 +62,7 @@ public class LoadBestResults {
 			long averagePreprocessTimeRunForEachDatabase = 0;
 			long total = 0;
 			if(id.equals("neo4j")){
-				File file = new File("preprocessTimeRunForEachDataset/"+bfWithFileName.getKey());
+				File file = new File("preprocessNeo4jTimeRunForEachDataset/"+bfWithFileName.getKey());
 		        BufferedReader reader = null;
 		        try {
 
