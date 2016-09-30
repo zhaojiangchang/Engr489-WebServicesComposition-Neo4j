@@ -164,7 +164,7 @@ public class GenerateDatabase {
 						relation.setProperty("weightCost", 0);
 						relation.setProperty("weightAvailibility", 0);
 						relation.setProperty("weightReliability", 0);
-
+						relation.setProperty("removeable", false);
 					}
 					else{
 						if(!inputsServicesNode.getProperty("name").equals(sNode.getProperty("name"))){
@@ -178,6 +178,8 @@ public class GenerateDatabase {
 							relation.setProperty("weightCost", serviceNode.getQos()[COST]);
 							relation.setProperty("weightAvailibility", serviceNode.getQos()[AVAILABILITY]);
 							relation.setProperty("weightReliability", serviceNode.getQos()[RELIABILITY]);
+							relation.setProperty("removeable", false);
+
 						}
 					}
 				}

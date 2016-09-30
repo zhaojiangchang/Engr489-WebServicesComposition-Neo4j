@@ -3,6 +3,8 @@ package Main;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -64,11 +68,11 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "08";
-	private final static int individuleNodeSize = 32;
-	private final static int candidateSize = 50;
+	private final static String dataSet = "01";
+	private final static int individuleNodeSize = 30;
+	private final static int candidateSize = 2;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = true;
+	private final boolean runMultipileTime = false;
 	private final int timesToRun = 30;
 
 	private final static double m_a = 0.25;
@@ -107,7 +111,7 @@ public class Main implements Runnable{
 		neo4jwsc.records.put("Load files", endTime - startTime);
 		System.out.println("Load files Total execution time: " + (endTime - startTime) );
 
-		
+
 		//populateTaxonomytree
 		startTime = System.currentTimeMillis();
 		populateTaxonomytree();		
@@ -137,7 +141,7 @@ public class Main implements Runnable{
 			}else{
 
 				startTime = System.currentTimeMillis();
-				generateDB(null,Neo4j_ServicesDBPath,"original",databaseName);			
+				neo4jwsc.generateDB(null,Neo4j_ServicesDBPath,"original",databaseName);			
 				endTime = System.currentTimeMillis();
 				neo4jwsc.records.put("Create new db", endTime - startTime);
 				System.out.println("Create new db Total execution time: " + (endTime - startTime) );
@@ -152,15 +156,15 @@ public class Main implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			generateDB(null,Neo4j_testServicesDBPath,"original test", null);						
+			neo4jwsc.generateDB(null,Neo4j_testServicesDBPath,"original test", null);						
 			endTime = System.currentTimeMillis();
 			neo4jwsc.records.put("Create new test db", endTime - startTime);
 			System.out.println("Create new test db Total execution time: " + (endTime - startTime) );
 
 			path = Neo4j_testServicesDBPath;
 		}
-		
-		
+
+
 
 		//run task
 		//1: copy database and call->tempServiceDatabase
@@ -172,8 +176,8 @@ public class Main implements Runnable{
 		neo4jwsc.records.put("run task: copied db, create temp db, add start and end nodes", endTime - startTime);
 		System.out.println("run task: copied db, create temp db, add start and end nodes Total execution time: " + (endTime - startTime) );
 
-		
-		
+
+
 		//reduce database use copied database
 		startTime = System.currentTimeMillis();
 		reduceDB();
@@ -181,8 +185,8 @@ public class Main implements Runnable{
 		neo4jwsc.records.put("reduce graph db ", endTime - startTime);
 		System.out.println("reduce graph db Total execution time: " + (endTime - startTime) );
 
-		
-		
+
+
 		if(!neo4jwsc.runMultipileTime){
 			//find compositions
 			startTime = System.currentTimeMillis();
@@ -204,9 +208,9 @@ public class Main implements Runnable{
 			System.out.println();
 			System.out.println();
 			System.out.println();
-			
-			
-			
+
+
+
 			startTime = System.currentTimeMillis();
 			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
 				try {
@@ -225,6 +229,7 @@ public class Main implements Runnable{
 				//				System.out.println("findCompositions.getBestRels()"+bestRels);
 				//				generateDatabase2.set(bestRels);
 				generateDatabase2.addServiceNodeRelationShip();
+				removeRedundantRel(newGraphDatabaseService);
 
 				registerShutdownHook(subGraphDatabaseService,"Reduced");
 				registerShutdownHook(newGraphDatabaseService, "Result");
@@ -487,7 +492,7 @@ public class Main implements Runnable{
 	}
 
 
-	private static void generateDB(List<Node> nodes, String dbpath, String string, String databaseName) {
+	private void generateDB(List<Node> nodes, String dbpath, String string, String databaseName) {
 
 		String path = "";
 		if(databaseName == null){
@@ -518,6 +523,110 @@ public class Main implements Runnable{
 		}			
 	}
 
+
+	private static void removeRedundantRel(GraphDatabaseService graphDatabaseService) {
+		List<Relationship>toRemove = new ArrayList<Relationship>();
+		Transaction transaction = graphDatabaseService.beginTx();
+		try{
+			Iterable<Node> nodes = graphDatabaseService.getAllNodes();
+			for(Node node: nodes){
+				if(!node.getProperty("name").equals("start")){
+					Iterable<Relationship> rels = node.getRelationships(Direction.INCOMING);
+					for(Relationship r: rels){
+						Transaction tt = graphDatabaseService.beginTx();
+						r.setProperty("removeable", true);
+						System.out.println("set: "+node.getProperty("name")+"  removeable to true");
+
+						tt.success();
+						tt.close();
+						if(isAllNodesFulfilled(node, nodes,graphDatabaseService)){
+//							Transaction t = graphDatabaseService.beginTx();
+//							r.delete();
+//							System.out.println("eeee: "+r.getId());
+//							t.success();
+//							t.close();
+							toRemove.add(r);
+
+						}else{
+							Transaction ttt = graphDatabaseService.beginTx();
+							System.out.println("set: "+node.getProperty("name")+"  removeable to false");
+							r.setProperty("removeable", false);
+							ttt.success();
+							ttt.close();
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Main removeRedundantRel"); 
+		} finally {
+			transaction.close();
+		}			
+		for(Relationship r: toRemove){
+			Transaction t = graphDatabaseService.beginTx();
+			System.out.println("remove: "+r.getId());
+			r.delete();
+			t.success();
+			t.close();
+		}
+	}
+
+
+	private static boolean isAllNodesFulfilled(Node node, Iterable<Node> nodes, GraphDatabaseService graphDatabaseService) {
+		Transaction transaction = graphDatabaseService.beginTx();
+		System.out.println(node.getProperty("name"));
+		Set<String> inputs = new HashSet<String>();
+		Set<String> nodeInputs = new HashSet<String>();
+		nodeInputs.addAll(Arrays.asList(getNodePropertyArray(node,"inputs")));
+
+		Iterable<Relationship> rels = node.getRelationships(Direction.INCOMING);
+		for(Relationship r: rels){
+			System.out.println(r.getId());
+			System.out.println(r.getProperty("removeable"));
+			if(!(boolean) r.getProperty("removeable")){
+				inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r, "outputs")));
+			}
+		}
+		for(Node n: nodes){
+			if(!n.getProperty("name").equals("start") &&!n.getProperty("name").equals("end") ){
+				Iterable<Relationship> relationships = n.getRelationships(Direction.OUTGOING);
+				int i = 0;
+				for(Relationship r: relationships){
+					if(!(boolean) r.getProperty("removeable"))
+						i++;
+				}
+				if(i==0){
+					transaction.close();
+					//node not start node
+					//node has no output relationship
+					return false;
+				}
+			}
+
+		}
+		if(equalLists(inputs, nodeInputs)){
+			transaction.close();
+			return true;
+		}
+		return false;
+
+	}
+	public static boolean equalLists(Set<String> one, Set<String> two){     
+
+		List<String>one1 = new ArrayList<String>(one); 
+		List<String>two2 = new ArrayList<String>(two);  
+		List<String>one11 = new ArrayList<String>(one); 
+		List<String>two22 = new ArrayList<String>(two);
+		one1.retainAll(two2);
+		two22.retainAll(one11);
+
+		if (one1.size()>0 && two22.size()>0 && two22.size()==two.size() && one1.size()==one.size() && one11.size()>0 && two2.size()>0){
+			return true;
+		}
+		else return false;
+	}
 
 	@SuppressWarnings("deprecation")
 	private static void loadExistingDB() {
@@ -595,4 +704,51 @@ public class Main implements Runnable{
 			}  
 		} );  
 	}  
+	private static String[] getNodeRelationshipPropertyArray(Relationship relationship, String property){
+		Object obj =relationship.getProperty(property);
+		//    		//remove the "[" and "]" from string
+		String string = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
+		String[] tempOutputs = string.split("\\s*,\\s*");
+		String[] array = new String[0];
+		for(String s: tempOutputs){
+			if(s.length()>0){
+				array =increaseArray(array);
+				array[array.length-1] = s;
+			}
+		}
+		return array;
+	}
+	private static String[] getNodePropertyArray(Node sNode, String property){
+		Object obj =sNode.getProperty(property);
+		//    		//remove the "[" and "]" from string
+		String[] array = new String[0];
+
+		String ips = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
+		String[] tempInputs = ips.split("\\s*,\\s*");
+
+		for(String s: tempInputs){
+			if(s.length()>0){
+				array =increaseArray(array);
+				array[array.length-1] = s;
+			}
+		}
+		return array;
+	}
+	private static String[] increaseArray(String[] theArray)
+	{
+		int i = theArray.length;
+		int n = ++i;
+		String[] newArray = new String[n];
+		if(theArray.length==0){
+			return new String[1];
+		}
+		else{
+			for(int cnt=0;cnt<theArray.length;cnt++)
+			{
+				newArray[cnt] = theArray[cnt];
+			}
+		}
+
+		return newArray;
+	}
 }
