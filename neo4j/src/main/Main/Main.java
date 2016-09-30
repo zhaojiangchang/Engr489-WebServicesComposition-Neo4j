@@ -64,17 +64,17 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "01";
-	private final static int individuleNodeSize = 12;
+	private final static String dataSet = "08";
+	private final static int individuleNodeSize = 32;
 	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = false;
+	private final boolean runMultipileTime = true;
 	private final int timesToRun = 30;
 
-	private final static double m_a = 0.1;
-	private final static double m_r = 0.05;
-	private final static double m_c = 0.05;
-	private final static double m_t = 0.8;
+	private final static double m_a = 0.25;
+	private final static double m_r = 0.25;
+	private final static double m_c = 0.25;
+	private final static double m_t = 0.25;
 
 	//******************************************************//
 
@@ -107,7 +107,8 @@ public class Main implements Runnable{
 		neo4jwsc.records.put("Load files", endTime - startTime);
 		System.out.println("Load files Total execution time: " + (endTime - startTime) );
 
-
+		
+		//populateTaxonomytree
 		startTime = System.currentTimeMillis();
 		populateTaxonomytree();		
 		endTime = System.currentTimeMillis();
@@ -158,30 +159,32 @@ public class Main implements Runnable{
 
 			path = Neo4j_testServicesDBPath;
 		}
+		
+		
 
 		//run task
 		//1: copy database and call->tempServiceDatabase
 		//2: connect to tempServiceDatabase
 		//3: use task inputs outputs create start and end nodes and link to tempservicedatabase
-
 		startTime = System.currentTimeMillis();
 		runTask(path);
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("run task: copied db, create temp db, add start and end nodes", endTime - startTime);
 		System.out.println("run task: copied db, create temp db, add start and end nodes Total execution time: " + (endTime - startTime) );
 
+		
+		
 		//reduce database use copied database
-
 		startTime = System.currentTimeMillis();
 		reduceDB();
 		endTime = System.currentTimeMillis();
 		neo4jwsc.records.put("reduce graph db ", endTime - startTime);
 		System.out.println("reduce graph db Total execution time: " + (endTime - startTime) );
 
+		
+		
 		if(!neo4jwsc.runMultipileTime){
-
 			//find compositions
-
 			startTime = System.currentTimeMillis();
 			Map<List<Node>, Map<String,Map<String, Double>>> resultWithQos =findCompositions();			
 			endTime = System.currentTimeMillis();
@@ -201,8 +204,10 @@ public class Main implements Runnable{
 			System.out.println();
 			System.out.println();
 			System.out.println();
+			
+			
+			
 			startTime = System.currentTimeMillis();
-
 			for (Map.Entry<List<Node>, Map<String,Map<String, Double>>> entry : resultWithQos.entrySet()){
 				try {
 					FileUtils.deleteRecursively(new File(newResultDBPath));
@@ -234,9 +239,7 @@ public class Main implements Runnable{
 		else {
 			int count  = 0;
 			while(count <neo4jwsc.timesToRun){
-
 				//find compositions
-
 				startTime = System.currentTimeMillis();
 				FindCompositions findCompositions = new FindCompositions(candidateSize, individuleNodeSize, subGraphDatabaseService);
 				findCompositions.setStartNode(startNode);

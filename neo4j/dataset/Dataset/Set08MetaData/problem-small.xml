@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problemStructure>
+	<task>
+		<provided>
+			<instance name="inst507612613"/>
+			<instance name="inst211649568"/>
+			<instance name="inst1610541870"/>
+			<instance name="inst1318470020"/>
+			<instance name="inst511297711"/>
+		</provided>
+		<wanted>
+			<instance name="inst1509977643"/>
+			<instance name="inst1592715767"/>
+			<instance name="inst1684683524"/>
+			<instance name="inst2088374857"/>
+		</wanted>
+	</task>
+	<solutions>
+		<solution>
+			<parallel>
+				<sequence>
+					<parallel>
+						<serviceDesc>
+							<abstraction>
+								<input>
+									<concept name="con2019760850"/>
+									<concept name="con281081801"/>
+									<concept name="con1129431795"/>
+									<concept name="con1874338062"/>
+									<concept name="con813604537"/>
+								</input>
+								<output>
+									<concept name="con1081708454"/>
+								</output>
+							</abstraction>
+							<realizations>
+								<service name="serv421174633"/>
+								<service name="serv1875974476"/>
+								<service name="serv1183290652"/>
+								<service name="serv490606866"/>
+								<service name="serv1945406709"/>
+							</realizations>
+						</serviceDesc>
+						<serviceDesc>
+							<abstraction>
+								<input>
+									<concept name="con2019760850"/>
+									<concept name="con281081801"/>
+									<concept name="con1129431795"/>
+									<concept name="con1874338062"/>
+									<concept name="con813604537"/>
+								</input>
+								<output>
+									<concept name="con1871881330"/>
+									<concept name="con1822313310"/>
+								</output>
+							</abstraction>
+							<realizations>
+								<service name="serv1252722885"/>
+							</realizations>
+						</serviceDesc>
+					</parallel>
+					<serviceDesc>
+						<abstraction>
+							<input>
+								<concept name="con1871881330"/>
+								<concept name="con1822313310"/>
+								<concept name="con1081708454"/>
+							</input>
+							<output>
+								<concept name="con698499739"/>
+								<concept name="con1311920142"/>
+								<concept name="con1501578902"/>
+							</output>
+						</abstraction>
+						<realizations>
+							<service name="serv560039099"/>
+							<service name="serv2014838942"/>
+						</realizations>
+					</serviceDesc>
+				</parallel>
+				<parallel>
+					<sequence>
+					</abstraction>
+					<realizations>
+						<service name="serv981548053"/>
+						<service name="serv288864267"/>
+					</realizations>
+				</serviceDesc>
+			</sequence>
+		</solution>
+	</solutions>
+</problemStructure>

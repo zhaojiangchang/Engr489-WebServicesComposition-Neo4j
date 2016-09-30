@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- "Res" stands for response time, and it is between 1 and 1000 -->
+<!-- "Pri" stands for price, and it is between 1 and 4 -->
+<!-- All other QoS values are between 0 and 1, and "Lat" is not used -->
+<services>
+	<service name="1" Res="1000" Ava="0.8" Suc="0.8" Rel="0.6"
+		Lat="0" Pri="4">
+		<inputs>
+			<instance name="C_inst" />
+		</inputs>
+		<outputs>
+			<instance name="G_inst" />
+		</outputs>
+	</service>
+	<service name="2" Res="500" Ava="0.5" Suc="0.3" Rel="0.9"
+		Lat="0" Pri="2">
+		<inputs>
+			<instance name="G_inst" />
+		</inputs>
+		<outputs>	
+			<instance name="K_inst" />
+			<instance name="L_inst" />
+						<instance name="C_inst" />
+		</outputs>
+	</service>
+	<service name="3" Res="700" Ava="0.4" Suc="0.6" Rel="0.4"
+		Lat="0" Pri="3">
+		<inputs>
+			<instance name="K_inst" />
+		</inputs>
+		<outputs>
+			<instance name="E_inst" />
+			
+		</outputs>
+	</service>
+	<service name="4" Res="200" Ava="0.7" Suc="0.7" Rel="0.5"
+		Lat="0" Pri="1">
+		<inputs>
+			<instance name="L_inst" />
+			
+		</inputs>
+		<outputs>
+			<instance name="H_inst" />
+						<instance name="T_inst" />
+			
+		</outputs>
+	</service>
+	<service name="5" Res="800" Ava="0.9" Suc="0.5" Rel="0.8"
+		Lat="0" Pri="2">
+		<inputs>
+			<instance name="E_inst" />
+			<instance name="H_inst" />
+			
+		</inputs>
+		<outputs>
+			<instance name="N_inst" />
+			
+		</outputs>
+	</service>
+	<service name="6" Res="900" Ava="0.6" Suc="0.4" Rel="0.3"
+		Lat="0" Pri="3">
+		<inputs>
+			<instance name="N_inst" />
+			
+		</inputs>
+		<outputs>
+			<instance name="O_inst" />
+			
+		</outputs>
+	</service>
+	<service name="7" Res="900" Ava="0.6" Suc="0.4" Rel="0.3"
+		Lat="0" Pri="3">
+		<inputs>
+			<instance name="W_inst" />
+			
+		</inputs>
+		<outputs>
+			<instance name="T_inst" />
+			
+		</outputs>
+	</service>
+<service name="8" Res="900" Ava="0.6" Suc="0.4" Rel="0.3"
+		Lat="0" Pri="3">
+		<inputs>
+			<instance name="T_inst" />
+			
+		</inputs>
+		<outputs>
+			<instance name="Q_inst" />
+			
+		</outputs>
+	</service>
+</services>
