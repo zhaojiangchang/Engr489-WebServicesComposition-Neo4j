@@ -42,7 +42,7 @@ public class ReduceGraphDb {
 	private Map<String,Node>subGraphNodesMap = new HashMap<String,Node>();
 	private Set<Node> relatedNodes;
 	private final String Neo4j_subDBPath = "database/sub_graph";
-	
+
 	public final double minAvailability = 0.0;
 	public double maxAvailability = -1.0;
 	public final double minReliability = 0.0;
@@ -51,7 +51,7 @@ public class ReduceGraphDb {
 	public double maxTime = -1.0;
 	public double minCost = Double.MAX_VALUE;
 	public double maxCost = -1.0;
-	
+
 	private Set<Node>subGraphNodes = new HashSet<Node>();
 	private Relationship relation;
 	private static Map<String, TaxonomyNode> taxonomyMap = new HashMap<String, TaxonomyNode>();
@@ -379,6 +379,7 @@ public class ReduceGraphDb {
 		Transaction transaction = graphDatabaseService.beginTx();
 
 		for(Node sNode: relatedNodes) {
+			
 			//			try{
 			String[] inputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes, "inputServices");				
 			String[] outputServices = getInputOutputServicesForSubGraph(sNode, relatedNodes,"outputServices");
@@ -466,14 +467,15 @@ public class ReduceGraphDb {
 		if (cost < minCost)
 			minCost = cost;
 
-	
-	// Adjust max. cost and max. time based on the number of services in shrunk repository
-//	maxCost *= relatedNodes.size();
-//	maxTime *= subGraphNodes.size();
+
+		// Adjust max. cost and max. time based on the number of services in shrunk repository
+		//	maxCost *= relatedNodes.size();
+		//	maxTime *= subGraphNodes.size();
 	}
 
 	private String[] getInputOutputServicesForSubGraph(Node sNode, Set<Node> releatedNodes, String inputOrOutput) {
 		Transaction tx = subGraphDatabaseService.beginTx();
+		
 		String [] toReturn = null;
 		try{
 			List<String>releatedNodesNames = new ArrayList<String>();

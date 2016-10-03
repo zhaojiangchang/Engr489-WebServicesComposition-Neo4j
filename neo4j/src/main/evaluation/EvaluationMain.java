@@ -1,5 +1,6 @@
 package evaluation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jsc.independentsamples.TwoSampleTtest;
@@ -41,11 +42,17 @@ public class EvaluationMain {
 		System.out.println("  Program: "+string);
 		for(Map.Entry<String, List<Individule>> fileNameWithFitnessValues: map.entrySet() ){
 			System.out.println("  \t "+fileNameWithFitnessValues.getKey());
-			double total = 0.0;
+			List<Double> time= new ArrayList<Double>(); 
+			List<Double> serviceSize = new ArrayList<Double>();
 			for(Individule individule: fileNameWithFitnessValues.getValue()){
-				total += individule.runningTime;
+				time.add(individule.runningTime);
+				serviceSize.add((double)individule.services.size());
 			}
-			System.out.println("  \t File: "+fileNameWithFitnessValues.getKey()+"\t average time: "+ total/fileNameWithFitnessValues.getValue().size());
+			Statistics statisticsTime = new Statistics(time);
+			Statistics statisticsServiceSize = new Statistics(serviceSize);
+
+			System.out.println("  \t File: "+fileNameWithFitnessValues.getKey()+"\t mean time: "+ statisticsTime.getMean()+"    SD: "+statisticsTime.getStdDev());
+			System.out.println("  \t File: "+fileNameWithFitnessValues.getKey()+"\t mean serviceSize: "+ statisticsServiceSize.getMean() +"    SD: "+statisticsServiceSize.getStdDev());
 		}
 		
 	}
@@ -81,7 +88,7 @@ public class EvaluationMain {
 
 			}
 			System.out.println();
-			TwoSampleTtest TwoSampleTtest = new TwoSampleTtest(evalQos, neo4jQos, H1.NOT_EQUAL, false, 0.95);
+			TwoSampleTtest TwoSampleTtest = new TwoSampleTtest(evalQos, neo4jQos, H1.LESS_THAN, false, 0.95);
 			System.out.println();
 			System.out.println( "\t P value (Not Equal): "+TwoSampleTtest.getSP());
 			System.out.println( "\t T value (Not Equal): "+TwoSampleTtest.getTestStatistic());
