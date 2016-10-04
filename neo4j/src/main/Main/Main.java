@@ -68,11 +68,11 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "07";
-	private final static int individuleNodeSize = 22;
+	private final static String dataSet = "01";
+	private final static int individuleNodeSize = 12;
 	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = true;
+	private final boolean runMultipileTime = false;
 	private final int timesToRun = 30;
 
 	private final static double m_a = 0.15;
@@ -536,8 +536,6 @@ public class Main implements Runnable{
 					for(Relationship r: rels){
 						Transaction tt = graphDatabaseService.beginTx();
 						r.setProperty("removeable", true);
-						System.out.println("set: "+node.getProperty("name")+"  removeable to true");
-
 						tt.success();
 						tt.close();
 						if(isAllNodesFulfilled(node, nodes,graphDatabaseService)){
@@ -550,7 +548,6 @@ public class Main implements Runnable{
 
 						}else{
 							Transaction ttt = graphDatabaseService.beginTx();
-							System.out.println("set: "+node.getProperty("name")+"  removeable to false");
 							r.setProperty("removeable", false);
 							ttt.success();
 							ttt.close();
@@ -578,15 +575,12 @@ public class Main implements Runnable{
 	private static boolean isAllNodesFulfilled(Node node, Iterable<Node> nodes, GraphDatabaseService graphDatabaseService) {
 
 		Transaction transaction = graphDatabaseService.beginTx();
-		System.out.println(node.getProperty("name"));
 		Set<String> inputs = new HashSet<String>();
 		Set<String> nodeInputs = new HashSet<String>();
 		nodeInputs.addAll(Arrays.asList(getNodePropertyArray(node,"inputs")));
 
 		Iterable<Relationship> rels = node.getRelationships(Direction.INCOMING);
 		for(Relationship r: rels){
-			System.out.println(r.getId());
-			System.out.println(r.getProperty("removeable"));
 			if(!(boolean) r.getProperty("removeable")){
 				inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r, "outputs")));
 			}
