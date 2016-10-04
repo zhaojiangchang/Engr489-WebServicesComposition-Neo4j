@@ -68,17 +68,17 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "08";
-	private final static int individuleNodeSize = 32;
+	private final static String dataSet = "07";
+	private final static int individuleNodeSize = 22;
 	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = false;
+	private final boolean runMultipileTime = true;
 	private final int timesToRun = 30;
 
-	private final static double m_a = 0.25;
-	private final static double m_r = 0.25;
-	private final static double m_c = 0.25;
-	private final static double m_t = 0.25;
+	private final static double m_a = 0.15;
+	private final static double m_r = 0.05;
+	private final static double m_c = 0.05;
+	private final static double m_t = 0.75;
 
 	//******************************************************//
 
@@ -576,11 +576,7 @@ public class Main implements Runnable{
 
 
 	private static boolean isAllNodesFulfilled(Node node, Iterable<Node> nodes, GraphDatabaseService graphDatabaseService) {
-		if(node.getProperty("name").equals("serv97148379")){
-			Object obj =node.getProperty("inputServices");
-			String ips = Arrays.toString((String[]) obj).substring(1, Arrays.toString((String[]) obj).length()-1);
-			System.out.println(ips);
-		}
+
 		Transaction transaction = graphDatabaseService.beginTx();
 		System.out.println(node.getProperty("name"));
 		Set<String> inputs = new HashSet<String>();
