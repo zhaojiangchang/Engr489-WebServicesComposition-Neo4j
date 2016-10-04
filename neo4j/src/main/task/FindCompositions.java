@@ -98,22 +98,22 @@ public class FindCompositions {
 			}
 			//			composition(endNode,bestResult);
 		}
-		
-//		for(Map.Entry<List<Node>,List<Map<String,String>>> entry4: candidatesWithRels.entrySet()){
-//			boolean contains = true;
-//			for(Node node: entry4.getKey()){
-//				Transaction tx = subGraphDatabaseService.beginTx();
-//				if(!bestNodesMap.containsKey(node.getProperty("name"))){
-//					contains = false;
-//				}
-//				tx.close();
-//			}
-//			if(contains){
-//				bestRels = entry4.getValue();
-//				break;
-//
-//			}
-//		}
+
+		//		for(Map.Entry<List<Node>,List<Map<String,String>>> entry4: candidatesWithRels.entrySet()){
+		//			boolean contains = true;
+		//			for(Node node: entry4.getKey()){
+		//				Transaction tx = subGraphDatabaseService.beginTx();
+		//				if(!bestNodesMap.containsKey(node.getProperty("name"))){
+		//					contains = false;
+		//				}
+		//				tx.close();
+		//			}
+		//			if(contains){
+		//				bestRels = entry4.getValue();
+		//				break;
+		//
+		//			}
+		//		}
 		return bestResultWithQos;
 	}
 	private Map<List<Node>, Map<String,Map<String, Double>>> calculateQos(Map<List<Node>, Double> timeForEachCandidate) {
@@ -177,7 +177,7 @@ public class FindCompositions {
 					totalC+=(double)node.getProperty("weightCost");
 					tx.close();
 				}
-//				System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
+				//				System.out.println("A: "+totalA +"   R: "+ totalR  +"   T: "+ entry.getValue()+"   C: "+ totalC);
 				Map<String,Double> non_normalized = new HashMap<String,Double>();
 				non_normalized.put("A", totalA);
 				non_normalized.put("R", totalR);
@@ -186,7 +186,7 @@ public class FindCompositions {
 
 				Map<String,Double> normalized = new HashMap<String,Double>();
 				normalized.put("A", normalize(totalA, "A"));
-				
+
 				normalized.put("R", normalize(totalR, "R"));
 				normalized.put("C", normalize(totalC, "C"));
 				normalized.put("T", normalize(entry.getValue(),"T"));
@@ -236,12 +236,12 @@ public class FindCompositions {
 	private void findCandidates(Map<List<Node>, Double> timeForEachCandidate) throws OuchException {
 		int size = 0;
 		while(timeForEachCandidate.size()<candidateSize){
-//			System.out.println();
-//			if(timeForEachCandidate.size()>size){
-//				size = timeForEachCandidate.size();
-//				System.out.print("candidate "+size);
-//			}
-//			System.out.println();
+			//			System.out.println();
+			//			if(timeForEachCandidate.size()>size){
+			//				size = timeForEachCandidate.size();
+			//				System.out.print("candidate "+size);
+			//			}
+			//			System.out.println();
 			skipRecursive  = false;			
 			Set<Node>result = new HashSet<Node>();
 
@@ -254,65 +254,84 @@ public class FindCompositions {
 			tt.close();
 			result.add(endNode);
 			composition(endNode, result);	
-			boolean findNonRelNode = false;
-			for(Node sNode: result){
-				if(!hasRel(startNode, sNode, result) || !hasRel(sNode, endNode, result)){
-					findNonRelNode =true;
-					relationships.clear();
-					break;
-				}
-			}
-			if(!findNonRelNode){
-				result = checkDuplicateNodes(result);
-				if(result.size()<=individuleNodeSize && result.size()>0){
-					for(Node n: result){
-						Transaction transaction = subGraphDatabaseService.beginTx();
-						if(n.getProperty("name").equals("start")){
-							List<Node> list = new ArrayList<Node>(result);
-							timeForEachCandidate.put(list,(double)n.getProperty("totalTime"));
-							List<Node> list2 = new ArrayList<Node>(result);
-							Transaction tr = subGraphDatabaseService.beginTx();
-//							Set<Relationship> rs = new HashSet<Relationship>(relationships);
-							List<Map<String,String>>rels = new ArrayList<Map<String,String>>();
-//							for (Relationship r: rs){
-//								Map<String,String>relsString = new HashMap<String, String>();
-//								String from = (String)r.getProperty("From");
-//								String to = (String)r.getProperty("To");
-//								if(compositionContains(from,result)&& compositionContains(to,result) && !from.equals(to)){
-//									relsString.put(from, to);
-//									rels.add(relsString);
-//									//System.out.println((String)r.getProperty("From")+"  =>  "+ (String)r.getProperty("To"));
-//								}
-//							}
+			result = checkDuplicateNodes(result);
+			if(result.size()<=individuleNodeSize){
+				boolean fulfilled = true;
+				for(Node node: result){
+					Transaction tx = subGraphDatabaseService.beginTx();
+					if(!node.getProperty("name").equals("start") &&!node.getProperty("name").equals("end") ){
 
-							tr.close();
-
-							candidatesWithRels.put(list2, rels);
+						if(!isAllNodesFulfilled(node,result)){
+							fulfilled = false;
+							break;
 						}
-						transaction.close();
 					}
+					tx.close();
 
 				}
-				else{
-					relationships.clear();
-				}
+				if(fulfilled){
+					boolean findNonRelNode = false;
+					for(Node sNode: result){
+						if(!hasRel(startNode, sNode, result) || !hasRel(sNode, endNode, result)){
+							findNonRelNode =true;
+							relationships.clear();
+							break;
+						}
+					}
+					if(!findNonRelNode){
+						//				result = checkDuplicateNodes(result);
 
+						if(result.size()<=individuleNodeSize && result.size()>0){
+							for(Node n: result){
+								Transaction transaction = subGraphDatabaseService.beginTx();
+								if(n.getProperty("name").equals("start")){
+									List<Node> list = new ArrayList<Node>(result);
+									timeForEachCandidate.put(list,(double)n.getProperty("totalTime"));
+									List<Node> list2 = new ArrayList<Node>(result);
+									Transaction tr = subGraphDatabaseService.beginTx();
+									//							Set<Relationship> rs = new HashSet<Relationship>(relationships);
+									List<Map<String,String>>rels = new ArrayList<Map<String,String>>();
+									//							for (Relationship r: rs){
+									//								Map<String,String>relsString = new HashMap<String, String>();
+									//								String from = (String)r.getProperty("From");
+									//								String to = (String)r.getProperty("To");
+									//								if(compositionContains(from,result)&& compositionContains(to,result) && !from.equals(to)){
+									//									relsString.put(from, to);
+									//									rels.add(relsString);
+									//									//System.out.println((String)r.getProperty("From")+"  =>  "+ (String)r.getProperty("To"));
+									//								}
+									//							}
+
+									tr.close();
+
+									candidatesWithRels.put(list2, rels);
+								}
+								transaction.close();
+							}
+
+						}
+						else{
+							relationships.clear();
+						}
+					}
+				}
 			}
 		}
+
 	}
-	
-//	private boolean compositionContains(String property, Set<Node> result) {
-//		Transaction transaction = subGraphDatabaseService.beginTx();
-//		for(Node n: result){
-//			if(n.getProperty("name").equals(property)){
-//				transaction.close();
-//				return true;
-//			}
-//		}
-//		transaction.close();
-//		return false;
-//	}
-	
+
+	private boolean contains(String property, Set<Node> result) {
+		Transaction transaction = subGraphDatabaseService.beginTx();
+		for(Node n: result){
+			if(n.getProperty("name").equals(property)){
+				transaction.close();
+				return true;
+			}
+		}
+		transaction.close();
+		return false;
+	}
+
 	private boolean hasRel(Node firstNode, Node secondNode, Set<Node> releatedNodes) {
 		Transaction transaction = subGraphDatabaseService.beginTx();
 		if(releatedNodes==null){
@@ -507,6 +526,7 @@ public class FindCompositions {
 				}
 				else{
 					List<String> sNodeInputs = Arrays.asList(getNodePropertyArray(sNode,"inputs"));
+					Set<String> newSNodeInputs = new HashSet<String>(sNodeInputs);
 					Set<String> inputs = new HashSet<String>();
 					for(Relationship r: sNode.getRelationships(Direction.INCOMING)){
 						String from = (String) r.getProperty("From");
@@ -516,7 +536,7 @@ public class FindCompositions {
 							inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r,"outputs")));
 						}
 					}
-					if(inputs.size()!=sNodeInputs.size()){
+					if(inputs.size()!=newSNodeInputs.size()){
 						toReturn = false;
 						return false;
 					}
@@ -524,6 +544,10 @@ public class FindCompositions {
 						toReturn = false;
 						return false;
 					}
+					if(!equalLists(inputs,newSNodeInputs)){
+						toReturn = false;
+						return false;
+					}	
 				}
 
 			}
@@ -634,6 +658,34 @@ public class FindCompositions {
 		}
 
 		return newArray;
+	}
+	private boolean isAllNodesFulfilled(Node node, Set<Node> nodes) {
+
+		Transaction transaction = subGraphDatabaseService.beginTx();
+
+		Set<String> inputs = new HashSet<String>();
+		Set<String> nodeInputs = new HashSet<String>();
+		nodeInputs.addAll(Arrays.asList(getNodePropertyArray(node,"inputs")));
+
+		Iterable<Relationship> rels = node.getRelationships(Direction.INCOMING);
+		for(Relationship r: rels){
+			//				Node n = neo4jServNodes.get(r.getProperty("From"));
+
+			if(contains((String) r.getProperty("From"),nodes)){
+				inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r, "outputs")));
+			}
+		}
+		if(!equalLists(inputs, nodeInputs)){
+
+			transaction.close();
+			return false;
+		}else{
+			transaction.close();			
+			return true;
+		}
+
+
+
 	}
 	//	public void setMinAvailability(double minAvailability) {
 	//		this.minAvailability = minAvailability;

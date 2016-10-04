@@ -1,8 +1,6 @@
-Populate Taxonomy Tree    248
-Load existing db    1669
-run task: copied db, create temp db, add start and end nodes    1060
-generate best result    0
-Load files    209
-generate candidates    183
-create new result graph db     426
-reduce graph db     1864
+Populate Taxonomy Tree    1767
+Load existing db    3818
+run task: copied db, create temp db, add start and end nodes    5461
+generate best result    5868
+Load files    673
+reduce graph db     19057

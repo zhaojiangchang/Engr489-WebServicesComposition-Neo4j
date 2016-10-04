@@ -68,17 +68,17 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "01";
-	private final static int individuleNodeSize = 30;
-	private final static int candidateSize = 2;
+	private final static String dataSet = "07";
+	private final static int individuleNodeSize = 22;
+	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = false;
+	private final boolean runMultipileTime = true;
 	private final int timesToRun = 30;
 
-	private final static double m_a = 0.25;
-	private final static double m_r = 0.25;
-	private final static double m_c = 0.25;
-	private final static double m_t = 0.25;
+	private final static double m_a = 0.15;
+	private final static double m_r = 0.05;
+	private final static double m_c = 0.05;
+	private final static double m_t = 0.75;
 
 	//******************************************************//
 
@@ -459,6 +459,7 @@ public class Main implements Runnable{
 		Set<Node> relatedNodes = new HashSet<Node>();;
 		reduceGraphDb.findAllReleatedNodes(relatedNodes, false);
 		System.out.println(relatedNodes.size());
+
 		reduceGraphDb.createNodes(relatedNodes);
 		reduceGraphDb.createRel();
 		relatedNodes = reduceGraphDb.getRelatedNodes();
@@ -575,6 +576,7 @@ public class Main implements Runnable{
 
 
 	private static boolean isAllNodesFulfilled(Node node, Iterable<Node> nodes, GraphDatabaseService graphDatabaseService) {
+
 		Transaction transaction = graphDatabaseService.beginTx();
 		System.out.println(node.getProperty("name"));
 		Set<String> inputs = new HashSet<String>();
@@ -646,6 +648,13 @@ public class Main implements Runnable{
 		populateTaxonomyTree.setTaxonomyMap(taxonomyMap);
 		populateTaxonomyTree.setServiceMap(serviceMap);
 		populateTaxonomyTree.populateTaxonomyTree();		
+//		TaxonomyNode t = taxonomyMap.get("inst958190119");
+//		System.out.println("==========================================");
+//		System.out.println(t);
+//
+//		for(TaxonomyNode tn: t.parents_notGrandparents){
+//			System.out.println(tn.value);
+//		}
 	}
 
 
@@ -669,6 +678,7 @@ public class Main implements Runnable{
 		for(Node n: nodes){
 			i++;
 			neo4jServNodes.put((String)n.getProperty("name"), n);
+		
 		}
 		System.out.println("total service nodes: "+i);
 		transaction.success();
