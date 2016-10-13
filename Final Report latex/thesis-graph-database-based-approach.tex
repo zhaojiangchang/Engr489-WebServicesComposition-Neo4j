@@ -25,7 +25,7 @@ In this project we model a Web service as an entity which has a \emph{name}, and
 \subsection {Inputs and Outputs}
 It is necessary to label each Web service for identification, and the different \emph{inputs} and  \emph{outputs} of each Web service should also be easily identifiable. In our approach we used a taxonomy tree to represent the relationships between the inputs and outputs of services. In the particular taxonomy tree we used, any two concepts \emph{A} and \emph{B} can be related to each other in one of four possible ways. The first scenario is that \emph{A} is a generalization of \emph{B}. The second scenario is that \emph{A} is a specialization of \emph{B}. The third scenario is that \emph{A} and \emph{B} are not related to each other. And the last scenario is that  \emph{A} equals \emph{B}. 
 \newcommand{\quotes}[1]{``#1''}
-\begin{example}
+\begin{example}[Example 3.1]
 \noindent
 The Web service \quotes{FindHotel} uses a single input parameter (cityName) represented by the concept of \quotes{CITY}, which belongs to the taxonomy tree. Therefore, \quotes{FindHotel} requires an instance of the concept \quotes{CITY}. The only output parameter (Hotel) is represented by an instance of the concept \quotes{Hotel} that also exists in the taxonomy tree. The \emph{inputs} and \emph{outputs} of each Web service are clearly defined in terms of concepts belonging to the specialized taxonomy tree.
 \end{example}
@@ -174,7 +174,7 @@ Service \emph{3}: $IS_3 = \{service 1, service 2\}$ and
 \subsection{Creation of Web Service Nodes}
 Each Web service is a node in the graph database, and each node contains list of properties. In this section we will introduce how to create graph database Web service nodes using Web service objects we produced from service repository preprocessing section. We use graph database create node method to generate a new node and we use the setproperty method to assign properties to the node. We also create an index for each Web service node for querying the Web service node by its service name when needed. After service nodes have been created, all service nodes are stored in the graph database permanently.  Figure \ref{fig:noRelationships} is an example of a graph database - it shows the Web service nodes we created with no relationships created yet between the Web services. The data set used in this example is WSC 2008-01. All the nodes represent the Web services. 
 \begin{figure}[H]
-\includegraphics[width=10cm]{service-without-relationships.png}
+\includegraphics[width=10cm]{service-without-relationships.pdf}
 \centering
 \caption{Graph database without relationships (WSC 2008-01)}
 \label{fig:noRelationships} 

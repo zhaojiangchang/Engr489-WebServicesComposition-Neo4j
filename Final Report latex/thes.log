@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.8)  14 OCT 2016 03:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.8)  14 OCT 2016 11:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -923,13 +923,13 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./taxonomy-tree-example.pdf)
 : PDF inclusion: invalid other resource which is no dict (key 'ProcSets', type 
 <array>); ignored.
->] <service-without-relationships.png, id=104, 2325.68875pt x 2333.71875pt>
-File: service-without-relationships.png Graphic file (type png)
+>] <service-without-relationships.pdf, id=104, 1856.48697pt x 1862.67844pt>
+File: service-without-relationships.pdf Graphic file (type pdf)
 
-<use service-without-relationships.png>
-Package pdftex.def Info: service-without-relationships.png used on input line 1
+<use service-without-relationships.pdf>
+Package pdftex.def Info: service-without-relationships.pdf used on input line 1
 77.
-(pdftex.def)             Requested size: 284.52756pt x 285.48244pt.
+(pdftex.def)             Requested size: 284.52756pt x 285.47205pt.
  [13 <./InputServicesAndOutServices.pdf
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./InputServicesAndOutService
@@ -938,17 +938,17 @@ s.pdf): PDF inclusion: invalid other resource which is no dict (key 'ProcSets',
 >]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [14 <./service-without-relationships.png>]
+ [14 <./service-without-relationships.pdf>]
 Package mdframed Info: mdframed works in twoside mode on input line 213.
 
-<svg-before-reduce.pdf, id=122, 1325.35728pt x 1309.06056pt>
+<svg-before-reduce.pdf, id=128, 1325.35728pt x 1309.06056pt>
 File: svg-before-reduce.pdf Graphic file (type pdf)
 
 <use svg-before-reduce.pdf>
 Package pdftex.def Info: svg-before-reduce.pdf used on input line 219.
 (pdftex.def)             Requested size: 662.67703pt x 654.52869pt.
 
-<The-properties-of-Web-service-serv213889376.pdf, id=123, 614.295pt x 397.485pt
+<The-properties-of-Web-service-serv213889376.pdf, id=129, 614.295pt x 397.485pt
 >
 File: The-properties-of-Web-service-serv213889376.pdf Graphic file (type pdf)
  <use The-properties-of-Web-service-serv213889376.pdf>
@@ -967,21 +967,21 @@ ice-serv213889376.pdf): PDF inclusion: invalid other resource which is no dict
 (key 'ProcSets', type <array>); ignored.
 >]
 Package mdframed Info: mdframed works in twoside mode on input line 264.
- <svg-reduced.pdf, id=146, 644.01222pt x 390.18695pt>
+ <svg-reduced.pdf, id=152, 644.01222pt x 390.18695pt>
 File: svg-reduced.pdf Graphic file (type pdf)
  <use svg-reduced.pdf>
 Package pdftex.def Info: svg-reduced.pdf used on input line 270.
 (pdftex.def)             Requested size: 322.00533pt x 195.09299pt.
 
 [17 <./svg-reduced.pdf>]
-<svg-composition1.pdf, id=158, 453.73624pt x 201.00723pt>
+<svg-composition1.pdf, id=164, 453.73624pt x 201.00723pt>
 File: svg-composition1.pdf Graphic file (type pdf)
 
 <use svg-composition1.pdf>
 Package pdftex.def Info: svg-composition1.pdf used on input line 313.
 (pdftex.def)             Requested size: 312.9803pt x 138.65526pt.
 
-<svg-composition2.pdf, id=159, 413.78282pt x 297.46843pt>
+<svg-composition2.pdf, id=165, 413.78282pt x 297.46843pt>
 File: svg-composition2.pdf Graphic file (type pdf)
 
 <use svg-composition2.pdf>
@@ -1091,7 +1091,7 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  14571 strings out of 493014
  259122 string characters out of 6133352
- 435900 words of memory out of 5000000
+ 435901 words of memory out of 5000000
  17863 multiletter control sequences out of 15000+600000
  53220 words of font info for 102 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1106,10 +1106,10 @@ al/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texl
 ive/2016/texmf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/20
 16/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texm
 f-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on thes.pdf (38 pages, 1021528 bytes).
+Output written on thes.pdf (38 pages, 691530 bytes).
 PDF statistics:
- 255 PDF objects out of 1000 (max. 8388607)
- 165 compressed objects within 2 object streams
+ 261 PDF objects out of 1000 (max. 8388607)
+ 170 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
