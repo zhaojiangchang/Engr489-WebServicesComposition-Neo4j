@@ -1,0 +1,90 @@
+\documentclass[12pt, a4paper, twoside, openright]{book}
+
+\usepackage{vuwthesis} % sets up some local things, mostly the front page?
+
+\usepackage{palatino} % sets palatino as the default font
+
+\usepackage{url} % for typesetting urls
+\usepackage{graphicx}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage[T1]{fontenc}
+\usepackage[nottoc,numbib]{tocbibind}
+%\renewcommand{\baselinestretch}{1.00}
+
+
+\begin{document}
+
+\frontmatter
+% Book style knows about front matter
+% Report style doesn't so you need to set roman numbering etc yourself :-(
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Using Graph Databases for Automatic Composition of Web Services}
+\author{Zhaojiang Zhang}
+
+\subject{Software Engineering}
+\abstract{With the rapid development of computer network technology and applications, the demand for services from the internet has grown, as has users? expectation that the internet can provide the services they need. A Web service is a software component that takes input data and produces output data. Since a single Web service provides only limited functionality, in order to complete complex tasks, shared Web services must be used, and it is necessary to combine, or compose these Web services to provide functions needed by users. The objective of service composition is to find a composite service that provides best quality of service (QoS) with the increasing number of available services that can be used for service composition. It is challenging to find a service with optimal QoS efficiently. In this project, we propose an efficient automated QoS-Aware Web service composition approach using graph databases. }
+% Books don't normally have abstracts, and this is a bit of a hack
+
+% Uncomment the appropriate degree
+\phd
+%\mscthesisonly
+%\mscwithhonours
+%\mscbothparts
+% \otherdegree{DEGREE OR DIPLOMA NAME}
+
+\makeatletter
+\let\OLDappendix\appendix
+\newif\if@appendixinbackmatter
+\renewenvironment{appendix}
+{
+  \if@mainmatter
+     \@appendixinbackmatterfalse\OLDappendix
+  \else
+      \@appendixinbackmattertrue\@mainmattertrue\OLDappendix
+\fi
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\maketitle
+
+
+
+\tableofcontents
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% book style knows about mainmatter
+% if you are using report style you will have to rest page numbering etc.
+\mainmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% individual chapters included here
+
+\include{thesis-introduction}
+\include{background}
+\include{workdone}
+\include{futureConclusions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% and of course book style knows about backmatter
+% \backmatter caused problems with appendices :-(
+% and of course report style doesn't
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand\bibname{References} 
+%\bibliographystyle{ieeetr}
+\bibliographystyle{acm}
+\bibliography{ref}
+\include{appendix}
+
+
+\end{document}

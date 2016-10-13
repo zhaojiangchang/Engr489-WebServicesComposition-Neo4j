@@ -1,0 +1,96 @@
+\documentclass[12pt, a4paper, twoside, openright]{book}
+
+\usepackage{vuwthesis} % sets up some local things, mostly the front page?
+
+\usepackage{palatino} % sets palatino as the default font
+
+\usepackage{url} % for typesetting urls
+\usepackage{graphicx}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{amsmath}
+\usepackage{cases}
+
+\DeclareMathOperator{\Opt}{Opt}
+%\renewcommand{\baselinestretch}{1.00}
+
+
+\begin{document}
+
+\frontmatter
+% Book style knows about front matter
+% Report style doesn't so you need to set roman numbering etc yourself :-(
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Using Graph Databases for Automatic QoS-Aware Web Service Composition}
+\author{Zhaojiang Zhang}
+
+\subject{Software Engineering}
+\include{thesis-abstract}
+
+
+% Books don't normally have abstracts, and this is a bit of a hack
+
+% Uncomment the appropriate degree
+\phd
+%\mscthesisonly
+%\mscwithhonours
+%\mscbothparts
+% \otherdegree{DEGREE OR DIPLOMA NAME}
+
+\makeatletter
+\let\OLDappendix\appendix
+\newif\if@appendixinbackmatter
+\renewenvironment{appendix}
+{
+  \if@mainmatter
+     \@appendixinbackmatterfalse\OLDappendix
+  \else
+      \@appendixinbackmattertrue\@mainmattertrue\OLDappendix
+\fi
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\maketitle
+
+
+
+\tableofcontents
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% book style knows about mainmatter
+% if you are using report style you will have to rest page numbering etc.
+\mainmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% individual chapters included here
+
+\include{thesis-introduction}
+\include{thesis-background}
+\include{thesis-graph-database-based-approach}
+\include{thesis-evaluationDesign}
+\include{thesis-conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% and of course book style knows about backmatter
+% \backmatter caused problems with appendices :-(
+% and of course report style doesn't
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter 
+\renewcommand\bibname{References} 
+%\bibliographystyle{ieeetr}
+\bibliographystyle{acm}
+\bibliography{ref3}
+%\include{appendix}
+\end{document}

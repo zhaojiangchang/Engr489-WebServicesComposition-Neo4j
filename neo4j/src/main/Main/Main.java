@@ -68,9 +68,9 @@ public class Main implements Runnable{
 	//******************************************************//
 	private final boolean runTestFiles = false;
 	private final static String year = "2008";
-	private final static String dataSet = "03";
-	private final static int individuleNodeSize = 100;
-	private final static int candidateSize = 1;
+	private final static String dataSet = "01";
+	private final static int individuleNodeSize = 12;
+	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
 	private final boolean runMultipileTime = false;
 	private final int timesToRun = 30;
@@ -340,6 +340,27 @@ public class Main implements Runnable{
 				}
 				fw.close();
 			}
+		}
+		TaxonomyNode tNode = taxonomyMap.get("inst1716616603").parentNode;
+		tNode.getParent();
+		System.out.println("inst1716616603 parents: ");
+
+		for(String s: tNode.childrenString){
+//			System.out.println(s);
+//			TaxonomyNode ttNode = taxonomyMap.get(s);
+//			for(String c: ttNode.childrenString){
+				if(s.equals("inst927259823"))
+					System.out.print("inst927259823");
+				if(s.equals("inst608977925"))
+					System.out.print("inst608977925");
+				if(s.equals("inst885068313"))
+					System.out.print("inst885068313");
+				if(s.equals("inst1420249694"))
+					System.out.print("inst1420249694");
+				if(s.equals("inst1488043421"))
+					System.out.print("inst1488043421");
+//			}
+			//  inst927259823,inst608977925 inst885068313,inst1420249694,inst1488043421
 		}
 		FileWriter fw = new FileWriter("timeRecord.txt");
 		for(Entry<String, Long> entry : neo4jwsc.records.entrySet()){

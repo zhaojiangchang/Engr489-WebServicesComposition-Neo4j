@@ -1,0 +1,20 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {1.1}Aims and objectives}{2}
+\contentsline {section}{\numberline {1.2}Structure of report}{3}
+\contentsline {chapter}{\numberline {2}Background and Literature review}{5}
+\contentsline {section}{\numberline {2.1}Background}{5}
+\contentsline {subsection}{\numberline {2.1.1}QoS Properties}{5}
+\contentsline {subsection}{\numberline {2.1.2}Neo4j graph database}{6}
+\contentsline {section}{\numberline {2.2}Literature review}{6}
+\contentsline {chapter}{\numberline {3}Work Done So Far}{9}
+\contentsline {section}{\numberline {3.1} Proposed graph database}{10}
+\contentsline {subsubsection}{Web service composition modeling}{10}
+\contentsline {subsubsection}{Inputs and Outputs}{10}
+\contentsline {subsubsection}{InputServices and OutputServices}{12}
+\contentsline {subsubsection}{Web service relationships}{13}
+\contentsline {section}{\numberline {3.2}Reducing graph databases}{14}
+\contentsline {section}{\numberline {3.3}Generating Web service compositions}{15}
+\contentsline {section}{\numberline {3.4}Preliminary Evaluation}{16}
+\contentsline {chapter}{\numberline {4}Future Plan and Conclusions}{19}
+\contentsline {chapter}{\numberline {5}References}{21}
+\contentsline {chapter}{\numberline {A}Appendix: Project Proposal Slides}{23}
