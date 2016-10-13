@@ -72,7 +72,7 @@ public class Main implements Runnable{
 	private final static int individuleNodeSize = 12;
 	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = false;
+	private final boolean runMultipileTime = true;
 	private final int timesToRun = 30;
 
 	private final static double m_a = 0.15;
@@ -341,6 +341,27 @@ public class Main implements Runnable{
 				fw.close();
 			}
 		}
+		TaxonomyNode tNode = taxonomyMap.get("inst1716616603").parentNode;
+		tNode.getParent();
+		System.out.println("inst1716616603 parents: ");
+
+		for(String s: tNode.childrenString){
+//			System.out.println(s);
+//			TaxonomyNode ttNode = taxonomyMap.get(s);
+//			for(String c: ttNode.childrenString){
+				if(s.equals("inst927259823"))
+					System.out.print("inst927259823");
+				if(s.equals("inst608977925"))
+					System.out.print("inst608977925");
+				if(s.equals("inst885068313"))
+					System.out.print("inst885068313");
+				if(s.equals("inst1420249694"))
+					System.out.print("inst1420249694");
+				if(s.equals("inst1488043421"))
+					System.out.print("inst1488043421");
+//			}
+			//  inst927259823,inst608977925 inst885068313,inst1420249694,inst1488043421
+		}
 		FileWriter fw = new FileWriter("timeRecord.txt");
 		for(Entry<String, Long> entry : neo4jwsc.records.entrySet()){
 			fw.write(entry.getKey()+"    " +entry.getValue()+ "\n");
@@ -459,6 +480,17 @@ public class Main implements Runnable{
 		Set<Node> relatedNodes = new HashSet<Node>();;
 		reduceGraphDb.findAllReleatedNodes(relatedNodes, false);
 		System.out.println(relatedNodes.size());
+//		Set<Node>toRemove = new HashSet<Node>();
+//		for(Node node: relatedNodes){
+//			Transaction transaction = graphDatabaseService.beginTx();
+//			if(!node.getProperty("name").equals("start")){
+//				if(!isNodeFulfilled(node, relatedNodes, graphDatabaseService)){
+//					toRemove.add(node);
+//				}
+//			}
+//			transaction.close();
+//		}
+//		System.out.println(	"tomove: "+			toRemove.size());
 
 		reduceGraphDb.createNodes(relatedNodes);
 		reduceGraphDb.createRel();
@@ -468,8 +500,45 @@ public class Main implements Runnable{
 		subGraphDatabaseService = reduceGraphDb.getSubGraphDatabaseService();		
 		subGraphNodesMap = reduceGraphDb.getSubGraphNodesMap();
 	}
+	private static boolean isNodeFulfilled(Node node, Set<Node> nodes, GraphDatabaseService graphDatabaseService) {
+
+		Transaction transaction = graphDatabaseService.beginTx();
+
+		Set<String> inputs = new HashSet<String>();
+		Set<String> nodeInputs = new HashSet<String>();
+		nodeInputs.addAll(Arrays.asList(getNodePropertyArray(node,"inputs")));
+
+		Iterable<Relationship> rels = node.getRelationships(Direction.INCOMING);
+		for(Relationship r: rels){
+			//				Node n = neo4jServNodes.get(r.getProperty("From"));
+
+			if(contains((String) r.getProperty("From"),nodes,graphDatabaseService)){
+				inputs.addAll(Arrays.asList(getNodeRelationshipPropertyArray(r, "outputs")));
+			}
+		}
+		if(!equalLists(inputs, nodeInputs)){
+
+			transaction.close();
+			return false;
+		}else{
+			transaction.close();			
+			return true;
+		}
 
 
+
+	}
+	private static boolean contains(String property, Set<Node> result, GraphDatabaseService graphDatabaseService) {
+		Transaction transaction = graphDatabaseService.beginTx();
+		for(Node n: result){
+			if(n.getProperty("name").equals(property)){
+				transaction.close();
+				return true;
+			}
+		}
+		transaction.close();
+		return false;
+	}
 	private static void runTask(String path) {
 
 		RunTask runtask = new RunTask(path);
@@ -499,7 +568,7 @@ public class Main implements Runnable{
 		if(databaseName == null){
 			path = dbpath;
 		}else{
-			path = dbpath+"  "+databaseName;
+			path = dbpath+""+databaseName;
 		}
 		GenerateDatabase generateDatabase = new GenerateDatabase(null, null,path);
 		generateDatabase.createDbService();
@@ -539,11 +608,11 @@ public class Main implements Runnable{
 						tt.success();
 						tt.close();
 						if(isAllNodesFulfilled(node, nodes,graphDatabaseService)){
-//							Transaction t = graphDatabaseService.beginTx();
-//							r.delete();
-//							System.out.println("eeee: "+r.getId());
-//							t.success();
-//							t.close();
+							//							Transaction t = graphDatabaseService.beginTx();
+							//							r.delete();
+							//							System.out.println("eeee: "+r.getId());
+							//							t.success();
+							//							t.close();
 							toRemove.add(r);
 
 						}else{
@@ -555,7 +624,7 @@ public class Main implements Runnable{
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			System.out.println(e);
 			System.out.println("Main removeRedundantRel"); 
@@ -642,13 +711,13 @@ public class Main implements Runnable{
 		populateTaxonomyTree.setTaxonomyMap(taxonomyMap);
 		populateTaxonomyTree.setServiceMap(serviceMap);
 		populateTaxonomyTree.populateTaxonomyTree();		
-//		TaxonomyNode t = taxonomyMap.get("inst958190119");
-//		System.out.println("==========================================");
-//		System.out.println(t);
-//
-//		for(TaxonomyNode tn: t.parents_notGrandparents){
-//			System.out.println(tn.value);
-//		}
+		//		TaxonomyNode t = taxonomyMap.get("inst958190119");
+		//		System.out.println("==========================================");
+		//		System.out.println(t);
+		//
+		//		for(TaxonomyNode tn: t.parents_notGrandparents){
+		//			System.out.println(tn.value);
+		//		}
 	}
 
 
@@ -672,7 +741,7 @@ public class Main implements Runnable{
 		for(Node n: nodes){
 			i++;
 			neo4jServNodes.put((String)n.getProperty("name"), n);
-		
+
 		}
 		System.out.println("total service nodes: "+i);
 		transaction.success();

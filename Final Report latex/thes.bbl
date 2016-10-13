@@ -1,0 +1,180 @@
+\begin{thebibliography}{10}
+
+\bibitem{24}
+XML Web Service. http://www.w3schools.com.
+
+\bibitem{25}
+UDDI Tutorial. https://www.tutorialspoint.com/uddi.
+
+\bibitem{8}
+{\sc A.~Erdinc~Yilmaz, Karagoz, P.}
+\newblock {\em Web Services (ICWS)\/}, Improved Genetic Algorithm Based
+  Approach for QoS Aware Web Service Composition. IEEE International Conference
+  on, pp. 463 -- 470 (2014).
+
+\bibitem{15}
+{\sc Alrifai, M., R.~T.}
+\newblock Combining global optimization with local selection for efficient
+  QoS--aware service composition. 881--890.
+
+\bibitem{10}
+{\sc Amiri, M.A., S.~H.}
+\newblock Effective web service composition using particle swarm optimization
+  algorithm.
+\newblock {\em In: 6th Int. Symposium Telecommunications,\/}, pp. 1190--1194
+  (2012).
+
+\bibitem{32}
+{\sc Antsfeld, T. W.~L.}
+\newblock Finding multi--criteria optimal paths in multi--modal public
+  transportation networks using the transit algorithm. In Intelligent Transport
+  Systems World Congress (2012).
+
+\bibitem{33}
+{\sc B.~Andreopoulos M. Schroeder L.~Royer, M.~R.}
+\newblock Unraveling protein networks with power graph analysis. PLoS
+  Computational Biology (2008).
+
+\bibitem{12}
+{\sc Bansal, A., B. M. K. S. B. S. W. T. J.~M.}
+\newblock WSC--08: continuing the Web services challenge. pp. 351--354.
+
+\bibitem{13}
+{\sc Chaker B.~M., Fathia~B., H.~A., and S., H.}
+\newblock Towards A Graph Based Approach For Web Services Composition. 351.
+
+\bibitem{22}
+{\sc Chakraborty~D, Perich~F, J.~A.}
+\newblock Web service composition languages: old wine in new bottles?
+\newblock [A]. Proc. of the 29th Conference on Euromicro [C]. Washington, DC:
+  IEEE Computer Society, 298~305 (2003).
+
+\bibitem{19}
+{\sc Da~Silva A.~S., Ma, H. Z.~M.}
+\newblock Effective web service composition using particle swarm optimization
+  algorithm.
+\newblock pp. 3127--3134.
+
+\bibitem{14}
+{\sc Da~Silva A.~S., Ma, H. Z.~M.}
+\newblock A GP Approach to QoS--Aware Web Service Composition and Selection.
+  2014.
+
+\bibitem{2}
+{\sc Da~Silva A.~S., Hui~Ma, M.~Z.}
+\newblock GraphEvol: A Graph Evolution Technique for Web Service Composition.
+  Part II, LNCS 9262, pp. 134--142.
+
+\bibitem{27}
+{\sc Gottschalk, K., G. S. K. H. S.~J.}
+\newblock Introduction to web services architecture. IBM Syst. J. 41(2), pp.
+  170–177 (2002).
+
+\bibitem{3}
+{\sc Gottschalk, K., G. S. K. H. S.~J.}
+\newblock Introduction to web services architecture.
+\newblock {\em IBM Syst. J. 41(2),\/}, pp. 170--177 (2002).
+
+\bibitem{6}
+{\sc GraphDatabase}.
+\newblock {\em Neo4j
+  https://neo4j.com/docs/developer-manual/current/introduction\/}, The Neo4j
+  Developer Manual v3.0 (2016).
+
+\bibitem{35}
+{\sc GraphDatabase}.
+\newblock OrientDB http://orientdb.com/orientdb--vs--neo4j/.
+
+\bibitem{36}
+{\sc GraphDatabase}.
+\newblock TITAN Distributed http://titan.thinkaurelius.com/.
+
+\bibitem{37}
+{\sc GraphDatabase}.
+\newblock DEx Graph Database https://dex.citd.tamu.edu/.
+
+\bibitem{16}
+{\sc Jaeger, M.C., M.~G.}
+\newblock QoS--based selection of services: The implementation of a genetic
+  algorithm. pp. 1--12.
+
+\bibitem{26}
+{\sc Jing.~L, Yuhong.~Y, D.~L.}
+\newblock Full Solution Indexing Using Database for QoS--aware Web Service
+  Composition IEEE International Conference on Services Computing. pp. 99--106
+  (2014).
+
+\bibitem{11}
+{\sc Liangzhao~Z, Boualem.~B, A. H. N. M. D. J.~K., and Henry, C.}
+\newblock QoS--Aware Middleware for Web Services Composition. 311--327.
+
+\bibitem{1}
+{\sc Linthicum, D.}
+\newblock Chapter 1: Service Oriented Architecture (SOA).
+  https://msdn.microsoft.com/en--us/library/bb833022.aspx.
+
+\bibitem{9}
+{\sc Mucientes, M., L. M. C.~M.}
+\newblock A genetic programming-based algorithm for composing web services.
+\newblock {\em In: 9th Int. Conf. Intelligent Systems Design and
+  Applications,\/}, pp. 379--384 (2009).
+
+\bibitem{21}
+{\sc Pires P~F, Benevides~M, M.~M.}
+\newblock A Reactive Service Composition Architecture for Pervasive Computing
+  Environments [A]. Proc. of the IFIP TC6/WG6. 8 Working Conference on Personal
+  Wireless Communications [C]. Washington, DC: IEEE Computer Society, 53~62
+  (2002).
+
+\bibitem{34}
+{\sc Ritter, D.}
+\newblock From network mining to large scale business networks. WWW (Companion
+  Volume), pages 989–996, (2012).
+
+\bibitem{29}
+{\sc S., P.}
+\newblock Service Composition Scenarios in the Internet of Things Paradigm.
+  AICT--394, pp.53--60, (2013).
+
+\bibitem{30}
+{\sc Salim~J., V.~V.}
+\newblock An empirical comparison of graph databases. Doi:
+  10.1109/SocialCom.2013.106. pp. 708--715 (2013).
+
+\bibitem{5}
+{\sc Seyyed, V., H. F.~M.}
+\newblock {\em In Proceedings of the 2005 Symposium on Applications and the
+  Internet (SAINT'05)\/}, A Graph--Based Approach to Web Services Composition
+  (2005).
+
+\bibitem{23}
+{\sc Sirin~E, Parsia~B, W.~D.}
+\newblock HTN Planning for Web Service Composition Using SHOP2 [J]. Journal of
+  Web Semantics. 377~396 (2004).
+
+\bibitem{20}
+{\sc Van~der Aalst W M~P, Dumas~M, T. H.~A.}
+\newblock Building Reliable Web Services Compositions [J]. Lecture Notes in
+  Computer Science, 2593:551~562 (2002).
+
+\bibitem{28}
+{\sc Vikas~A., Girish~C., S. M. B.~S.}
+\newblock Understanding approaches for web service composition and execution.
+  Doi 10.1145/1341771.1341773. (2008).
+
+\bibitem{4}
+{\sc Wang~A., Ma~H., Z.~M.}
+\newblock Genetic programming with greedy search for web service composition.
+  In: Decker, H., Lhotsk?a, L., Link, S., Basl, J., Tjoa, A.M. (eds.) DEXA
+  2013, Springer, Heidelberg. pp. 9--17 (2013).
+
+\bibitem{7}
+{\sc Yoo~J.J.W., Kumara~S., L. D. O.~S.}
+\newblock A web service composition framework using integer programming with
+  non-functional objectives and constraints. algorithms 1, 7.
+
+\bibitem{18}
+{\sc Zheng~L., Benatallah~B., D. M. K. J. S.~Q.}
+\newblock Quality driven web services composition. pp. 411--421 (2003).
+
+\end{thebibliography}

@@ -1,0 +1,57 @@
+\begin{thebibliography}{1}
+
+\bibitem{10}
+{\sc Amiri, M.A., S.~H.}
+\newblock Effective web service composition using particle swarm optimization
+  algorithm.
+\newblock {\em In: 6th Int. Symposium Telecommunications,\/} (2012), pp.
+  1190--1194.
+
+\bibitem{2}
+{\sc Da~Silva A.~S., Hui~Ma, M.~Z.}
+\newblock Graphevol: A graph evolution technique for web service composition.
+\newblock Part II, LNCS 9262, pp. 134--142.
+
+\bibitem{1}
+{\sc Linthicum, D.}
+\newblock Chapter 1: Service oriented architecture (soa).
+\newblock https://msdn.microsoft.com/en--us/library/bb833022.aspx.
+
+\bibitem{9}
+{\sc Mucientes, M., L. M. C.~M.}
+\newblock A genetic programming-based algorithm for composing web services.
+\newblock {\em In: 9th Int. Conf. Intelligent Systems Design and
+  Applications,\/} (2009), pp. 379--384.
+
+\bibitem{6}
+{\sc Neo4jTeam}.
+\newblock The neo4j developer manual v3.0.
+\newblock {\em https://neo4j.com/docs/developer-manual/current/introduction\/}
+  (2016).
+
+\bibitem{5}
+{\sc Seyyed, V., H. F.~M.}
+\newblock A graph-based approach to web services composition.
+\newblock {\em In Proceedings of the 2005 Symposium on Applications and the
+  Internet (SAINT'05)\/} (2005).
+
+\bibitem{4}
+{\sc Wang, A., M. H. Z.~M.}
+\newblock Genetic programming with greedy search for web service composition.
+  in: Decker, h., lhotsk?a, l., link, s., basl, j., tjoa, a.m. (eds.) dexa
+  2013, springer, heidelberg.
+\newblock pp. 9--17.
+
+\bibitem{8}
+{\sc Yilmaz, A.~Erdinc, K.~P.}
+\newblock Improved genetic algorithm based approach for qos aware web service
+  composition.
+\newblock {\em Web Services (ICWS) IEEE International Conference on, pp. 463 -
+  470\/} (2014).
+
+\bibitem{7}
+{\sc Yoo, J.J.W., K. S. L. D. O.~S.}
+\newblock A web service composition framework using integer programming with
+  non-functional objectives and constraints. algorithms 1, 7.
+
+\end{thebibliography}
