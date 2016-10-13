@@ -72,7 +72,7 @@ public class Main implements Runnable{
 	private final static int individuleNodeSize = 12;
 	private final static int candidateSize = 50;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = false;
+	private final boolean runMultipileTime = true;
 	private final int timesToRun = 30;
 
 	private final static double m_a = 0.15;
@@ -568,7 +568,7 @@ public class Main implements Runnable{
 		if(databaseName == null){
 			path = dbpath;
 		}else{
-			path = dbpath+"  "+databaseName;
+			path = dbpath+""+databaseName;
 		}
 		GenerateDatabase generateDatabase = new GenerateDatabase(null, null,path);
 		generateDatabase.createDbService();
