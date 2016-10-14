@@ -12,7 +12,7 @@ This report focuses on the the use of graph databases to model and store a servi
 \end{enumerate}
 The overall design of our system is shown in Figure \ref{fig:process}, following with some design details.\par
 
-\begin{figure}[H]
+\begin{figure}[h]
 \includegraphics[width=10cm]{process2.pdf}
 \centering
 \caption{Overall system design}
@@ -102,7 +102,7 @@ Before generating a graph database, we need to preprocess the service repository
 Figure \ref{fig:taxonomyTree} shows an example of a taxonomy tree. Service \emph{1} has inputs $I_1 = \{A\}$ and outputs $O_1 = \{B\}$, service \emph{2} has Inputs $I_2 = \{E\}$  and outputs $O_2 = \{B\}$, and service \emph{3} has Inputs $I_3 = \{B\}$  and outputs $O_3 = \{F\}$. \emph{Algorithm 1} searches services inputs and outputs of services \emph{1, 2} and \emph{3}. Each value in inputs and outputs is a node in the taxonomy tree, which we call a taxonomy node (\emph{tNode}). Each \emph{tNode} has input services (\emph{IS}) and output services (\emph{OS}) fields; then we add Web services into corresponding \emph{IS} or \emph{OS} field. Taxonomy is represented as a tree, and each \emph{tNode} can have a parent node or child node. For example, \quotes{CITY} \emph{tNode} may have parent node called \quotes{COUNTRY} and child node called \quotes{HOTEL}. When we add Web service into \emph{IS}, we also add a Web service into all the \emph{tNode}'s parent node's \emph{IS} field. The same applies to adding Web service into \emph{OS}, in which case we also add Web service into all the \emph{tNode}'s children node's \emph{OS} field. After we run \emph{algorithm 1}, we obtain $IS_A = \{service 1\}$, $OS_A = \{service 1, service 2, service 3\}$, $IS_B = \{service 1, service 3\}$, $OS_B = \{service 1, service 2\}$, $IS_E = \{service 1, service 3\}$, $OS_E = \{Null\}$, $IS_F = \{service 1\}$ and $OS_F = \{service 3\}$. This is shown in Figure \ref{fig:taxonomyTree}. \par
 \end{exmp}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \includegraphics[width = 10cm]{taxonomy-tree-example.pdf}
 \centering
 \caption{Taxonomy tree Example}
@@ -121,13 +121,13 @@ Service \emph{3}: $IS_3 = \{service 1, service 2\}$ and
  $OS_3 = \{service 1\}$, shown in Figure \ref{fig:inputOutputServs}.
 \end{exmp}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \includegraphics[width=10cm]{InputServicesAndOutServices.pdf}
 \centering
 \caption{Input services and out services}
 \label{fig:inputOutputServs} 
 \end{figure} 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
  \SetKwFunction{connectNode}{connectNode}\SetKwFunction{findCands}{findCands}\SetKwFunction{removeDangling}{removeDangling}
  \LinesNumbered
@@ -230,7 +230,7 @@ Figure \ref{fig:beforeReduction} is an example of a graph database before reduct
 \section{Generate a Graph Database for a Given Task}
 For each given task which is described by $\{inputs, outputs\}$, only a subset of services in a repository is related to that task. Therefore we created a graph database for each given task. This section presents an algorithm that generates a reduced graph for a given task, as shown in \emph{Algorithm 4}. \\
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
  \SetKwFunction{connectNode}{connectNode}\SetKwFunction{findCands}{findCands}\SetKwFunction{removeDangling}{removeDangling}
  \LinesNumbered
@@ -264,7 +264,7 @@ Our algorithm first creates a start node \emph{S} and an end node \emph{E}. The 
 The following example illustrates the effectiveness of our proposed algorithm. Applying our graph database reduction algorithm (\emph{Algorithm 4}) to the graph database shown in Figure \ref{fig:inputOutputServs} leads to the new reduced graph database shown in Figure \ref{fig:reduced}. This new reduced graph database contains only Web services which are related to both task \emph{input} and task \emph{output}. In this example, the procedure reduces the number of Web services in the graph database from 158 to 61.
 \end{exmp}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \includegraphics[width = 13cm, height = 10cm, scale = 0.5]{svg-reduced.pdf}
 \centering
 \caption{Reduced graph database (WSC2008-01)}
@@ -328,32 +328,7 @@ In section \ref{generatingComp}, we proposed a Web service composition algorithm
 The next step in our approach is to select a service composition for a set of solutions, which presents the best \emph{QoS} for a given task. There are many service compositions which can fulfill a given task. As we can see in section 1, to meet a user's non-functional requirements, we must aim to find a service composition that proves to have the best \emph{QoS}.\par
 
 Algorithm 6 is designed to search for the solution with best \emph{QoS}. Using the set of initial population generated from \emph{Algorithm 5}, the algorithm goes through each and every service node invoked in the compositions. It then determines minimums and maximums of execution cost, response time, availability and reliability. Having found all minimums and maximums the next steps are to carry out normalization to restrict all values to the interval \emph{[0,1]}, and then to apply a fitness function, using normalized \emph{QoS} properties and user defined weights (see section \ref{fitnessFunction}), to each service composition. Lastly, the algorithm returns the service composition which has the best fitness value. \par
-
-The following example shows a comparison of two compositions and uses data from Table \ref{tb:compExample}, which contains \emph{QoS} properties and fitness values of web service compositions. \\
-
-\begin{exmp}
-This example shows a comparison of two Web service compositions. Composition 1 is shown in Figure \ref{fig:c3compEg1} and composition  2 is shown in Figure \ref{fig:c3compEg2}. To determine which is the better of the two compositions, we normalized the \emph{QoS} properties and used the fitness functions (section \ref{fitnessFunction}) of each service composition. Since we are only using two compositions in this example, the highest values on Availability and reliability, and the lowest values on Cost and Time will be equal or close to 1. We then set the weight for our fitness function to \emph{0.25}. The result in Table \ref{tb:c3compExample} shows that composition 2 (originally shown in \ref{fig:c3compEg2}) has the best fitness.  
-\end{exmp}
-
-% Please add the following required packages to your document preamble:
-% \usepackage{multirow}
-\begin{table}[H]
-\centering
-\caption{Comparison of two web service compositions}
-\label{tb:compExample}
-\scalebox{0.9}{
-\begin{tabular}{|c|c|c|c|c|c|c|}
-\hline
-\multicolumn{2}{|c|}{\textbf{Compositions}}               & Cost   & Time     & Availability & Reliability & Fitness                 \\ \hline
-\multirow{2}{*}{\textbf{1 (Figure \ref{fig:c3compEg1})}} & Non-normalized & 48.11  & 23427.83 & 1.60043E-5   & 0.00935     & \multirow{2}{*}{0.25}   \\ \cline{2-6}
-                                         & Normalized     & 0.0    & 0.0      & 0.0          & 1.0         &                         \\ \hline
-\multirow{2}{*}{\textbf{2 (Figure \ref{fig:c3compEg2})}} & Non-normalized & 44.18  & 12858.46 & 0.005        & 0.001408    & \multirow{2}{*}{0.7475} \\ \cline{2-6}
-                                         & Normalized     & 0.9899 & 1.0      & 1.0          & 0.0         &                         \\ \hline
-\end{tabular}
-}
-\end{table}
-
-\begin{algorithm}[H]
+\begin{algorithm}[h]
  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 
  \SetKwFunction{connectNode}{connectNode}\SetKwFunction{findCands}{findCands}\SetKwFunction{removeDangling}{removeDangling}
@@ -397,5 +372,30 @@ This example shows a comparison of two Web service compositions. Composition 1 i
 \label{generation}
 \end{algorithm}
 
+The following example shows a comparison of two compositions and uses data from Table \ref{tb:compExample}, which contains \emph{QoS} properties and fitness values of web service compositions.
+
+\begin{exmp}
+This example shows a comparison of two Web service compositions. Composition 1 is shown in Figure \ref{fig:c3compEg1} and composition  2 is shown in Figure \ref{fig:c3compEg2}. To determine which is the better of the two compositions, we normalized the \emph{QoS} properties and used the fitness functions (section \ref{fitnessFunction}) of each service composition. Since we are only using two compositions in this example, the highest values on Availability and reliability, and the lowest values on Cost and Time will be equal or close to 1. We then set the weight for our fitness function to \emph{0.25}. The result in Table \ref{tb:compExample} shows that composition 2 (originally shown in \ref{fig:c3compEg2}) has the best fitness.  
+\end{exmp}
+
 \section{Summary}
 In this chapter we have proposed how to model and store a service repository, and dependencies between the Web services, as a graph databases. We have also proposed several QoS-aware service composition algorithms to carry out required tasks.  We have shown that the QoS-aware service composition solutions generated by our approach are all functionally correct for all the test cases in the WSC2008. 
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[h]
+\centering
+\caption{Comparison of two web service compositions}
+\label{tb:compExample}
+\scalebox{0.9}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Compositions}}               & Cost   & Time     & Availability & Reliability & Fitness                 \\ \hline
+\multirow{2}{*}{\textbf{1 (Figure \ref{fig:c3compEg1})}} & Non-normalized & 48.11  & 23427.83 & 1.60043E-5   & 0.00935     & \multirow{2}{*}{0.25}   \\ \cline{2-6}
+                                         & Normalized     & 0.0    & 0.0      & 0.0          & 1.0         &                         \\ \hline
+\multirow{2}{*}{\textbf{2 (Figure \ref{fig:c3compEg2})}} & Non-normalized & 44.18  & 12858.46 & 0.005        & 0.001408    & \multirow{2}{*}{0.7475} \\ \cline{2-6}
+                                         & Normalized     & 0.9899 & 1.0      & 1.0          & 0.0         &                         \\ \hline
+\end{tabular}
+}
+\end{table}
+

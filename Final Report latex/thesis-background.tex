@@ -101,28 +101,37 @@ Objective_{i}=(w_{1} \times A_{i}) + (w_{2} \times R_{i}) + (w_{3} \times T_{i})
 where \emph{A$_{i}$}, \emph{R$_{i}$}, \emph{T$_{i}$} and  \emph{C$_{i}$} denote the normalized availability, reliability,  execution cost and  execution time of candidate \emph{i}, and weights \emph{w} are real positive numbers where $w_{1} + w_{2} + w_{3} + w_{4} = 1$. The value of weights assigned by the user to the objective function represents the importance of the different \emph{QoS} properties for the Web service composition. \par
 
 To achieve normalization we identify the minimum and maximum values of all the composition solutions discovered so far. We then use those values to normalize the \emph{QoS} properties according to the following formula \cite{4}:
-
-
-\[A_i = \left\{
-\begin{array}{l l} 
+\begin{equation}
+A_i = \left\{
+\begin{split}
     \frac{A_i - A_{min}}{A_{max} - A_{min}}      & \quad \text{if  } A_{max} - A_{min} \neq 0\\
     1  & \quad \text{if  } A_{max} - A_{min} = 0\\
-\end{array} \right. \]\label{eq:2}
-\[R_i = \left\{
-\begin{array}{l l} 
-    \frac{R_i - R_{min}}{R_{max} - R_{min}}      & \quad \text{if  } R_{max} - R_{min} \neq 0\\
+\end{split}\right. 
+\end{equation}
+
+\begin{equation}
+R_i = \left\{
+\begin{split}
+   \frac{R_i - R_{min}}{R_{max} - R_{min}}      & \quad \text{if  } R_{max} - R_{min} \neq 0\\
     1  & \quad \text{if  } R_{max} - R_{min} = 0\\
-\end{array} \right. \]\label{eq:2}
-\[T_i = \left\{
-\begin{array}{l l} 
+\end{split}\right. 
+\end{equation}
+
+\begin{equation}
+T_i = \left\{
+\begin{split}
     \frac{T_{max} - T_i}{T_{max} - T_{min}}      & \quad \text{if  } T_{max} - T_{min} \neq 0\\
     1  & \quad \text{if  } T_{max} - T_{min} = 0\\
-\end{array} \right. \]\label{eq:2}
-\[C_i = \left\{
-\begin{array}{l l} 
-    \frac{C_{max} - C_i}{C_{max} - C_{min}}      & \quad \text{if  } C_{max} - C_{min} \neq 0\\
+\end{split}\right. 
+\end{equation}
+
+\begin{equation}
+C_i = \left\{
+\begin{split}
+     \frac{C_{max} - C_i}{C_{max} - C_{min}}      & \quad \text{if  } C_{max} - C_{min} \neq 0\\
     1  & \quad \text{if  } C_{max} - C_{min} = 0\\
-\end{array} \right. \]\label{eq:2}
+\end{split}\right. 
+\end{equation}
 
 Normalized \emph{QoS} property values close to \emph{1} indicate better quality, while normalized values closer to \emph{0} indicate poorer quality. Finally, we use the normalized \emph{QoS} properties and weights to calculate the fitness of the individual candidates, where the largest fitness value will be chose as the best Web service composition out of that set of candidates. 
 

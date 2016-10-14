@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.8)  15 OCT 2016 03:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.8)  15 OCT 2016 04:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -627,17 +627,7 @@ Modified to handle duplex printing properly 2006
 . Defining environment 'example' with sig. 'O{\textbf {Example:}}' on line 86.
 .................................................
  (./thes.aux (./thesis-acknowledge.aux) (./thesis-introduction.aux)
-(./thesis-background.aux
-
-LaTeX Warning: Label `eq:2' multiply defined.
-
-
-LaTeX Warning: Label `eq:2' multiply defined.
-
-
-LaTeX Warning: Label `eq:2' multiply defined.
-
-) (./thesis-graph-database-based-approach.aux
+(./thesis-background.aux) (./thesis-graph-database-based-approach.aux
 
 LaTeX Warning: Label `buildingLine' multiply defined.
 
@@ -885,7 +875,24 @@ t line 56.
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./Figure2-1ExampleWebService
 Composition.pdf): PDF inclusion: invalid other resource which is no dict (key '
 ProcSets', type <array>); ignored.
->] [6] [7]) [8]
+>]
+
+Package amsmath Warning: Cannot use `split' here;
+(amsmath)                trying to recover with `aligned' on input line 109.
+
+
+Package amsmath Warning: Cannot use `split' here;
+(amsmath)                trying to recover with `aligned' on input line 117.
+
+
+Package amsmath Warning: Cannot use `split' here;
+(amsmath)                trying to recover with `aligned' on input line 125.
+
+
+Package amsmath Warning: Cannot use `split' here;
+(amsmath)                trying to recover with `aligned' on input line 133.
+
+[6] [7]) [8]
 \openout2 = `thesis-graph-database-based-approach.aux'.
 
  (./thesis-graph-database-based-approach.tex
@@ -902,27 +909,21 @@ File: process2.pdf Graphic file (type pdf)
 Package pdftex.def Info: process2.pdf used on input line 16.
 (pdftex.def)             Requested size: 284.52756pt x 201.10324pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [9
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[9
 
 
 
-]
-[10 <./process2.pdf>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [11]
-<taxonomy-tree-example.pdf, id=84, 614.295pt x 397.485pt>
+] [10 <./process2.pdf>] [11]
+<taxonomy-tree-example.pdf, id=85, 614.295pt x 397.485pt>
 File: taxonomy-tree-example.pdf Graphic file (type pdf)
 
 <use taxonomy-tree-example.pdf>
 Package pdftex.def Info: taxonomy-tree-example.pdf used on input line 106.
 (pdftex.def)             Requested size: 284.52756pt x 184.10686pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [12]
 Overfull \hbox (18.49564pt too wide) in paragraph at lines 114--122
 []\T1/ppl/b/n/10.95 Example 3.2.2. []\T1/ppl/m/n/10.95 Af-ter we run the \T1/pp
 l/m/it/10.95 al-go-rithm 2\T1/ppl/m/n/10.95 , we get: Ser-vice \T1/ppl/m/it/10.
@@ -932,7 +933,7 @@ plm/m/n/10.95 f\OML/zplm/m/it/10.95 service\OT1/ppl/m/n/10.95 1, \OML/zplm/m/it
 .95 3\OMS/zplm/m/n/10.95 g$
  []
 
-<InputServicesAndOutServices.pdf, id=89, 614.295pt x 397.485pt>
+<InputServicesAndOutServices.pdf, id=86, 614.295pt x 397.485pt>
 File: InputServicesAndOutServices.pdf Graphic file (type pdf)
 
 <use InputServicesAndOutServices.pdf>
@@ -940,38 +941,38 @@ Package pdftex.def Info: InputServicesAndOutServices.pdf used on input line 125
 .
 (pdftex.def)             Requested size: 284.52756pt x 184.10686pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [13 <./taxonomy-tree-example.pdf
+LaTeX Warning: `h' float specifier changed to `ht'.
 
-pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./taxonomy-tree-example.pdf)
-: PDF inclusion: invalid other resource which is no dict (key 'ProcSets', type 
-<array>); ignored.
-> <./InputServicesAndOutServices.pdf
 
-pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./InputServicesAndOutService
-s.pdf): PDF inclusion: invalid other resource which is no dict (key 'ProcSets',
- type <array>); ignored.
->] <service-without-relationships.pdf, id=112, 1856.48697pt x 1862.67844pt>
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<service-without-relationships.pdf, id=87, 1856.48697pt x 1862.67844pt>
 File: service-without-relationships.pdf Graphic file (type pdf)
 
 <use service-without-relationships.pdf>
 Package pdftex.def Info: service-without-relationships.pdf used on input line 1
 76.
 (pdftex.def)             Requested size: 284.52756pt x 285.47205pt.
+ [12 <./taxonomy-tree-example.pdf
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./taxonomy-tree-example.pdf)
+: PDF inclusion: invalid other resource which is no dict (key 'ProcSets', type 
+<array>); ignored.
+>] [13 <./InputServicesAndOutServices.pdf
 
- [14]
-[15 <./service-without-relationships.pdf>]
-<svg-before-reduce.pdf, id=127, 1325.35728pt x 1309.06056pt>
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./InputServicesAndOutService
+s.pdf): PDF inclusion: invalid other resource which is no dict (key 'ProcSets',
+ type <array>); ignored.
+> <./service-without-relationships.pdf>] [14]
+<svg-before-reduce.pdf, id=124, 1325.35728pt x 1309.06056pt>
 File: svg-before-reduce.pdf Graphic file (type pdf)
 
 <use svg-before-reduce.pdf>
 Package pdftex.def Info: svg-before-reduce.pdf used on input line 217.
 (pdftex.def)             Requested size: 662.67703pt x 654.52869pt.
 
-<The-properties-of-Web-service-serv213889376.pdf, id=128, 614.295pt x 397.485pt
+<The-properties-of-Web-service-serv213889376.pdf, id=125, 614.295pt x 397.485pt
 >
 File: The-properties-of-Web-service-serv213889376.pdf Graphic file (type pdf)
  <use The-properties-of-Web-service-serv213889376.pdf>
@@ -983,24 +984,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 231--232
 
  []
 
-[16 <./svg-before-reduce.pdf> <./The-properties-of-Web-service-serv213889376.pd
-f
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [15 <./svg-before-reduce.pdf> <./The-properties-of-Web-service-serv213889376.p
+df
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./The-properties-of-Web-serv
 ice-serv213889376.pdf): PDF inclusion: invalid other resource which is no dict 
 (key 'ProcSets', type <array>); ignored.
->] <svg-reduced.pdf, id=148, 644.01222pt x 390.18695pt>
+>] <svg-reduced.pdf, id=145, 644.01222pt x 390.18695pt>
 File: svg-reduced.pdf Graphic file (type pdf)
  <use svg-reduced.pdf>
 Package pdftex.def Info: svg-reduced.pdf used on input line 268.
 (pdftex.def)             Requested size: 322.00533pt x 195.09299pt.
 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[16]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [17]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [18 <./svg-reduced.pdf>] <svg-chapter3-c1.pdf, id=163, 466.9303pt x 231.75342p
+ [17 <./svg-reduced.pdf>] <svg-chapter3-c1.pdf, id=160, 466.9303pt x 231.75342p
 t>
 File: svg-chapter3-c1.pdf Graphic file (type pdf)
 
@@ -1008,35 +1013,22 @@ File: svg-chapter3-c1.pdf Graphic file (type pdf)
 Package pdftex.def Info: svg-chapter3-c1.pdf used on input line 311.
 (pdftex.def)             Requested size: 312.9803pt x 155.34824pt.
 
-<svg-chapter3-c2.pdf, id=164, 420.66624pt x 192.79524pt>
+<svg-chapter3-c2.pdf, id=161, 420.66624pt x 192.79524pt>
 File: svg-chapter3-c2.pdf Graphic file (type pdf)
 
 <use svg-chapter3-c2.pdf>
 Package pdftex.def Info: svg-chapter3-c2.pdf used on input line 318.
 (pdftex.def)             Requested size: 312.9803pt x 143.44287pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [19 <./svg-chapter3-c1.pdf>]
 LaTeX Font Info:    Font shape `T1/ppl/bx/it' in size <14.4> not available
 (Font)              Font shape `T1/ppl/b/it' tried instead on input line 324.
+ [18 <./svg-chapter3-c1.pdf> <./svg-chapter3-c2.pdf
 
-Underfull \hbox (badness 10000) in paragraph at lines 332--333
-
- []
-
-
-LaTeX Warning: Reference `tb:c3compExample' on page 20 undefined on input line 
-335.
-
-[20 <./svg-chapter3-c2.pdf>]) [21]
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./svg-chapter3-c2.pdf): PDF 
+inclusion: multiple pdfs with page group included in a single page
+>] [19]) [20]
 \openout2 = `thesis-evaluationDesign.aux'.
 
- (./thesis-evaluationDesign.tex [22
-
-
-
-]
+ (./thesis-evaluationDesign.tex
 Chapter 4.
 
 Overfull \hbox (7.63177pt too wide) in paragraph at lines 5--5
@@ -1053,12 +1045,16 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--38
 
  []
 
-[23]
+[21
+
+
+
+]
 Underfull \hbox (badness 10000) in paragraph at lines 41--41
 
  []
 
-<svg-chapter4-c1.pdf, id=198, 453.73624pt x 201.00723pt>
+<svg-chapter4-c1.pdf, id=191, 453.73624pt x 201.00723pt>
 File: svg-chapter4-c1.pdf Graphic file (type pdf)
 
 <use svg-chapter4-c1.pdf>
@@ -1078,7 +1074,7 @@ e, ac-cord-ing to the tax-on-omy tree, \T1/ppl/m/it/10.95 inst1519789560 \T1/pp
 l/m/n/10.95 and \T1/ppl/m/it/10.95 inst1326239605
  []
 
-<svg-chapter4-c2.pdf, id=199, 413.78282pt x 297.46843pt>
+<svg-chapter4-c2.pdf, id=192, 413.78282pt x 297.46843pt>
 File: svg-chapter4-c2.pdf Graphic file (type pdf)
 
 <use svg-chapter4-c2.pdf>
@@ -1095,11 +1091,11 @@ Overfull \hbox (16.93973pt too wide) in paragraph at lines 61--61
 t/10.95 inst885068313,inst1420249694,inst1488043421
  []
 
-[24 <./svg-chapter4-c1.pdf>]
+[22 <./svg-chapter4-c1.pdf>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[25 <./svg-chapter4-c2.pdf>]
+[23 <./svg-chapter4-c2.pdf>]
 Overfull \hbox (6.90846pt too wide) in paragraph at lines 120--120
 \T1/ppl/m/n/10.95 Our ap-proach suc-cess-fully gen-er-ated a Web ser-vice com-p
 o-si-tion for each task in eight datasets
@@ -1108,19 +1104,19 @@ o-si-tion for each task in eight datasets
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[26]) [27]
+[24]) [25]
 \openout2 = `thesis-conclusion.aux'.
 
- (./thesis-conclusion.tex [28
+ (./thesis-conclusion.tex [26
 
 
 ]
 Chapter 5.
-[29
+[27
 
-]) [30] (./thes.bbl
+]) [28] (./thes.bbl
 Appendix A.
-[31
+[29
 
 
 
@@ -1137,12 +1133,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 112--115
 ented Ar-chi-tec-ture (SOA).
  []
 
-[32]) [33] (./thes.aux (./thesis-acknowledge.aux) (./thesis-introduction.aux)
+[30]) [31] (./thes.aux (./thesis-acknowledge.aux) (./thesis-introduction.aux)
 (./thesis-background.aux) (./thesis-graph-database-based-approach.aux)
 (./thesis-evaluationDesign.aux) (./thesis-conclusion.aux))
-
-LaTeX Warning: There were undefined references.
-
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -1152,13 +1145,13 @@ LaTeX Warning: There were multiply-defined labels.
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 14641 strings out of 493014
- 259977 string characters out of 6133352
- 446048 words of memory out of 5000000
- 17927 multiletter control sequences out of 15000+600000
- 53220 words of font info for 102 fonts, out of 8000000 for 9000
+ 14635 strings out of 493014
+ 259937 string characters out of 6133352
+ 446036 words of memory out of 5000000
+ 17925 multiletter control sequences out of 15000+600000
+ 51260 words of font info for 98 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,18n,42p,10429b,9059s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,18n,42p,10429b,9111s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
@@ -1169,10 +1162,10 @@ al/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texl
 ive/2016/texmf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/20
 16/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texm
 f-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on thes.pdf (39 pages, 712785 bytes).
+Output written on thes.pdf (37 pages, 711419 bytes).
 PDF statistics:
- 281 PDF objects out of 1000 (max. 8388607)
- 186 compressed objects within 2 object streams
+ 274 PDF objects out of 1000 (max. 8388607)
+ 181 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  66 words of extra memory for PDF output out of 10000 (max. 10000000)
 
