@@ -15,6 +15,7 @@
 \usepackage{url} % for typesetting urls
 \usepackage{graphicx}
 \usepackage{blindtext}
+\usepackage{amsthm}
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage[T1]{fontenc}
 \usepackage{float}
@@ -29,7 +30,8 @@
 \usepackage{xcolor}
 \usepackage{xparse} % Add support for \NewDocumentEnvironment
 \definecolor{graylight}{cmyk}{.30,0,0,.67} % define color using xcolor syntax
-
+\theoremstyle{definition}
+\newtheorem{exmp}{Example}[section]
 %
 %  We don't want figures to float so we define
 %
@@ -93,7 +95,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-A Web service is a software component that takes input data and produces output data. With the rapid development of computer network technology, the demand for online services has grown, as has users? expectation that the quality of online services will meet their demands. Since a single Web service provides only limited functionality, in order to complete complex tasks, multiple Web services must be used, and it is necessary to combine, or compose these Web services to provide functions needed by users. The objective of service composition is to find a composite service that meets functional requirements and provides the best quality of service (QoS), in a challenging environment where the number of available services is rapidly increasing. Existing approaches to service composition suffer from the drawback of requiring excessive computation in in order to find a service composition that meets functional requirements. In order to tackle the challenge of finding an efficient method for creating Web compositions with optimal QoS, we propose an automated QoS-Aware Web service composition approach using graph databases to store information taken from service repositories. We will show our proposed approach can efficiently find service composition solutions. \end{abstract}
+A Web service is a software component that takes input data and produces output data. With the rapid development of computer network technology, the demand for online services has grown, as has users' expectation that the quality of online services will meet their demands. To complete complex tasks, multiple Web services must be used, and it is necessary to combine, or compose these Web services to provide functions needed by users. The objective of service composition is to find a composite service that meets certain functional requirements and provides the best quality of service (\emph{QoS}), in a challenging environment where the number of available services is rapidly increasing. Existing approaches to service composition suffer from the drawback of requiring excessive computation in in order to find a service composition that meets functional requirements. We propose an automated QoS-Aware Web service composition approach using graph databases to store information taken from service repositories. We will show that our proposed approach can efficiently find service composition solutions.\end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

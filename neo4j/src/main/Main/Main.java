@@ -70,9 +70,9 @@ public class Main implements Runnable{
 	private final static String year = "2008";
 	private final static String dataSet = "01";
 	private final static int individuleNodeSize = 12;
-	private final static int candidateSize = 50;
+	private final static int candidateSize = 10;
 	private final boolean runQosDataset = true;
-	private final boolean runMultipileTime = true;
+	private final boolean runMultipileTime = false;
 	private final int timesToRun = 30;
 
 	private final static double m_a = 0.15;

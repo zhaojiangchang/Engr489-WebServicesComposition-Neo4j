@@ -5,31 +5,32 @@
 \contentsline {section}{\numberline {2.1}Background}{3}
 \contentsline {subsection}{\numberline {2.1.1}\emph {QoS}-Aware Web Service Composition}{3}
 \contentsline {subsection}{\numberline {2.1.2}\emph {QoS} Properties}{4}
-\contentsline {subsection}{\numberline {2.1.3}\emph {QoS}-Aware Fitness Functions}{5}
-\contentsline {subsection}{\numberline {2.1.4}Neo4j Graph Database}{6}
+\contentsline {subsection}{\numberline {2.1.3}\emph {QoS}-Aware Fitness Functions}{6}
+\contentsline {subsection}{\numberline {2.1.4}Graph Database and Neo4j}{6}
 \contentsline {section}{\numberline {2.2}Literature Review}{7}
-\contentsline {chapter}{\numberline {3}The Graph database-based Web Service Composition Approach}{9}
+\contentsline {chapter}{\numberline {3}The Graph Database-based Web Service Composition Approach}{9}
 \contentsline {section}{\numberline {3.1}Modelling of Web service Repository}{10}
 \contentsline {subsection}{\numberline {3.1.1}Web Service}{10}
-\contentsline {subsection}{\numberline {3.1.2}Inputs and Outputs}{10}
+\contentsline {subsection}{\numberline {3.1.2}Taxonomy for Inputs and Outputs}{10}
 \contentsline {subsection}{\numberline {3.1.3}InputServices and OutputServices}{10}
-\contentsline {subsection}{\numberline {3.1.4}Web Service Dependencies}{10}
-\contentsline {section}{\numberline {3.2}Generating a Graph Database for a Service Repository}{10}
+\contentsline {subsection}{\numberline {3.1.4}Web Service Dependencies}{11}
+\contentsline {section}{\numberline {3.2}Generating a Graph Database for a Service Repository}{11}
 \contentsline {subsection}{\numberline {3.2.1}Preprocessing of the Service Repository}{11}
-\contentsline {subsection}{\numberline {3.2.2}Creation of Web Service Nodes}{13}
-\contentsline {subsection}{\numberline {3.2.3}Creation of Web Service Dependencies}{14}
-\contentsline {section}{\numberline {3.3}Generate a Graph Database for a Given Task}{16}
-\contentsline {section}{\numberline {3.4}Generating Web Service Compositions}{17}
-\contentsline {section}{\numberline {3.5}\emph {QoS}-Aware Service Composition}{18}
-\contentsline {chapter}{\numberline {4}Evaluation Design}{21}
-\contentsline {section}{\numberline {4.1}Datasets and Parameters}{21}
-\contentsline {section}{\numberline {4.2}Evaluation Results}{21}
-\contentsline {subsection}{\numberline {4.2.1}Effectiveness of the Reducing Algorithm}{21}
-\contentsline {subsection}{\numberline {4.2.2}Correctness of the Web Service Composition}{22}
-\contentsline {subsection}{\numberline {4.2.3}Evaluation Results for QoS-Aware Service Composition}{23}
-\contentsline {subsubsection}{The number of the Web services involved}{23}
-\contentsline {subsubsection}{Execution time to generate best QoS-Aware Web service composition}{24}
-\contentsline {subsubsection}{Hypothesis test using two fitness value sets for each approach}{24}
-\contentsline {subsection}{\numberline {4.2.4}Summary}{24}
-\contentsline {chapter}{\numberline {5}Conclusion and Future work}{27}
-\contentsline {chapter}{\numberline {A}Bibliography}{29}
+\contentsline {subsection}{\numberline {3.2.2}Creation of Web Service Nodes}{14}
+\contentsline {subsection}{\numberline {3.2.3}Creation of Web Service Dependencies}{15}
+\contentsline {section}{\numberline {3.3}Generate a Graph Database for a Given Task}{17}
+\contentsline {section}{\numberline {3.4}Generating Web Service Compositions}{18}
+\contentsline {section}{\numberline {3.5}\emph {QoS}-Aware Service Composition}{20}
+\contentsline {section}{\numberline {3.6}Summary}{21}
+\contentsline {chapter}{\numberline {4}Evaluation Design}{23}
+\contentsline {section}{\numberline {4.1}Datasets and Parameters}{23}
+\contentsline {section}{\numberline {4.2}Evaluation Results}{23}
+\contentsline {subsection}{\numberline {4.2.1}Effectiveness of the Reducing Algorithm}{23}
+\contentsline {subsection}{\numberline {4.2.2}Correctness of the Web Service Composition}{24}
+\contentsline {subsection}{\numberline {4.2.3}Evaluation Results for QoS-Aware Service Composition}{25}
+\contentsline {subsubsection}{The number of the Web services involved}{26}
+\contentsline {subsubsection}{Execution time to generate best QoS-Aware Web service composition}{26}
+\contentsline {subsubsection}{Hypothesis test using two fitness value sets for each approach}{26}
+\contentsline {subsection}{\numberline {4.2.4}Summary}{27}
+\contentsline {chapter}{\numberline {5}Conclusion and Future work}{29}
+\contentsline {chapter}{\numberline {A}Bibliography}{31}

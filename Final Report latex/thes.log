@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.8)  14 OCT 2016 11:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.8)  15 OCT 2016 03:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -94,6 +94,18 @@ Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
 \c@blind@pangramcount=\count106
 \c@blind@pangrammax=\count107
 )
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2015/03/04 v2.20.2
+\thm@style=\toks17
+\thm@bodyfont=\toks18
+\thm@headfont=\toks19
+\thm@notefont=\toks20
+\thm@headpunct=\toks21
+\thm@preskip=\skip43
+\thm@postskip=\skip44
+\thm@headsep=\skip45
+\dth@everypar=\toks22
+)
 (/usr/local/texlive/2016/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
 Package: algorithm2e 2013/01/06 v5.00 algorithms environments
 \c@AlgoLine=\count108
@@ -101,7 +113,7 @@ Package: algorithm2e 2013/01/06 v5.00 algorithms environments
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
 )
-\algocf@hangindent=\skip43
+\algocf@hangindent=\skip46
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/relsize/relsize.sty
 Package: relsize 2013/03/29 ver 4.1
@@ -113,35 +125,35 @@ Package `algorithm2e' Release 5.1 -- october 19 2015 --
 subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
 - Author: Christophe Fiorio (christophe.fiorio@umontpellier.fr)
 ********************************************************
-\skiptotal=\skip44
-\skiplinenumber=\skip45
-\skiprule=\skip46
-\skiphlne=\skip47
-\skiptext=\skip48
-\skiplength=\skip49
-\algomargin=\skip50
-\skipalgocfslide=\skip51
+\skiptotal=\skip47
+\skiplinenumber=\skip48
+\skiprule=\skip49
+\skiphlne=\skip50
+\skiptext=\skip51
+\skiplength=\skip52
+\algomargin=\skip53
+\skipalgocfslide=\skip54
 \algowidth=\dimen105
 \inoutsize=\dimen106
 \inoutindent=\dimen107
 \interspacetitleruled=\dimen108
 \interspacealgoruled=\dimen109
 \interspacetitleboxruled=\dimen110
-\algocf@ruledwidth=\skip52
+\algocf@ruledwidth=\skip55
 \algocf@inoutbox=\box28
 \algocf@inputbox=\box29
-\AlCapSkip=\skip53
-\AlCapHSkip=\skip54
-\algoskipindent=\skip55
+\AlCapSkip=\skip56
+\AlCapHSkip=\skip57
+\algoskipindent=\skip58
 \algocf@nlbox=\box30
 \algocf@hangingbox=\box31
 \algocf@untilbox=\box32
-\algocf@skipuntil=\skip56
+\algocf@skipuntil=\skip59
 \algocf@capbox=\box33
-\algoheightruledefault=\skip57
-\algoheightrule=\skip58
-\algotitleheightruledefault=\skip59
-\algotitleheightrule=\skip60
+\algoheightruledefault=\skip60
+\algoheightrule=\skip61
+\algotitleheightruledefault=\skip62
+\algotitleheightrule=\skip63
 \c@algocfline=\count109
 \c@algocfproc=\count110
 \c@algocf=\count111
@@ -163,7 +175,7 @@ Package tocbibind Note: Using chapter style headings, unless overridden.
 
 ) (/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2016/03/10 v2.15b AMS math features
-\@mathmargin=\skip61
+\@mathmargin=\skip64
 
 For additional information on amsmath, use the `?' option.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amstext.sty
@@ -171,7 +183,7 @@ Package: amstext 2000/06/29 v2.01 AMS text
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks17
+\@emptytoks=\toks23
 \ex@=\dimen111
 ))
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsbsy.sty
@@ -201,21 +213,21 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 635.
 \dotsspace@=\muskip11
 \c@parentequation=\count119
 \dspbrk@lvl=\count120
-\tag@help=\toks18
+\tag@help=\toks24
 \row@=\count121
 \column@=\count122
 \maxfields@=\count123
-\andhelp@=\toks19
+\andhelp@=\toks25
 \eqnshift@=\dimen114
 \alignsep@=\dimen115
 \tagshift@=\dimen116
 \tagwidth@=\dimen117
 \totwidth@=\dimen118
 \lineht@=\dimen119
-\@envbody=\toks20
-\multlinegap=\skip62
-\multlinetaggap=\skip63
-\mathdisplay@stack=\toks21
+\@envbody=\toks26
+\multlinegap=\skip65
+\multlinetaggap=\skip66
+\mathdisplay@stack=\toks27
 LaTeX Info: Redefining \[ on input line 2739.
 LaTeX Info: Redefining \] on input line 2740.
 )
@@ -228,12 +240,12 @@ Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
 \calc@Bcount=\count125
 \calc@Adimen=\dimen120
 \calc@Bdimen=\dimen121
-\calc@Askip=\skip64
-\calc@Bskip=\skip65
+\calc@Askip=\skip67
+\calc@Bskip=\skip68
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
 \calc@Ccount=\count126
-\calc@Cskip=\skip66
+\calc@Cskip=\skip69
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/mathtools/mhsetup.sty
 Package: mhsetup 2010/01/21 v1.2a programming setup (MH)
@@ -244,7 +256,7 @@ LaTeX Info: Thecontrolsequence`\['isalreadyrobust on input line 129.
 LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
 \g_MT_multlinerow_int=\count127
 \l_MT_multwidth_dim=\dimen122
-\origjot=\skip67
+\origjot=\skip70
 \l_MT_shortvdotswithinadjustabove_dim=\dimen123
 \l_MT_shortvdotswithinadjustbelow_dim=\dimen124
 \l_MT_above_intertext_sep=\dimen125
@@ -341,12 +353,12 @@ L3 Module: l3skip 2016/01/05 v6366 L3 Dimensions and skips
 \l_tmpb_dim=\dimen140
 \g_tmpa_dim=\dimen141
 \g_tmpb_dim=\dimen142
-\c_zero_skip=\skip68
-\c_max_skip=\skip69
-\l_tmpa_skip=\skip70
-\l_tmpb_skip=\skip71
-\g_tmpa_skip=\skip72
-\g_tmpb_skip=\skip73
+\c_zero_skip=\skip71
+\c_max_skip=\skip72
+\l_tmpa_skip=\skip73
+\l_tmpb_skip=\skip74
+\g_tmpa_skip=\skip75
+\g_tmpb_skip=\skip76
 \c_zero_muskip=\muskip12
 \c_max_muskip=\muskip13
 \l_tmpa_muskip=\muskip14
@@ -474,47 +486,47 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package color Info: Driver file: pdftex.def on input line 144.
 )
-\mdf@templength=\skip74
+\mdf@templength=\skip77
 \c@mdf@globalstyle@cnt=\count161
-\mdf@skipabove@length=\skip75
-\mdf@skipbelow@length=\skip76
-\mdf@leftmargin@length=\skip77
-\mdf@rightmargin@length=\skip78
-\mdf@innerleftmargin@length=\skip79
-\mdf@innerrightmargin@length=\skip80
-\mdf@innertopmargin@length=\skip81
-\mdf@innerbottommargin@length=\skip82
-\mdf@splittopskip@length=\skip83
-\mdf@splitbottomskip@length=\skip84
-\mdf@outermargin@length=\skip85
-\mdf@innermargin@length=\skip86
-\mdf@linewidth@length=\skip87
-\mdf@innerlinewidth@length=\skip88
-\mdf@middlelinewidth@length=\skip89
-\mdf@outerlinewidth@length=\skip90
-\mdf@roundcorner@length=\skip91
-\mdf@footenotedistance@length=\skip92
-\mdf@userdefinedwidth@length=\skip93
-\mdf@needspace@length=\skip94
-\mdf@frametitleaboveskip@length=\skip95
-\mdf@frametitlebelowskip@length=\skip96
-\mdf@frametitlerulewidth@length=\skip97
-\mdf@frametitleleftmargin@length=\skip98
-\mdf@frametitlerightmargin@length=\skip99
-\mdf@shadowsize@length=\skip100
-\mdf@extratopheight@length=\skip101
-\mdf@subtitleabovelinewidth@length=\skip102
-\mdf@subtitlebelowlinewidth@length=\skip103
-\mdf@subtitleaboveskip@length=\skip104
-\mdf@subtitlebelowskip@length=\skip105
-\mdf@subtitleinneraboveskip@length=\skip106
-\mdf@subtitleinnerbelowskip@length=\skip107
-\mdf@subsubtitleabovelinewidth@length=\skip108
-\mdf@subsubtitlebelowlinewidth@length=\skip109
-\mdf@subsubtitleaboveskip@length=\skip110
-\mdf@subsubtitlebelowskip@length=\skip111
-\mdf@subsubtitleinneraboveskip@length=\skip112
-\mdf@subsubtitleinnerbelowskip@length=\skip113
+\mdf@skipabove@length=\skip78
+\mdf@skipbelow@length=\skip79
+\mdf@leftmargin@length=\skip80
+\mdf@rightmargin@length=\skip81
+\mdf@innerleftmargin@length=\skip82
+\mdf@innerrightmargin@length=\skip83
+\mdf@innertopmargin@length=\skip84
+\mdf@innerbottommargin@length=\skip85
+\mdf@splittopskip@length=\skip86
+\mdf@splitbottomskip@length=\skip87
+\mdf@outermargin@length=\skip88
+\mdf@innermargin@length=\skip89
+\mdf@linewidth@length=\skip90
+\mdf@innerlinewidth@length=\skip91
+\mdf@middlelinewidth@length=\skip92
+\mdf@outerlinewidth@length=\skip93
+\mdf@roundcorner@length=\skip94
+\mdf@footenotedistance@length=\skip95
+\mdf@userdefinedwidth@length=\skip96
+\mdf@needspace@length=\skip97
+\mdf@frametitleaboveskip@length=\skip98
+\mdf@frametitlebelowskip@length=\skip99
+\mdf@frametitlerulewidth@length=\skip100
+\mdf@frametitleleftmargin@length=\skip101
+\mdf@frametitlerightmargin@length=\skip102
+\mdf@shadowsize@length=\skip103
+\mdf@extratopheight@length=\skip104
+\mdf@subtitleabovelinewidth@length=\skip105
+\mdf@subtitlebelowlinewidth@length=\skip106
+\mdf@subtitleaboveskip@length=\skip107
+\mdf@subtitlebelowskip@length=\skip108
+\mdf@subtitleinneraboveskip@length=\skip109
+\mdf@subtitleinnerbelowskip@length=\skip110
+\mdf@subsubtitleabovelinewidth@length=\skip111
+\mdf@subsubtitlebelowlinewidth@length=\skip112
+\mdf@subsubtitleaboveskip@length=\skip113
+\mdf@subsubtitlebelowskip@length=\skip114
+\mdf@subsubtitleinneraboveskip@length=\skip115
+\mdf@subsubtitleinnerbelowskip@length=\skip116
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/mdframed/md-frame-0.mdf
 File: md-frame-0.mdf 2013/07/01\ 1.9b: md-frame-0
@@ -524,33 +536,33 @@ File: md-frame-0.mdf 2013/07/01\ 1.9b: md-frame-0
 \mdf@splitbox@one=\box56
 \mdf@splitbox@two=\box57
 \mdf@splitbox@save=\box58
-\mdfsplitboxwidth=\skip114
-\mdfsplitboxtotalwidth=\skip115
-\mdfsplitboxheight=\skip116
-\mdfsplitboxdepth=\skip117
-\mdfsplitboxtotalheight=\skip118
-\mdfframetitleboxwidth=\skip119
-\mdfframetitleboxtotalwidth=\skip120
-\mdfframetitleboxheight=\skip121
-\mdfframetitleboxdepth=\skip122
-\mdfframetitleboxtotalheight=\skip123
-\mdffootnoteboxwidth=\skip124
-\mdffootnoteboxtotalwidth=\skip125
-\mdffootnoteboxheight=\skip126
-\mdffootnoteboxdepth=\skip127
-\mdffootnoteboxtotalheight=\skip128
-\mdftotallinewidth=\skip129
-\mdfboundingboxwidth=\skip130
-\mdfboundingboxtotalwidth=\skip131
-\mdfboundingboxheight=\skip132
-\mdfboundingboxdepth=\skip133
-\mdfboundingboxtotalheight=\skip134
-\mdf@freevspace@length=\skip135
-\mdf@horizontalwidthofbox@length=\skip136
-\mdf@verticalmarginwhole@length=\skip137
-\mdf@horizontalspaceofbox=\skip138
-\mdfsubtitleheight=\skip139
-\mdfsubsubtitleheight=\skip140
+\mdfsplitboxwidth=\skip117
+\mdfsplitboxtotalwidth=\skip118
+\mdfsplitboxheight=\skip119
+\mdfsplitboxdepth=\skip120
+\mdfsplitboxtotalheight=\skip121
+\mdfframetitleboxwidth=\skip122
+\mdfframetitleboxtotalwidth=\skip123
+\mdfframetitleboxheight=\skip124
+\mdfframetitleboxdepth=\skip125
+\mdfframetitleboxtotalheight=\skip126
+\mdffootnoteboxwidth=\skip127
+\mdffootnoteboxtotalwidth=\skip128
+\mdffootnoteboxheight=\skip129
+\mdffootnoteboxdepth=\skip130
+\mdffootnoteboxtotalheight=\skip131
+\mdftotallinewidth=\skip132
+\mdfboundingboxwidth=\skip133
+\mdfboundingboxtotalwidth=\skip134
+\mdfboundingboxheight=\skip135
+\mdfboundingboxdepth=\skip136
+\mdfboundingboxtotalheight=\skip137
+\mdf@freevspace@length=\skip138
+\mdf@horizontalwidthofbox@length=\skip139
+\mdf@verticalmarginwhole@length=\skip140
+\mdf@horizontalspaceofbox=\skip141
+\mdfsubtitleheight=\skip142
+\mdfsubsubtitleheight=\skip143
 \c@mdfcountframes=\count162
 
 ****** mdframed patching \endmdf@trivlist
@@ -595,8 +607,9 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 )
-\@float@every@fig=\toks22
-\c@fig=\count168
+\c@exmp=\count168
+\@float@every@fig=\toks28
+\c@fig=\count169
 
 (./vuwproject.sty
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/mathpazo.sty
@@ -611,7 +624,7 @@ Modified to handle duplex printing properly 2006
 .................................................
 . LaTeX info: "xparse/define-environment"
 . 
-. Defining environment 'example' with sig. 'O{\textbf {Example:}}' on line 84.
+. Defining environment 'example' with sig. 'O{\textbf {Example:}}' on line 86.
 .................................................
  (./thes.aux (./thesis-acknowledge.aux) (./thesis-introduction.aux)
 (./thesis-background.aux
@@ -712,36 +725,36 @@ LaTeX Warning: Label `generation' multiply defined.
 ) (./thesis-evaluationDesign.aux) (./thesis-conclusion.aux))
 \openout1 = `thes.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 85.
-LaTeX Font Info:    ... okay on input line 85.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 85.
-LaTeX Font Info:    ... okay on input line 85.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 85.
-LaTeX Font Info:    ... okay on input line 85.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 85.
-LaTeX Font Info:    ... okay on input line 85.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 85.
-LaTeX Font Info:    ... okay on input line 85.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 85.
-LaTeX Font Info:    ... okay on input line 85.
-LaTeX Font Info:    Try loading font information for T1+ppl on input line 85.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Try loading font information for T1+ppl on input line 87.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/t1ppl.fd
 File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
 )
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count169
+\scratchcounter=\count170
 \scratchdimen=\dimen168
 \scratchbox=\box60
-\nofMPsegments=\count170
-\nofMParguments=\count171
-\everyMPshowfont=\toks23
-\MPscratchCnt=\count172
+\nofMPsegments=\count171
+\nofMParguments=\count172
+\everyMPshowfont=\toks29
+\MPscratchCnt=\count173
 \MPscratchDim=\dimen169
-\MPnumerator=\count173
-\makeMPintoPDFobject=\count174
-\everyMPtoPDFconversion=\toks24
+\MPnumerator=\count174
+\makeMPintoPDFobject=\count175
+\everyMPtoPDFconversion=\toks30
 ) (/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
@@ -767,52 +780,50 @@ Missing character: There is no 	 in font pplri!
 <VUWlogo.png, id=1, 325.215pt x 152.10313pt>
 File: VUWlogo.png Graphic file (type png)
  <use VUWlogo.png>
-Package pdftex.def Info: VUWlogo.png used on input line 100.
+Package pdftex.def Info: VUWlogo.png used on input line 102.
 (pdftex.def)             Requested size: 158.76663pt x 74.25731pt.
 Missing character: There is no 	 in font pplri!
 Missing character: There is no 	 in font pplri!
 Missing character: There is no 	 in font pplri!
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 100.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 102.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
-LaTeX Font Info:    Try loading font information for OML+zplm on input line 100
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 102
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMS+zplm on input line 100
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 102
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMX+zplm on input line 100
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 102
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
-LaTeX Font Info:    Try loading font information for OT1+zplm on input line 100
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 102
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 100.
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 102.
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 100.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 102.
  [-1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./VUWlo
-go.png>] [0] [1]
+go.png>]
+[0]
 \openout2 = `thesis-acknowledge.aux'.
 
  (./thesis-acknowledge.tex
@@ -858,18 +869,16 @@ LaTeX Font Info:    Font shape `T1/ppl/bx/it' in size <12> not available
 
 
 ]
-Package mdframed Info: mdframed works in twoside mode on input line 29.
-Package mdframed Info: mdframed works in twoside mode on input line 40.
- [4]
-Package mdframed Info: mdframed works in twoside mode on input line 49.
-Package mdframed Info: mdframed works in twoside mode on input line 61.
 
-<Figure2-1ExampleWebServiceComposition.pdf, id=45, 614.295pt x 397.485pt>
+Package amsmath Warning: Cannot use `split' here;
+(amsmath)                trying to recover with `aligned' on input line 41.
+
+[4] <Figure2-1ExampleWebServiceComposition.pdf, id=43, 614.295pt x 397.485pt>
 File: Figure2-1ExampleWebServiceComposition.pdf Graphic file (type pdf)
 
 <use Figure2-1ExampleWebServiceComposition.pdf>
 Package pdftex.def Info: Figure2-1ExampleWebServiceComposition.pdf used on inpu
-t line 73.
+t line 56.
 (pdftex.def)             Requested size: 256.0748pt x 165.69315pt.
  [5 <./Figure2-1ExampleWebServiceComposition.pdf
 
@@ -881,186 +890,237 @@ ProcSets', type <array>); ignored.
 
  (./thesis-graph-database-based-approach.tex
 Chapter 3.
-<process.pdf, id=69, 614.295pt x 397.485pt>
-File: process.pdf Graphic file (type pdf)
- <use process.pdf>
-Package pdftex.def Info: process.pdf used on input line 16.
-(pdftex.def)             Requested size: 284.52756pt x 184.10686pt.
+
+Overfull \hbox (14.6935pt too wide) in paragraph at lines 8--8
+[]\T1/ppl/m/n/10.95 Generating ini-tial pop-u-la-tion of ser-vice com-po-si-tio
+n so-lu-tions: We use the graph database
+ []
+
+<process2.pdf, id=66, 844.65562pt x 596.98032pt>
+File: process2.pdf Graphic file (type pdf)
+ <use process2.pdf>
+Package pdftex.def Info: process2.pdf used on input line 16.
+(pdftex.def)             Requested size: 284.52756pt x 201.10324pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
  [9
 
 
 
- <./process.pdf
+]
+[10 <./process2.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./process.pdf): PDF inclusio
-n: invalid other resource which is no dict (key 'ProcSets', type <array>); igno
-red.
->]
-Package mdframed Info: mdframed works in twoside mode on input line 28.
- [10] [11]
-Package mdframed Info: mdframed works in twoside mode on input line 102.
-Package mdframed Info: Not enough space on this page on input line 106.
- <taxonomy-tree-example.pdf, id=89, 614.295pt x 397.485pt>
+ [11]
+<taxonomy-tree-example.pdf, id=84, 614.295pt x 397.485pt>
 File: taxonomy-tree-example.pdf Graphic file (type pdf)
 
 <use taxonomy-tree-example.pdf>
-Package pdftex.def Info: taxonomy-tree-example.pdf used on input line 109.
+Package pdftex.def Info: taxonomy-tree-example.pdf used on input line 106.
 (pdftex.def)             Requested size: 284.52756pt x 184.10686pt.
-Package mdframed Info: mdframed works in twoside mode on input line 116.
 
-<InputServicesAndOutServices.pdf, id=90, 614.295pt x 397.485pt>
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [12]
+Overfull \hbox (18.49564pt too wide) in paragraph at lines 114--122
+[]\T1/ppl/b/n/10.95 Example 3.2.2. []\T1/ppl/m/n/10.95 Af-ter we run the \T1/pp
+l/m/it/10.95 al-go-rithm 2\T1/ppl/m/n/10.95 , we get: Ser-vice \T1/ppl/m/it/10.
+95 1\T1/ppl/m/n/10.95 : $\OML/zplm/m/it/10.95 IS[] \OT1/zplm/m/n/10.95 = \OMS/z
+plm/m/n/10.95 f\OML/zplm/m/it/10.95 service\OT1/ppl/m/n/10.95 1, \OML/zplm/m/it
+/10.95 service\OT1/ppl/m/n/10.95 2, \OML/zplm/m/it/10.95 service\OT1/ppl/m/n/10
+.95 3\OMS/zplm/m/n/10.95 g$
+ []
+
+<InputServicesAndOutServices.pdf, id=89, 614.295pt x 397.485pt>
 File: InputServicesAndOutServices.pdf Graphic file (type pdf)
 
 <use InputServicesAndOutServices.pdf>
-Package pdftex.def Info: InputServicesAndOutServices.pdf used on input line 128
+Package pdftex.def Info: InputServicesAndOutServices.pdf used on input line 125
 .
 (pdftex.def)             Requested size: 284.52756pt x 184.10686pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [12 <./taxonomy-tree-example.pdf
+ [13 <./taxonomy-tree-example.pdf
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./taxonomy-tree-example.pdf)
 : PDF inclusion: invalid other resource which is no dict (key 'ProcSets', type 
 <array>); ignored.
->] <service-without-relationships.pdf, id=104, 1856.48697pt x 1862.67844pt>
-File: service-without-relationships.pdf Graphic file (type pdf)
-
-<use service-without-relationships.pdf>
-Package pdftex.def Info: service-without-relationships.pdf used on input line 1
-77.
-(pdftex.def)             Requested size: 284.52756pt x 285.47205pt.
- [13 <./InputServicesAndOutServices.pdf
+> <./InputServicesAndOutServices.pdf
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./InputServicesAndOutService
 s.pdf): PDF inclusion: invalid other resource which is no dict (key 'ProcSets',
  type <array>); ignored.
->]
+>] <service-without-relationships.pdf, id=112, 1856.48697pt x 1862.67844pt>
+File: service-without-relationships.pdf Graphic file (type pdf)
+
+<use service-without-relationships.pdf>
+Package pdftex.def Info: service-without-relationships.pdf used on input line 1
+76.
+(pdftex.def)             Requested size: 284.52756pt x 285.47205pt.
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [14 <./service-without-relationships.pdf>]
-Package mdframed Info: mdframed works in twoside mode on input line 213.
-
-<svg-before-reduce.pdf, id=128, 1325.35728pt x 1309.06056pt>
+ [14]
+[15 <./service-without-relationships.pdf>]
+<svg-before-reduce.pdf, id=127, 1325.35728pt x 1309.06056pt>
 File: svg-before-reduce.pdf Graphic file (type pdf)
 
 <use svg-before-reduce.pdf>
-Package pdftex.def Info: svg-before-reduce.pdf used on input line 219.
+Package pdftex.def Info: svg-before-reduce.pdf used on input line 217.
 (pdftex.def)             Requested size: 662.67703pt x 654.52869pt.
 
-<The-properties-of-Web-service-serv213889376.pdf, id=129, 614.295pt x 397.485pt
+<The-properties-of-Web-service-serv213889376.pdf, id=128, 614.295pt x 397.485pt
 >
 File: The-properties-of-Web-service-serv213889376.pdf Graphic file (type pdf)
  <use The-properties-of-Web-service-serv213889376.pdf>
 Package pdftex.def Info: The-properties-of-Web-service-serv213889376.pdf used o
-n input line 226.
-(pdftex.def)             Requested size: 368.57983pt x 238.49283pt.
- [15 <./svg-before-reduce.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 233--234
+n input line 224.
+(pdftex.def)             Requested size: 325.57478pt x 210.66605pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 231--232
 
  []
 
-[16 <./The-properties-of-Web-service-serv213889376.pdf
+[16 <./svg-before-reduce.pdf> <./The-properties-of-Web-service-serv213889376.pd
+f
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./The-properties-of-Web-serv
 ice-serv213889376.pdf): PDF inclusion: invalid other resource which is no dict 
 (key 'ProcSets', type <array>); ignored.
->]
-Package mdframed Info: mdframed works in twoside mode on input line 264.
- <svg-reduced.pdf, id=152, 644.01222pt x 390.18695pt>
+>] <svg-reduced.pdf, id=148, 644.01222pt x 390.18695pt>
 File: svg-reduced.pdf Graphic file (type pdf)
  <use svg-reduced.pdf>
-Package pdftex.def Info: svg-reduced.pdf used on input line 270.
+Package pdftex.def Info: svg-reduced.pdf used on input line 268.
 (pdftex.def)             Requested size: 322.00533pt x 195.09299pt.
 
-[17 <./svg-reduced.pdf>]
-<svg-composition1.pdf, id=164, 453.73624pt x 201.00723pt>
-File: svg-composition1.pdf Graphic file (type pdf)
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-<use svg-composition1.pdf>
-Package pdftex.def Info: svg-composition1.pdf used on input line 313.
-(pdftex.def)             Requested size: 312.9803pt x 138.65526pt.
+ [17]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-<svg-composition2.pdf, id=165, 413.78282pt x 297.46843pt>
-File: svg-composition2.pdf Graphic file (type pdf)
+ [18 <./svg-reduced.pdf>] <svg-chapter3-c1.pdf, id=163, 466.9303pt x 231.75342p
+t>
+File: svg-chapter3-c1.pdf Graphic file (type pdf)
 
-<use svg-composition2.pdf>
-Package pdftex.def Info: svg-composition2.pdf used on input line 320.
-(pdftex.def)             Requested size: 312.9803pt x 224.99806pt.
+<use svg-chapter3-c1.pdf>
+Package pdftex.def Info: svg-chapter3-c1.pdf used on input line 311.
+(pdftex.def)             Requested size: 312.9803pt x 155.34824pt.
 
+<svg-chapter3-c2.pdf, id=164, 420.66624pt x 192.79524pt>
+File: svg-chapter3-c2.pdf Graphic file (type pdf)
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+<use svg-chapter3-c2.pdf>
+Package pdftex.def Info: svg-chapter3-c2.pdf used on input line 318.
+(pdftex.def)             Requested size: 312.9803pt x 143.44287pt.
 
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [19 <./svg-chapter3-c1.pdf>]
 LaTeX Font Info:    Font shape `T1/ppl/bx/it' in size <14.4> not available
-(Font)              Font shape `T1/ppl/b/it' tried instead on input line 326.
-[18 <./svg-composition1.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 334--335
+(Font)              Font shape `T1/ppl/b/it' tried instead on input line 324.
+
+Underfull \hbox (badness 10000) in paragraph at lines 332--333
 
  []
 
-Package mdframed Info: mdframed works in twoside mode on input line 336.
-) [19 <./svg-composition2.pdf>] [20]
+
+LaTeX Warning: Reference `tb:c3compExample' on page 20 undefined on input line 
+335.
+
+[20 <./svg-chapter3-c2.pdf>]) [21]
 \openout2 = `thesis-evaluationDesign.aux'.
 
- (./thesis-evaluationDesign.tex
-Chapter 4.
-
-LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 19.
-
-[21
+ (./thesis-evaluationDesign.tex [22
 
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 41--42
+Chapter 4.
 
+Overfull \hbox (7.63177pt too wide) in paragraph at lines 5--5
+\T1/ppl/m/n/10.95 We eval-u-ated the per-for-mance of our ap-proach by test-ing
+ it on a bench-mark dataset, WSC2008
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 45--45
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 15.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--38
 
  []
 
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 41--41
 
-Overfull \hbox (0.63518pt too wide) in paragraph at lines 48--48
+ []
+
+<svg-chapter4-c1.pdf, id=198, 453.73624pt x 201.00723pt>
+File: svg-chapter4-c1.pdf Graphic file (type pdf)
+
+<use svg-chapter4-c1.pdf>
+Package pdftex.def Info: svg-chapter4-c1.pdf used on input line 44.
+(pdftex.def)             Requested size: 312.9803pt x 138.65526pt.
+
+Overfull \hbox (0.63518pt too wide) in paragraph at lines 50--50
 \T1/ppl/m/n/10.95 . This matches the out-put \T1/ppl/m/it/10.95 O \T1/ppl/m/n/1
 0.95 = \T1/ppl/m/it/10.95 inst722854357, inst2092246857, inst1326239605, inst18
 81697469,
  []
 
 
-Overfull \hbox (3.98619pt too wide) in paragraph at lines 48--48
+Overfull \hbox (3.98619pt too wide) in paragraph at lines 50--50
 \T1/ppl/m/n/10.95 vice \T1/ppl/m/it/10.95 serv976005395\T1/ppl/m/n/10.95 , whil
 e, ac-cord-ing to the tax-on-omy tree, \T1/ppl/m/it/10.95 inst1519789560 \T1/pp
 l/m/n/10.95 and \T1/ppl/m/it/10.95 inst1326239605
  []
 
+<svg-chapter4-c2.pdf, id=199, 413.78282pt x 297.46843pt>
+File: svg-chapter4-c2.pdf Graphic file (type pdf)
 
-Overfull \hbox (16.93973pt too wide) in paragraph at lines 50--50
+<use svg-chapter4-c2.pdf>
+Package pdftex.def Info: svg-chapter4-c2.pdf used on input line 54.
+(pdftex.def)             Requested size: 312.9803pt x 224.99806pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (16.93973pt too wide) in paragraph at lines 61--61
 \T1/ppl/m/n/10.95 of Web ser-vice \T1/ppl/m/it/10.95 serv2085282617 \T1/ppl/m/n
 /10.95 and the out-put \T1/ppl/m/it/10.95 O$[]$ \T1/ppl/m/n/10.95 = \T1/ppl/m/i
 t/10.95 inst885068313,inst1420249694,inst1488043421
  []
 
-[22]
-Overfull \hbox (6.90846pt too wide) in paragraph at lines 108--108
+[24 <./svg-chapter4-c1.pdf>]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[25 <./svg-chapter4-c2.pdf>]
+Overfull \hbox (6.90846pt too wide) in paragraph at lines 120--120
 \T1/ppl/m/n/10.95 Our ap-proach suc-cess-fully gen-er-ated a Web ser-vice com-p
 o-si-tion for each task in eight datasets
  []
 
-[23]) [24] [25]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[26]) [27]
 \openout2 = `thesis-conclusion.aux'.
 
- (./thesis-conclusion.tex [26
-
+ (./thesis-conclusion.tex [28
 
 
 ]
 Chapter 5.
-[27]) [28] (./thes.bbl
-Appendix A.
 [29
+
+]) [30] (./thes.bbl
+Appendix A.
+[31
 
 
 
@@ -1077,9 +1137,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 112--115
 ented Ar-chi-tec-ture (SOA).
  []
 
-[30]) [31] (./thes.aux (./thesis-acknowledge.aux) (./thesis-introduction.aux)
+[32]) [33] (./thes.aux (./thesis-acknowledge.aux) (./thesis-introduction.aux)
 (./thesis-background.aux) (./thesis-graph-database-based-approach.aux)
 (./thesis-evaluationDesign.aux) (./thesis-conclusion.aux))
+
+LaTeX Warning: There were undefined references.
+
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -1089,13 +1152,13 @@ LaTeX Warning: There were multiply-defined labels.
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 14571 strings out of 493014
- 259122 string characters out of 6133352
- 435901 words of memory out of 5000000
- 17863 multiletter control sequences out of 15000+600000
+ 14641 strings out of 493014
+ 259977 string characters out of 6133352
+ 446048 words of memory out of 5000000
+ 17927 multiletter control sequences out of 15000+600000
  53220 words of font info for 102 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,18n,42p,10429b,9045s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,18n,42p,10429b,9059s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
@@ -1106,10 +1169,10 @@ al/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texl
 ive/2016/texmf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/20
 16/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texm
 f-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on thes.pdf (38 pages, 691530 bytes).
+Output written on thes.pdf (39 pages, 712785 bytes).
 PDF statistics:
- 261 PDF objects out of 1000 (max. 8388607)
- 170 compressed objects within 2 object streams
+ 281 PDF objects out of 1000 (max. 8388607)
+ 186 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 56 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 66 words of extra memory for PDF output out of 10000 (max. 10000000)
 
